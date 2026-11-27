@@ -3685,10 +3685,15 @@
 
     async function uploadBlobToCloudinary(blob, fileName, cloudName, uploadPreset) {
       try {
+        const lower = (fileName || '').toLowerCase();
+        const isVideo = (blob.type && blob.type.startsWith('video/')) || /\.(mp4|mov|webm|mkv)$/i.test(lower);
+        const isImage = (blob.type && blob.type.startsWith('image/')) || /\.(jpg|jpeg|png|webp|gif|svg)$/i.test(lower);
+        const resourceType = isVideo ? 'video' : (isImage ? 'image' : 'raw');
+
         const formData = new FormData();
         formData.append('file', blob, fileName);
         formData.append('upload_preset', uploadPreset);
-        const res = await fetch(`https://api.cloudinary.com/v1_1/${encodeURIComponent(cloudName)}/auto/upload`, {
+        const res = await fetch(`https://api.cloudinary.com/v1_1/${encodeURIComponent(cloudName)}/${resourceType}/upload`, {
           method: 'POST',
           body: formData
         });
@@ -3708,70 +3713,86 @@
         'Accept': 'application/vnd.github+json',
         'Content-Type': 'application/json'
       };
-
-      let existingSha = null;
-      const getRes = await fetch(`${apiUrl}?ref=${encodeURIComponent(branchName)}`, { headers });
-      if (getRes.ok) {
-        const fileInfo = await getRes.json();
-        existingSha = fileInfo.sha;
+      try {
+        let sha = null;
+        const checkRes = await fetch(`${apiUrl}?ref=${encodeURIComponent(branchName)}`, { headers });
+        if (checkRes.ok) {
+          const info = await checkRes.json();
+          sha = info.sha;
+        }
+        const body = { message: commitMsg, content: base64Content, branch: branchName };
+        if (sha) body.sha = sha;
+        const putRes = await fetch(apiUrl, { method: 'PUT', headers, body: JSON.stringify(body) });
+        return putRes.ok;
+      } catch (e) {
+        console.warn('Binary file GitHub upload failed:', e);
+        return false;
       }
-
-      const body = {
-        message: commitMsg,
-        content: base64Content,
-        branch: branchName
-      };
-      if (existingSha) body.sha = existingSha;
-
-      const putRes = await fetch(apiUrl, {
-        method: 'PUT',
-        headers,
-        body: JSON.stringify(body)
-      });
-      return putRes.ok;
     }
 
-    async function buildExportableProjectsList(githubCfg = null, branchName = 'main') {
+    async function buildExportableProjectsList(githubCfg = null, branchName = 'main', onProgress = null) {
       const exportProjects = [];
       let largeLocalCount = 0;
+      const total = appState.projects.length;
 
-      for (const proj of appState.projects) {
+      for (let idx = 0; idx < total; idx++) {
+        const proj = appState.projects[idx];
+        if (onProgress) onProgress(idx + 1, total, proj.title);
+
         const copy = { ...proj };
+        // Clean heavy base64 thumbnail if already hosted externally so index.html stays ultra-light (<150KB)
+        if (copy.sourceType === 'link' && copy.customThumbUrl && copy.customThumbUrl.startsWith('data:image/') && copy.customThumbUrl.length > 60000) {
+          copy.customThumbUrl = '';
+        }
+
         if (copy.sourceType === 'local') {
           const blob = await getBlobFromIndexedDB(copy.id);
           if (blob) {
-            if (blob.size <= 3 * 1024 * 1024) {
-              copy.embeddedDataUrl = await blobToDataURL(blob);
-              copy.sourceType = 'embedded-data';
-            } else if (githubCfg && githubCfg.cloudName && githubCfg.uploadPreset) {
-              const ext = (blob.name && blob.name.includes('.')) ? blob.name.split('.').pop().toLowerCase() : (copy.mediaType === 'video' ? 'mp4' : copy.mediaType === 'pdf' ? 'pdf' : 'jpg');
+            const ext = (blob.name && blob.name.includes('.'))
+              ? blob.name.split('.').pop().toLowerCase()
+              : (copy.mediaType === 'video' ? 'mp4' : copy.mediaType === 'pdf' ? 'pdf' : 'jpg');
+
+            // 1. Prefer Cloudinary CDN when configured (supports up to 100MB videos & 20MB PDFs/images)
+            if (githubCfg && githubCfg.cloudName && githubCfg.uploadPreset && blob.size <= 98 * 1024 * 1024) {
               const cdnUrl = await uploadBlobToCloudinary(blob, `${copy.id}.${ext}`, githubCfg.cloudName, githubCfg.uploadPreset);
               if (cdnUrl) {
                 copy.sourceType = 'link';
                 copy.externalUrl = cdnUrl;
                 copy.embeddedDataUrl = '';
+                if (copy.customThumbUrl && copy.customThumbUrl.startsWith('data:')) copy.customThumbUrl = '';
                 proj.sourceType = 'link';
                 proj.externalUrl = cdnUrl;
+                proj.embeddedDataUrl = '';
                 persistPortfolioState();
-              } else {
-                largeLocalCount++;
+                exportProjects.push(copy);
+                continue;
               }
-            } else if (githubCfg && githubCfg.token && blob.size <= 24 * 1024 * 1024) {
+            }
+
+            // 2. Otherwise upload directly to GitHub repo's /media/ folder (up to 24MB per file)
+            if (githubCfg && githubCfg.token && blob.size <= 24 * 1024 * 1024) {
               const dataUrl = await blobToDataURL(blob);
               const base64Data = dataUrl.split(',')[1];
-              const ext = (blob.name && blob.name.includes('.')) ? blob.name.split('.').pop().toLowerCase() : (copy.mediaType === 'video' ? 'mp4' : copy.mediaType === 'pdf' ? 'pdf' : 'jpg');
               const mediaPath = `media/${copy.id}.${ext}`;
               const uploaded = await uploadBinaryFileToGitHub(githubCfg, mediaPath, base64Data, `Upload media asset ${copy.title}`, branchName);
               if (uploaded) {
                 copy.sourceType = 'link';
                 copy.externalUrl = `./${mediaPath}`;
                 copy.embeddedDataUrl = '';
+                if (copy.customThumbUrl && copy.customThumbUrl.startsWith('data:')) copy.customThumbUrl = '';
                 proj.sourceType = 'link';
                 proj.externalUrl = `./${mediaPath}`;
+                proj.embeddedDataUrl = '';
                 persistPortfolioState();
-              } else {
-                largeLocalCount++;
+                exportProjects.push(copy);
+                continue;
               }
+            }
+
+            // 3. Fallback for offline HTML export only (when no GitHub token is used)
+            if ((!githubCfg || !githubCfg.token) && blob.size <= 1.5 * 1024 * 1024) {
+              copy.embeddedDataUrl = await blobToDataURL(blob);
+              copy.sourceType = 'embedded-data';
             } else {
               largeLocalCount++;
             }
@@ -3781,7 +3802,7 @@
       }
 
       if (largeLocalCount > 0) {
-        showToast(`${largeLocalCount} file(s) >24MB synced with title & story — add Cloudinary in Settings or Google Drive link for direct playback.`, 'error');
+        showToast(`${largeLocalCount} file(s) >100MB synced with title & story — add Google Drive link for direct playback.`, 'error');
       }
       return exportProjects;
     }
@@ -3800,7 +3821,7 @@
       const origHtml = syncBtn ? syncBtn.innerHTML : '';
       if (syncBtn) {
         syncBtn.disabled = true;
-        syncBtn.textContent = 'Syncing Live...';
+        syncBtn.textContent = `Syncing 0/${appState.projects.length}...`;
       }
 
       try {
@@ -3818,7 +3839,11 @@
           if (repoMeta.default_branch) targetBranch = repoMeta.default_branch;
         }
 
-        const exportProjects = await buildExportableProjectsList(cfg, targetBranch);
+        const exportProjects = await buildExportableProjectsList(cfg, targetBranch, (current, total) => {
+          if (syncBtn) syncBtn.textContent = `Syncing ${current}/${total}...`;
+        });
+
+        if (syncBtn) syncBtn.textContent = 'Publishing Live Page...';
         const finalHtml = buildCleanStandaloneDocument(exportProjects);
 
         const apiUrl = `https://api.github.com/repos/${encodeURIComponent(cfg.owner)}/${encodeURIComponent(cfg.repo)}/contents/index.html`;
@@ -3852,7 +3877,9 @@
           throw new Error(errData.message || 'GitHub API push failed');
         }
 
-        showToast(`✓ ${exportProjects.length} Project(s) Synced Live to GitHub! Refresh Incognito in ~45 sec.`);
+        await renderGallery();
+        renderSoftwareTeaser();
+        showToast(`✓ All ${exportProjects.length} Project(s) Synced Live to GitHub! Refresh Incognito in ~45 sec.`);
         return true;
       } catch (err) {
         console.error('GitHub Sync Error:', err);
