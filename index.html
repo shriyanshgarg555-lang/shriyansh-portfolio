@@ -911,13 +911,13 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <button type="button" id="modeLocalBtn" onclick="switchUploadSource('local')"
             class="p-3.5 rounded-2xl border-2 border-espresso-900 bg-espresso-900 text-alabaster text-left transition-all">
-            <span class="text-xs font-bold block">Direct Device File (Up to 15 MB for GitHub)</span>
-            <span class="text-[11px] opacity-80 block mt-0.5">Best for Images, Logos, PDFs &amp; Short Clips</span>
+            <span class="text-xs font-bold block">Direct Device File (Up to 95 MB Auto-GitHub)</span>
+            <span class="text-[11px] opacity-80 block mt-0.5">Images, Logos, PDFs &amp; Videos auto-upload to GitHub</span>
           </button>
           <button type="button" id="modeLinkBtn" onclick="switchUploadSource('link')"
             class="p-3.5 rounded-2xl border-2 border-sand-300 bg-alabaster text-espresso-900 text-left transition-all">
-            <span class="text-xs font-bold block">Google Drive / YouTube Link (No Limit • GBs)</span>
-            <span class="text-[11px] opacity-75 block mt-0.5">Use for 15 MB to 20 GB+ 4K Videos on GitHub</span>
+            <span class="text-xs font-bold block">Google Drive / YouTube Link (1.5 GB – 20 GB+)</span>
+            <span class="text-[11px] opacity-75 block mt-0.5">Required by GitHub for files larger than 100 MB</span>
           </button>
         </div>
 
@@ -3214,40 +3214,49 @@
       });
     }
 
-    function buildCleanStandaloneDocument(seedPayload) {
+    function utf8ToBase64(str) {
+      const bytes = new TextEncoder().encode(str);
+      let binary = '';
+      const chunkSize = 0x8000;
+      for (let i = 0; i < bytes.length; i += chunkSize) {
+        binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunkSize));
+      }
+      return btoa(binary);
+    }
+
+    function buildCleanStandaloneDocument(cleanStateObj) {
       const cloneDoc = document.documentElement.cloneNode(true);
 
-      // Reset transient runtime UI on the cloned DOM so visitors see a clean public view
-      const toolbar = cloneDoc.querySelector('#adminToolbar');
-      if (toolbar) toolbar.classList.add('hidden');
+      // Reset transient runtime UI states on the cloned document
+      const adminToolbar = cloneDoc.querySelector('#adminToolbar');
+      if (adminToolbar) adminToolbar.classList.add('hidden');
 
-      const headerBtnText = cloneDoc.querySelector('#adminHeaderBtnText');
-      if (headerBtnText) headerBtnText.textContent = 'Owner Login';
+      const adminBtnText = cloneDoc.querySelector('#adminHeaderBtnText');
+      if (adminBtnText) adminBtnText.textContent = 'Owner Login';
 
       const lockClosed = cloneDoc.querySelector('#lockIconClosed');
       const lockOpen = cloneDoc.querySelector('#lockIconOpen');
       if (lockClosed) lockClosed.classList.remove('hidden');
       if (lockOpen) lockOpen.classList.add('hidden');
 
-      ['pinModal', 'projectModal', 'profileModal', 'settingsModal', 'lightboxModal', 'notepadCodeModal'].forEach(id => {
-        const modal = cloneDoc.querySelector('#' + id);
-        if (modal) modal.classList.add('hidden');
+      const modalIds = ['notepadCodeModal', 'pinModal', 'projectModal', 'profileModal', 'settingsModal', 'lightboxModal'];
+      modalIds.forEach(id => {
+        const el = cloneDoc.querySelector('#' + id);
+        if (el) el.classList.add('hidden');
       });
 
       const notepadArea = cloneDoc.querySelector('#notepadSourceTextarea');
-      if (notepadArea) notepadArea.textContent = '';
+      if (notepadArea) notepadArea.value = '';
 
-      const grid = cloneDoc.querySelector('#portfolioGrid');
-      if (grid) grid.innerHTML = '';
+      const gridEl = cloneDoc.querySelector('#portfolioGrid');
+      if (gridEl) gridEl.innerHTML = '';
 
       const toastBox = cloneDoc.querySelector('#toastContainer');
       if (toastBox) toastBox.innerHTML = '';
 
-      // Inject latest state cleanly into embeddedPortfolioSeed (never includes private GitHub PAT)
       const seedScript = cloneDoc.querySelector('#embeddedPortfolioSeed');
       if (seedScript) {
-        const safeJson = JSON.stringify(seedPayload, null, 2).replace(/<\/script>/gi, '<\\/script>');
-        seedScript.textContent = '\n  ' + safeJson + '\n  ';
+        seedScript.textContent = '\n  ' + JSON.stringify(cleanStateObj, null, 2).replace(/<\/script/gi, '<\\/script') + '\n  ';
       }
 
       return '<!DOCTYPE html>\n' + cloneDoc.outerHTML;
@@ -3259,30 +3268,31 @@
       const origHtml = btn ? btn.innerHTML : '';
       if (btn) {
         btn.disabled = true;
-        btn.textContent = 'Packing index.html...';
+        btn.textContent = 'Building index.html...';
       }
 
       try {
-        const exportProjects = await buildExportableProjectsList();
-        const htmlContent = buildCleanStandaloneDocument({
+        const exportProjects = await buildExportableProjectsList(null);
+        const finalHtml = buildCleanStandaloneDocument({
           pin: appState.pin,
           profile: appState.profile,
           projects: exportProjects
         });
 
-        const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'index.html';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        setTimeout(() => URL.revokeObjectURL(url), 2000);
-        showToast('Exported index.html with all embedded projects!');
+        const htmlBlob = new Blob([finalHtml], { type: 'text/html;charset=utf-8' });
+        const downloadUrl = URL.createObjectURL(htmlBlob);
+        const link = document.createElement('a');
+        link.href = downloadUrl;
+        link.download = 'index.html';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        setTimeout(() => URL.revokeObjectURL(downloadUrl), 2000);
+
+        showToast('✓ Exported clean index.html! Ready for GitHub.');
       } catch (err) {
-        console.error(err);
-        showToast('Could not export file. Try Copy HTML Code (Notepad).', 'error');
+        console.error('Export error:', err);
+        showToast('Export failed. Try Copy HTML Code (Notepad).', 'error');
       } finally {
         if (btn) {
           btn.disabled = false;
@@ -3291,41 +3301,118 @@
       }
     }
 
-    function utf8ToBase64(str) {
-      const bytes = new TextEncoder().encode(str);
-      let binary = '';
-      const chunkSize = 0x8000;
-      for (let i = 0; i < bytes.length; i += chunkSize) {
-        binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunkSize));
-      }
-      return btoa(binary);
-    }
-
-    async function buildExportableProjectsList() {
+    async function buildExportableProjectsList(githubContext = null) {
       const exportProjects = [];
-      let skippedLargeVideos = 0;
+      let skippedHugeVideos = 0;
+
       for (const proj of appState.projects) {
         const clone = { ...proj };
         if (clone.sourceType === 'local') {
           const rec = await getBlobFromIndexedDB(clone.id);
           if (rec && rec.blob) {
-            if (rec.blob.size <= 15 * 1024 * 1024) {
+            // 1. Small files (<= 4 MB) embed directly inside HTML for instant offline portability
+            if (rec.blob.size <= 4 * 1024 * 1024) {
+              const dataUrl = await blobToDataURL(rec.blob);
+              if (dataUrl) {
+                clone.sourceType = 'embedded-data';
+                clone.embeddedDataUrl = dataUrl;
+              }
+            }
+            // 2. Medium-to-large files (4 MB to 95 MB — GitHub's hard 100 MB API limit) upload to GitHub /media/ folder
+            else if (githubContext && rec.blob.size <= 95 * 1024 * 1024) {
+              const safeExt = (rec.fileName && rec.fileName.includes('.'))
+                ? rec.fileName.split('.').pop().replace(/[^a-zA-Z0-9]/g, '').toLowerCase()
+                : (clone.mediaType === 'video' ? 'mp4' : (clone.mediaType === 'pdf' ? 'pdf' : 'png'));
+              const mediaPath = `media/${clone.id}.${safeExt}`;
+              const rawBase64 = await blobToRawBase64(rec.blob);
+
+              if (rawBase64) {
+                const uploadedOk = await uploadBinaryFileToGitHub(githubContext, mediaPath, rawBase64);
+                if (uploadedOk) {
+                  clone.sourceType = 'link';
+                  clone.externalUrl = `./${mediaPath}`;
+                  clone.embeddedDataUrl = '';
+                } else {
+                  skippedHugeVideos++;
+                }
+              } else {
+                skippedHugeVideos++;
+              }
+            }
+            // 3. Fallback when manually exporting without GitHub API (up to 15 MB inline)
+            else if (!githubContext && rec.blob.size <= 15 * 1024 * 1024) {
               const dataUrl = await blobToDataURL(rec.blob);
               if (dataUrl) {
                 clone.sourceType = 'embedded-data';
                 clone.embeddedDataUrl = dataUrl;
               }
             } else {
-              skippedLargeVideos++;
+              skippedHugeVideos++;
             }
           }
         }
         exportProjects.push(clone);
       }
-      if (skippedLargeVideos > 0) {
-        showToast(`Note: ${skippedLargeVideos} large file(s) >15MB need a Google Drive link to play on GitHub.`, 'error');
+
+      if (skippedHugeVideos > 0) {
+        showToast(`${skippedHugeVideos} video(s) >100MB skipped (GitHub limit is 100MB) — paste their Google Drive link to publish them!`);
       }
       return exportProjects;
+    }
+
+    function blobToRawBase64(blob) {
+      return new Promise((resolve) => {
+        try {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            const res = reader.result || '';
+            const commaIdx = res.indexOf(',');
+            resolve(commaIdx !== -1 ? res.slice(commaIdx + 1) : null);
+          };
+          reader.onerror = () => resolve(null);
+          reader.readAsDataURL(blob);
+        } catch (e) {
+          resolve(null);
+        }
+      });
+    }
+
+    async function uploadBinaryFileToGitHub(ctx, filePath, base64Content) {
+      try {
+        const fileApiUrl = `https://api.github.com/repos/${encodeURIComponent(ctx.owner)}/${encodeURIComponent(ctx.repo)}/contents/${filePath}`;
+        let existingSha = null;
+        const checkRes = await fetch(`${fileApiUrl}?ref=${encodeURIComponent(ctx.branch)}`, {
+          headers: {
+            'Authorization': `Bearer ${ctx.token}`,
+            'Accept': 'application/vnd.github+json'
+          }
+        });
+        if (checkRes.ok) {
+          const meta = await checkRes.json();
+          existingSha = meta.sha;
+        }
+
+        const body = {
+          message: `Upload media asset ${filePath}`,
+          content: base64Content,
+          branch: ctx.branch
+        };
+        if (existingSha) body.sha = existingSha;
+
+        const putRes = await fetch(fileApiUrl, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${ctx.token}`,
+            'Accept': 'application/vnd.github+json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(body)
+        });
+        return putRes.ok;
+      } catch (e) {
+        console.error('Binary upload error:', e);
+        return false;
+      }
     }
 
     async function syncLiveToGitHub(manualClick = false) {
@@ -3343,7 +3430,7 @@
       const origText = syncBtn ? syncBtn.innerHTML : '';
       if (syncBtn) {
         syncBtn.disabled = true;
-        syncBtn.textContent = 'Syncing to GitHub...';
+        syncBtn.textContent = 'Syncing Media & HTML...';
       }
 
       try {
@@ -3380,8 +3467,13 @@
           currentSha = fileMeta.sha;
         }
 
-        // 2. Build clean standalone index.html with latest projects & profile
-        const exportProjects = await buildExportableProjectsList();
+        // 2. Upload local files (up to 85 MB) directly into GitHub /media/ folder & build clean HTML
+        const exportProjects = await buildExportableProjectsList({
+          owner,
+          repo,
+          token: cfg.token,
+          branch: targetBranch
+        });
         const finalHtml = buildCleanStandaloneDocument({
           pin: appState.pin,
           profile: appState.profile,
@@ -3411,7 +3503,7 @@
           throw new Error(errData.message || 'GitHub sync failed.');
         }
 
-        showToast('✓ Live GitHub website updated automatically! (Live in ~45s)');
+        showToast('✓ All videos & designs synced live to GitHub! (Live in ~45s)');
       } catch (err) {
         console.error('GitHub Auto-Sync Error:', err);
         showToast(`GitHub Sync: ${err.message}`, 'error');
