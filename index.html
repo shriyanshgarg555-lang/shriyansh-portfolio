@@ -1,827 +1,13 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth"><head><script data-bard-client-injected="true">(function(firebaseConfig, initialAuthToken, appId) {
-        window.__firebase_config = firebaseConfig;
-        window.__initial_auth_token = initialAuthToken;
-        window.__app_id = appId;
-            })("\n{\n  \"apiKey\": \"AIzaSyCqyCcs2R2e7AegGjvFAwG98wlamtbHvZY\",\n  \"authDomain\": \"bard-frontend.firebaseapp.com\",\n  \"projectId\": \"bard-frontend\",\n  \"storageBucket\": \"bard-frontend.firebasestorage.app\",\n  \"messagingSenderId\": \"175205271074\",\n  \"appId\": \"1:175205271074:web:2b7bd4d34d33bf38e6ec7b\"\n}\n","eyJhbGciOiJSUzI1NiIsImtpZCI6IjExNjRiNzdiNDMzZDdhMDAyMWI4NjE4YjhjYTU3ZTMyZGI5MWUxMTMiLCJ0eXAiOiJKV1QifQ.eyJzdWIiOiJmaXJlYmFzZS1hZG1pbnNkay1mYnN2Y0BiYXJkLWZyb250ZW5kLmlhbS5nc2VydmljZWFjY291bnQuY29tIiwiYXVkIjoiaHR0cHM6Ly9pZGVudGl0eXRvb2xraXQuZ29vZ2xlYXBpcy5jb20vZ29vZ2xlLmlkZW50aXR5LmlkZW50aXR5dG9vbGtpdC52MS5JZGVudGl0eVRvb2xraXQiLCJ1aWQiOiIwMDI1MzM0Njg1OTkxNTg4MTgxNyIsImlzcyI6ImZpcmViYXNlLWFkbWluc2RrLWZic3ZjQGJhcmQtZnJvbnRlbmQuaWFtLmdzZXJ2aWNlYWNjb3VudC5jb20iLCJjbGFpbXMiOnsiYXBwSWQiOiJjXzVmMTZiMmY0NmU4NGZhNDFfaW5kZXguaHRtbC0zODMifSwiZXhwIjoxNzk1NzY3MjI5LCJpYXQiOjE3OTU3NjM2MjksImFsZyI6IlJTMjU2In0.j7HLKnk2kR21-vjjb2OVJaFi6GYhXqwJeWOQ_gRe-zuf0YnErS8U6znQAkvQ_Md5joDRHn3sx6BH-GHE7MywtSEaMWSWkvQDqrVmGuOVd8oCZZ7cK01O95BsUurVFyYbSURSqhEqhMESRoMipOsjW7lzPRGAgcVohg8lK9ZxTNwhaFlFKYiwYtJTIjB2MHjmyEEOpestvcKjWePk0RHiVRYtjc4r62ZHEC5ZldTE0NfojCURJmGkEOI15RV3g9vGpijQPz6r6sIqOdfzbyHptafS2AX07lTHODrIEwhkUFqBDed_BcIWjvFig_w8ziP_ultB4OIptt4-0NKEaBer-A","c_5f16b2f46e84fa41_index.html-383")</script><script data-bard-client-injected="true">
-  document.addEventListener('input', (event) => {
-    if (event.target && (event.target.isContentEditable || event.target.hasAttribute('contenteditable'))) {
-      const clonedDoc = document.cloneNode(true);
-      const injectedScripts = clonedDoc.querySelectorAll('[data-bard-client-injected="true"]');
-      injectedScripts.forEach(el => el.remove());
-      window.parent.postMessage({
-        type: 'inlineEdit',
-        html: '<!DOCTYPE html>\n' + clonedDoc.documentElement.outerHTML
-      }, '*');
-    }
-  });
-</script><script data-bard-client-injected="true">(function(){'use strict';window.addEventListener("message",a=>{a.data&&a.data.type==="SUPPLEMENTAL_DATA_UPDATE"&&window.dispatchEvent(new CustomEvent("supplementaldataupdate",{detail:a.data.data}))});}).call(this);
-</script><script data-bard-client-injected="true">(function() {
-  const SCROLL_KEYS = new Set([
-    'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight',
-    ' ', 'Spacebar', 'PageUp', 'PageDown', 'Home', 'End',
-  ]);
-  const HORIZONTAL_KEYS = new Set(['ArrowLeft', 'ArrowRight']);
-
-  function isTextEntryTarget(target) {
-    if (!target) return false;
-    const tagName = target.tagName;
-    return tagName === 'INPUT' || tagName === 'TEXTAREA' ||
-        tagName === 'SELECT' || target.isContentEditable === true;
-  }
-
-  // An element absorbs the key only if it both overflows on the axis being
-  // scrolled and is configured to scroll on that axis. The cheap dimension
-  // test runs first because getComputedStyle forces a style recalc, and this
-  // runs on every keypress. Each axis is read from its own longhand: the
-  // 'overflow' shorthand serializes as two values when the axes differ, which
-  // is the common 'overflow-x: hidden; overflow-y: auto' pane.
-  function canScroll(node, horizontal) {
-    const overflows = horizontal ? node.scrollWidth > node.clientWidth
-                                 : node.scrollHeight > node.clientHeight;
-    if (!overflows) return false;
-    const style = window.getComputedStyle(node);
-    const overflow = horizontal ? style.overflowX : style.overflowY;
-    return overflow === 'auto' || overflow === 'scroll';
-  }
-
-  // Walks up from the event target so nested scrollers keep their behavior.
-  // <body> is included because pages that pin the root height make it the
-  // scroll container.
-  function hasScrollableAncestor(target, horizontal) {
-    let node = target;
-    while (node && node !== document.documentElement) {
-      if (canScroll(node, horizontal)) return true;
-      node = node.parentElement;
-    }
-    return false;
-  }
-
-  function rootCanScroll(horizontal) {
-    const scroller = document.scrollingElement || document.documentElement;
-    if (!scroller) return false;
-    // Tolerate a pixel of rounding so subpixel layouts do not look scrollable.
-    return horizontal ? scroller.scrollWidth > window.innerWidth + 1
-                      : scroller.scrollHeight > window.innerHeight + 1;
-  }
-
-  window.addEventListener('keydown', function(event) {
-    if (!SCROLL_KEYS.has(event.key)) return;
-    if (event.defaultPrevented) return;
-    // Alt and Meta turn arrows into browser history navigation, and Ctrl is
-    // reserved for shortcuts, so none of them are scroll intent.
-    if (event.altKey || event.metaKey || event.ctrlKey) return;
-
-    const target = event.target;
-    if (isTextEntryTarget(target)) return;
-
-    // Anything that can still absorb the scroll gets to keep it.
-    const horizontal = HORIZONTAL_KEYS.has(event.key);
-    if (rootCanScroll(horizontal)) return;
-    if (hasScrollableAncestor(target, horizontal)) return;
-
-    event.preventDefault();
-  }, {capture: true, passive: false});
-})();</script><script data-bard-client-injected="true">(function() {
-  // Ensure this script is executed only once
-  if (window.firebaseAuthBridgeScriptLoaded) {
-    return;
-  }
-  window.firebaseAuthBridgeScriptLoaded = true;
-
-  let nextTokenPromiseId = 0;
-
-  // Stores { resolve, reject } for ongoing token requests
-  const pendingTokenPromises = {};
-
-  // Listen for messages from the Host Application
-  window.addEventListener('message', function(event) {
-
-    const messageData = event.data;
-
-  if (messageData && messageData.type === 'RESOLVE_NEW_FIREBASE_TOKEN') {
-      const { success, token, error, promiseId } = messageData ?? {};
-      if (pendingTokenPromises[promiseId]) {
-        if (success) {
-          pendingTokenPromises[promiseId].resolve(token);
-        } else {
-          pendingTokenPromises[promiseId].reject(new Error(error || 'Token refresh failed from host.'));
-        }
-        delete pendingTokenPromises[promiseId];
-      }
-    }
-  });
-
-  // Expose a function for the Generated App to request a new Firebase token
-  window.requestNewFirebaseToken = function() {
-    const currentPromiseId = nextTokenPromiseId++;
-    const promise = new Promise((resolve, reject) => {
-      pendingTokenPromises[currentPromiseId] = { resolve, reject };
-    });
-    if (window.parent && window.parent !== window) {
-      window.parent.postMessage({
-        type: 'REQUEST_NEW_FIREBASE_TOKEN',
-        promiseId: currentPromiseId
-      }, '*');
-    } else {
-      pendingTokenPromises[currentPromiseId].reject(new Error('No parent window to request token from.'));
-      delete pendingTokenPromises[currentPromiseId];
-    }
-    return promise;
-  };
-})();</script><script data-bard-client-injected="true">
-let realOriginalGetUserMedia = null;
-if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-  realOriginalGetUserMedia = navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices);
-}
-
-(function() {
-  if (navigator.mediaDevices && navigator.mediaDevices.__proto__) {
-    try {
-      Object.defineProperty(navigator.mediaDevices.__proto__, 'getUserMedia', {
-        get: function() {
-          return undefined; // Or throw an error
-        },
-        configurable: false
-      });
-    } catch (error) {
-      console.error("Error defining prototype getter:", error);
-    }
-  }
-})();
-
-(function() {
-  const pendingMediaResolvers = {};
-  let nextMediaPromiseId = 0;
-
-  function requestMediaPermissions(constraints) {
-    const mediaPromiseId = nextMediaPromiseId++;
-    const promise = new Promise((resolve, reject) => {
-      pendingMediaResolvers[mediaPromiseId] = (granted) => {
-        delete pendingMediaResolvers[mediaPromiseId];
-        resolve(granted);
-      };
-    });
-
-    window.parent.postMessage({
-      type: 'requestMediaPermission',
-      constraints: constraints,
-      promiseId: mediaPromiseId,
-    }, '*');
-
-    return promise;
-  }
-
-  let originalGetUserMedia = realOriginalGetUserMedia;
-
-  function interceptGetUserMedia() {
-    if (navigator.mediaDevices) {
-      Object.defineProperty(navigator.mediaDevices, 'getUserMedia', {
-        value: function(constraints) {
-          return requestMediaPermissions(constraints).then((granted) => {
-            if (granted) {
-              if (originalGetUserMedia) {
-                return originalGetUserMedia(constraints);
-              } else {
-                throw new Error("Original getUserMedia not available.");
-              }
-            } else {
-              throw new DOMException('Permission denied', 'NotAllowedError');
-            }
-          });
-        },
-        writable: false,
-        configurable: false
-      });
-    }
-  }
-
-  interceptGetUserMedia();
-
-  const observer = new MutationObserver(function(mutationsList, observer) {
-    for (const mutation of mutationsList) {
-      if (mutation.type === 'reconfigured' && mutation.name === 'getUserMedia' && mutation.object === navigator.mediaDevices) {
-        interceptGetUserMedia();
-      } else if (mutation.type === 'attributes' && mutation.attributeName === 'getUserMedia' && mutation.target === navigator.mediaDevices) {
-        interceptGetUserMedia();
-      } else if (mutation.type === 'childList' && mutation.addedNodes) {
-        mutation.addedNodes.forEach(node => {
-          if (node === navigator.mediaDevices) {
-            interceptGetUserMedia();
-          }
-        });
-      }
-    }
-  });
-
-  function interceptSpeechRecognition() {
-    if (!window.SpeechRecognition && !window.webkitSpeechRecognition) {
-      return;
-    }
-
-    const OriginalSpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-
-    const SpeechRecognitionWrapper = function(...args) {
-      const recognizer = new OriginalSpeechRecognition(...args);
-      const originalStart = recognizer.start.bind(recognizer);
-
-      recognizer.start = function() {
-        requestMediaPermissions({ audio: true }).then(granted => {
-          if (granted) {
-            originalStart();
-          } else {
-            const errorEvent = new SpeechRecognitionErrorEvent('error');
-            errorEvent.error = 'not-allowed'; // This is the standard error for permission denial.
-            recognizer.dispatchEvent(errorEvent);
-          }
-        });
-      };
-
-      return recognizer;
-    };
-
-    SpeechRecognitionWrapper.prototype = OriginalSpeechRecognition.prototype;
-    SpeechRecognitionWrapper.prototype.constructor = SpeechRecognitionWrapper;
-
-    if (window.SpeechRecognition) {
-      window.SpeechRecognition = SpeechRecognitionWrapper;
-    }
-    if (window.webkitSpeechRecognition) {
-      window.webkitSpeechRecognition = SpeechRecognitionWrapper;
-    }
-  }
-
-  interceptSpeechRecognition();
-
-  window.addEventListener('message', function(event) {
-    if (event.data) {
-      if (event.data.type === 'resolveMediaPermission') {
-        const { promiseId, granted } = event.data;
-        if (pendingMediaResolvers[promiseId]) {
-          pendingMediaResolvers[promiseId](granted);
-        }
-      }
-    }
-  });
-
-})();</script><script ws-interception-config="{&quot;parentOrigin&quot;:&quot;https://gemini.google.com&quot;,&quot;proxiedDomains&quot;:[]}" data-bard-client-injected="true">(function(){'use strict';var u=typeof Object.defineProperties=="function"?Object.defineProperty:function(b,d,e){if(b==Array.prototype||b==Object.prototype)return b;b[d]=e.value;return b};function v(b){b=["object"==typeof globalThis&&globalThis,b,"object"==typeof window&&window,"object"==typeof self&&self,"object"==typeof global&&global];for(var d=0;d<b.length;++d){var e=b[d];if(e&&e.Math==Math)return e}throw Error("Cannot find global object");}var w=v(this);
-function y(b,d){if(d)a:{var e=w;b=b.split(".");for(var h=0;h<b.length-1;h++){var k=b[h];if(!(k in e))break a;e=e[k]}b=b[b.length-1];h=e[b];d=d(h);d!=h&&d!=null&&u(e,b,{configurable:!0,writable:!0,value:d})}}function z(b){function d(h){return b.next(h)}function e(h){return b.throw(h)}return new Promise(function(h,k){function m(n){n.done?h(n.value):Promise.resolve(n.value).then(d,e).then(m,k)}m(b.next())})}y("globalThis",function(b){return b||w});/*
-
- Copyright The Closure Library Authors.
- SPDX-License-Identifier: Apache-2.0
-*/
-function A(b,d){function e(){}e.prototype=d.prototype;b.i=d.prototype;b.prototype=new e;b.prototype.constructor=b;b.h=function(h,k,m){for(var n=Array(arguments.length-2),p=2;p<arguments.length;p++)n[p-2]=arguments[p];return d.prototype[k].apply(h,n)}};function B(b,d,e="*"){function h(a){if(typeof a==="string")return F.encode(a).buffer;if(a instanceof ArrayBuffer)return a.slice(0);if(ArrayBuffer.isView(a))return a.buffer.slice(a.byteOffset,a.byteOffset+a.byteLength);throw Error("Invalid data type");}function k(a){a=h(a);var f={type:"send",data:new Uint8Array(a)},g;(g=r)==null||g.postMessage(f,[a])}function m(){if(!r)throw Error("Data port not captured yet.");r.onmessage=a=>{if(a.data.type==="message"){a=new MessageEvent("message",{data:G.decode(a.data.data)});
-let f;(f=c.onmessage)==null||f.call(c,a);c.dispatchEvent(a)}}}function n(){if(!t)throw Error("Control port not captured yet.");t.onmessage=a=>{switch(a.data.type){case "open":l=1;var f=new Event("open"),g;(g=c.onopen)==null||g.call(c,f);c.dispatchEvent(f);q.forEach(H=>{k(H)});q=[];break;case "close":g=a.data;l=3;g=new CloseEvent("close",{code:g.code,reason:g.reason,wasClean:g.wasClean});(f=c.onclose)==null||f.call(c,g);c.dispatchEvent(g);break;case "error":l=3;f=new Event("error");let x;(x=c.onerror)==
-null||x.call(c,f);c.dispatchEvent(f)}}}function p(a){return z(function*(){var f=new MessageChannel;t=f.port1;var g=new MessageChannel;r=g.port1;n();m();window.parent.postMessage({type:"websocket_open",portOrdering:["control","data"],url:b,protocols:a||[],connectionId:I},e,[f.port2,g.port2])}())}var c=Reflect.construct(EventTarget,[],new.target);c.CONNECTING=0;c.OPEN=1;c.CLOSING=2;c.CLOSED=3;c.url=b;c.binaryType="arraybuffer";c.protocol="";c.extensions="";var l=0,t=null,r=null,q=[],F=new TextEncoder,
-G=new TextDecoder;c.onopen=null;c.onmessage=null;c.onclose=null;c.onerror=null;Object.defineProperty(c,"readyState",{get:()=>l,enumerable:!0,configurable:!0});Object.defineProperty(c,"bufferedAmount",{get:()=>{var a=0;q.forEach(f=>{a+=typeof f==="string"?f.length:f.byteLength});return a},enumerable:!0,configurable:!0});var I=function(){var a;return((a=globalThis.crypto)==null?0:a.randomUUID)?globalThis.crypto.randomUUID():"xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g,f=>{var g=Math.random()*
-16|0;return(f==="x"?g:g&3|8).toString(16)})}();c.send=a=>{if(l===1)a instanceof Blob?a.arrayBuffer().then(f=>{k(f)}):k(a);else if(l===0)if(typeof a==="string")q.push(a);else if(a instanceof ArrayBuffer||ArrayBuffer.isView(a))q.push(h(a));else throw Error("Sending Blob is not supported before the connection is open.");else console.debug("WebSocket send called in CLOSING or CLOSED state; ignored.")};c.close=(a=1E3,f="")=>{if(l!==2&&l!==3){l=2;a={type:"close",code:a,reason:f,wasClean:a===1E3};var g;
-(g=t)==null||g.postMessage(a)}};Promise.resolve().then(()=>p(d));return c}A(B,EventTarget);var C=document.currentScript,D=C==null?void 0:C.getAttribute("ws-interception-config");if(!D)throw Error("WebSocket Interceptor: Missing ws-interception-config attribute in the script tag.");var E=JSON.parse(D);if(!E.parentOrigin||typeof E.parentOrigin!=="string")throw Error("WebSocket Interceptor: Invalid parentOrigin in ws-interception-config");
-(function(b){var d=Object.getOwnPropertyDescriptor(window,"WebSocket");if(!d||d.writable||d.configurable)d=Object.assign(function(e,h){try{let k=(new URL(e)).hostname;if(b.proxiedDomains.some(m=>k===m||k.endsWith(`.${m}`)))return new B(e,h,b.parentOrigin)}catch(k){throw window.parent.postMessage({type:"websocket_blocked",url:e,reason:"blocked_invalid_url"},b.parentOrigin),new DOMException(`WebSocket connection to '${e}' is not allowed in Canvas.`,"SecurityError");}window.parent.postMessage({type:"websocket_blocked",
-url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMException(`WebSocket connection to '${e}' is not allowed in Canvas.`,"SecurityError");},{CONNECTING:0,OPEN:1,CLOSING:2,CLOSED:3}),Object.defineProperty(window,"WebSocket",{value:d,writable:!1,configurable:!1})})({proxiedDomains:E.proxiedDomains||[],parentOrigin:E.parentOrigin});}).call(this);
-</script><script data-bard-client-injected="true">((function(modelInformation) {
-  const originalFetch = window.fetch;
-  // TODO: b/421908508 - Move these out of the script and match all generative AI model calls.
-  let googleLlmBaseApiUrls = [
-    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.textModelName + ':streamGenerateContent',
-    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.textModelName + ':generateContent',
-    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.imageModelName + ':predict',
-    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.imageModelName + ':predictLongRunning',
-    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.imageEditModelName + ':generateContent',
-    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.imageTransformModelName + ':generateContent',
-    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.videoModelName + ':predict',
-    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.videoModelName + ':predictLongRunning',
-    'https://generativelanguage.googleapis.com/v1beta/models/' + modelInformation.ttsModelName + ':generateContent',
-  ];
-  modelInformation.deprecatedTextModelNames.forEach((modelName) => {
-    googleLlmBaseApiUrls.push(
-      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':streamGenerateContent',
-      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':generateContent',
-    );
-  });
-  modelInformation.deprecatedImageModelNames.forEach((modelName) => {
-    googleLlmBaseApiUrls.push(
-      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':predict',
-      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':predictLongRunning',
-      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':generateContent',
-      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':streamGenerateContent',
-    );
-  });
-  modelInformation.deprecatedGenerateImageModelNames.forEach((modelName) => {
-    googleLlmBaseApiUrls.push(
-      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':generateContent',
-      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':streamGenerateContent',
-    );
-  });
-  modelInformation.deprecatedImageTransformModelNames.forEach((modelName) => {
-    googleLlmBaseApiUrls.push(
-      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':generateContent',
-      'https://generativelanguage.googleapis.com/v1beta/models/' + modelName + ':streamGenerateContent',
-    );
-  });
-
-  const pendingFetchResolvers = {};
-  let nextPromiseId = 0;
-
-  function handleStringInput(input, optionsArgument) {
-    const actualUrl = input;
-    const fetchCallArgs = [actualUrl, optionsArgument];
-    const effectiveOptions = optionsArgument || {};
-    const bodyForApiKeyCheck = effectiveOptions.body;
-    const bodyForPostMessage = effectiveOptions.body;
-    return { actualUrl, fetchCallArgs, effectiveOptions, bodyForApiKeyCheck, bodyForPostMessage };
-  }
-
-  function handleRequestInput(input, optionsArgument) {
-    const actualUrl = input.url;
-    const fetchCallArgs = [input, optionsArgument];
-    const effectiveOptions = { method: input.method, headers: new Headers(input.headers) };
-    let bodyForApiKeyCheck;
-    let bodyForPostMessage;
-
-    if (optionsArgument) {
-      if (optionsArgument.method) effectiveOptions.method = optionsArgument.method;
-      if (optionsArgument.headers) effectiveOptions.headers = new Headers(optionsArgument.headers);
-      if ('body' in optionsArgument) {
-        bodyForApiKeyCheck = optionsArgument.body;
-        bodyForPostMessage = optionsArgument.body;
-      } else {
-        bodyForApiKeyCheck = undefined;
-        bodyForPostMessage = input.body;
-      }
-    } else {
-      bodyForApiKeyCheck = undefined;
-      bodyForPostMessage = input.body;
-    }
-    return { actualUrl, fetchCallArgs, effectiveOptions, bodyForApiKeyCheck, bodyForPostMessage };
-  }
-
-  window.fetch = function(input, optionsArgument) {
-    let actualUrl;
-    let fetchCallArgs;
-    let effectiveOptions = {};
-    let bodyForApiKeyCheck;
-    let bodyForPostMessage;
-
-    if (typeof input === 'string') {
-      ({actualUrl, fetchCallArgs, effectiveOptions, bodyForApiKeyCheck, bodyForPostMessage} = handleStringInput(input, optionsArgument));
-    } else if (input instanceof Request) {
-      ({actualUrl, fetchCallArgs, effectiveOptions, bodyForApiKeyCheck, bodyForPostMessage} = handleRequestInput(input, optionsArgument));
-    } else {
-      return originalFetch.apply(window, [input, optionsArgument]);
-    }
-
-    effectiveOptions.method = effectiveOptions.method || 'GET';
-    if (!effectiveOptions.headers) {
-      effectiveOptions.headers = new Headers();
-    }
-
-
-    if (typeof actualUrl === 'string' && googleLlmBaseApiUrls.some((url) => actualUrl.startsWith(url))) {
-      let apiKeyIsNull = true;
-
-      const regex = new RegExp("models/([^:]+)");
-      const modelNameMatch = actualUrl.match(regex);
-      const modelName = modelNameMatch ? modelNameMatch[1] : 'unspecified';
-
-
-      try {
-        const urlObject = new URL(actualUrl);  // Use URL object for robust parsing
-        const apiKeyParam = urlObject.searchParams.get('key');
-        if (apiKeyParam) {
-          apiKeyIsNull = false;
-        }
-      } catch (e) {
-        // Continue checks even if URL parsing fails
-      }
-
-      if (apiKeyIsNull && effectiveOptions.headers) {
-        const h = new Headers(effectiveOptions.headers);
-        const apiKeyHeaderValue = h.get('X-API-Key') || h.get('x-api-key');
-        if (apiKeyHeaderValue) {
-          apiKeyIsNull = false;
-          return originalFetch.apply(window, fetchCallArgs);
-        }
-      }
-
-      if (apiKeyIsNull && effectiveOptions.method && ['POST', 'PUT', 'PATCH'].includes(effectiveOptions.method.toUpperCase()) && typeof bodyForApiKeyCheck === 'string') {
-        try {
-          const bodyData = JSON.parse(bodyForApiKeyCheck);
-          if (bodyData && bodyData.apiKey) {
-            apiKeyIsNull = false;
-            return originalFetch.apply(window, fetchCallArgs);
-          }
-        } catch (e) {
-          // Ignore JSON parsing errors
-        }
-      }
-
-      if(apiKeyIsNull) {
-        const promiseId = nextPromiseId++;
-        const promise = new Promise((resolve) => {
-          pendingFetchResolvers[promiseId] = (resolvedResponse) => {
-            delete pendingFetchResolvers[promiseId];
-            resolve(resolvedResponse);
-          };
-        });
-
-        let serializedBodyForPostMessage;
-        if (typeof bodyForPostMessage === 'string' || bodyForPostMessage == null) {
-            serializedBodyForPostMessage = bodyForPostMessage;
-        } else if (bodyForPostMessage instanceof ReadableStream) {
-            serializedBodyForPostMessage = null;
-        } else {
-            try {
-                serializedBodyForPostMessage = JSON.stringify(bodyForPostMessage);
-            } catch (e) {
-                serializedBodyForPostMessage = null;
-            }
-        }
-
-        const messageOptions = {
-            method: effectiveOptions.method,
-            headers: Object.fromEntries(new Headers(effectiveOptions.headers).entries()),
-            body: serializedBodyForPostMessage
-        };
-
-        window.parent.postMessage({
-          type: 'requestFetch',
-          url: actualUrl,
-          modelName: modelName,
-          options: messageOptions,
-          promiseId: promiseId,
-        }, '*');
-
-        return promise;
-      }
-      return originalFetch.apply(window, fetchCallArgs);
-    }
-    return originalFetch.apply(window, fetchCallArgs);
-  };
-
-  window.addEventListener('message', function(event) {
-    if (event.data && event.data.type === 'resolveFetch') {
-      const { promiseId, response } = event.data;
-      if (pendingFetchResolvers[promiseId]) {
-        try {
-          const reconstructedResponse = new Response(response.body, {
-            status: response.status,
-            statusText: response.statusText,
-            headers: new Headers(response.headers),
-          });
-          pendingFetchResolvers[promiseId](reconstructedResponse);
-        } catch (error) {
-          pendingFetchResolvers[promiseId](new Response(null, { status: 500, statusText: "Interceptor Response Reconstruction Error" }));
-        }
-      }
-    }
-  });
-
-}))({"textModelName":"gemini-3-flash-preview","imageModelName":"imagen-4.0-generate-001","imageEditModelName":"gemini-3.1-flash-image","imageTransformModelName":"gemini-3-pro-image","videoModelName":"veo-2.0-generate-001","ttsModelName":"gemini-2.5-flash-preview-tts","deprecatedTextModelNames":["gemini-2.0-flash","gemini-2.5-flash","gemini-2.5-flash-preview-04-17","gemini-2.5-flash-preview-05-20","gemini-2.5-flash-preview-09-2025"],"deprecatedImageModelNames":["imagen-3.0-generate-001","imagen-3.0-generate-002"],"deprecatedGenerateImageModelNames":["gemini-2.5-flash-image-preview","gemini-2.5-flash-image","gemini-3.1-flash-image-preview"],"deprecatedImageTransformModelNames":["gemini-3-pro-image-preview-11-2025"]})</script><script data-bard-client-injected="true">(function() {
-  const OVERLAY_SELECTOR =
-    'dialog[open], [role="dialog"], [role="alertdialog"], [role="menu"], [role="listbox"], [role="combobox"]';
-
-  function isVisibleOverlay(element) {
-    if (element.closest('[hidden], [aria-hidden="true"], [inert]')) {
-      return false;
-    }
-    if (window.getComputedStyle(element).visibility === 'hidden') {
-      return false;
-    }
-    for (let cur = element; cur; cur = cur.parentElement) {
-      if (window.getComputedStyle(cur).display === 'none') {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  function hasOpenOverlay() {
-    const candidates = document.querySelectorAll(OVERLAY_SELECTOR);
-    for (let i = 0; i < candidates.length; i++) {
-      if (isVisibleOverlay(candidates[i])) {
-        return true;
-      }
-    }
-    try {
-      if (document.querySelector('[popover]:popover-open')) {
-        return true;
-      }
-    } catch (e) {
-      // Ignore engines that do not support :popover-open.
-    }
-    return false;
-  }
-
-  function isNonEmptySearchInput(target) {
-    return (
-      Boolean(target) &&
-      target.tagName === 'INPUT' &&
-      typeof target.type === 'string' &&
-      target.type.toLowerCase() === 'search' &&
-      typeof target.value === 'string' &&
-      target.value.length > 0
-    );
-  }
-
-  function shouldIgnoreEscape(event) {
-    return (
-      event.key !== 'Escape' ||
-      event.altKey ||
-      event.ctrlKey ||
-      event.metaKey ||
-      event.shiftKey ||
-      event.isComposing ||
-      event.repeat ||
-      event.keyCode === 229 ||
-      isNonEmptySearchInput(event.target)
-    );
-  }
-
-  let shouldIgnoreCaptureState = false;
-
-  window.addEventListener(
-    'keydown',
-    function(event) {
-      if (event.key === 'Escape') {
-        shouldIgnoreCaptureState =
-          hasOpenOverlay() || isNonEmptySearchInput(event.target);
-      }
-    },
-    {capture: true},
-  );
-
-  window.addEventListener('keydown', function(event) {
-    if (
-      shouldIgnoreEscape(event) ||
-      event.defaultPrevented ||
-      shouldIgnoreCaptureState
-    ) {
-      return;
-    }
-    const wasBlockedOnCapture = shouldIgnoreCaptureState;
-    queueMicrotask(function() {
-      if (event.defaultPrevented || wasBlockedOnCapture) {
-        return;
-      }
-      if (window.parent && window.parent !== window) {
-        window.parent.postMessage({'type': 'escapeKey'}, '*');
-      }
-    });
-  });
-})();</script><script data-bard-client-injected="true">(function() {
-  function normalizeSlug(str) {
-    try {
-      return str
-        .trim()
-        .toLowerCase()
-        .replace(/[^p{L}p{N}s_-]/gu, '')
-        .replace(/s+/g, '-');
-    } catch (e) {
-      return str
-        .trim()
-        .toLowerCase()
-        .replace(/[^a-z0-9s_-]/g, '')
-        .replace(/s+/g, '-');
-    }
-  }
-
-  function findTargetElement(hash) {
-    if (!hash || hash === '#') {
-      return null;
-    }
-    const rawId = hash.startsWith('#') ? hash.slice(1) : hash;
-    let decodedId = rawId;
-    try {
-      decodedId = decodeURIComponent(rawId);
-    } catch (e) {
-      // Ignore URI malformed errors.
-    }
-
-    // 1. Direct ID match (raw and decoded).
-    let target = document.getElementById(rawId) || document.getElementById(decodedId);
-    if (target) {
-      return target;
-    }
-
-    // 2. Name attribute match (<a name="...">).
-    try {
-      if (typeof CSS !== 'undefined' && CSS.escape) {
-        target =
-          document.querySelector('[name="' + CSS.escape(rawId) + '"]') ||
-          document.querySelector('[name="' + CSS.escape(decodedId) + '"]');
-      } else {
-        const namedElements = document.getElementsByName(rawId);
-        if (namedElements && namedElements.length > 0) {
-          return namedElements[0];
-        }
-      }
-    } catch (e) {
-      // Ignore querySelector syntax errors.
-    }
-    if (target) {
-      return target;
-    }
-
-    // 3. Match heading text by slug (for Markdown TOCs where headings lack explicit IDs).
-    const targetSlug = normalizeSlug(decodedId);
-    if (targetSlug) {
-      for (const heading of document.querySelectorAll('h1, h2, h3, h4, h5, h6')) {
-        if (normalizeSlug(heading.textContent || '') === targetSlug) {
-          return heading;
-        }
-      }
-    }
-
-    return null;
-  }
-
-  document.addEventListener('click', function(event) {
-    const target = event.target;
-    const anchor = target && typeof target.closest === 'function' ? target.closest('a') : null;
-    if (!anchor) {
-      return;
-    }
-
-    const href = anchor.getAttribute('href');
-    if (
-      !href ||
-      href.trim().toLowerCase().startsWith('javascript:') ||
-      anchor.hasAttribute('download')
-    ) {
-      return;
-    }
-
-    // Check if the link is an in-page hash / anchor link.
-    if (href.startsWith('#')) {
-      event.preventDefault();
-      const targetElement = findTargetElement(href);
-      if (targetElement) {
-        targetElement.scrollIntoView({behavior: 'smooth', block: 'start'});
-      }
-      return;
-    }
-
-    // Check if the URL has the same origin/pathname but with a hash.
-    try {
-      const url = new URL(anchor.href, window.location.href);
-      if (
-        url.hash &&
-        url.origin === window.location.origin &&
-        url.pathname === window.location.pathname
-      ) {
-        event.preventDefault();
-        const targetElement = findTargetElement(url.hash);
-        if (targetElement) {
-          targetElement.scrollIntoView({behavior: 'smooth', block: 'start'});
-        }
-        return;
-      }
-    } catch (e) {
-      // Fall through if URL parsing fails.
-    }
-
-    // For all external or full navigation links, prevent iframe-level navigation
-    // (which breaks in AGSA WebView or sandboxed iframes) and ensure they open
-    // safely in a new tab/window.
-    if (anchor.target !== '_blank') {
-      event.preventDefault();
-      window.open(anchor.href, '_blank', 'noopener,noreferrer');
-    }
-  }, {capture: true});
-})();</script><script data-bard-client-injected="true">(function(){'use strict';function a(){window.parent.postMessage({type:"interaction"},"*")}window.addEventListener("click",a,{capture:!0,passive:!0});window.addEventListener("touchstart",a,{capture:!0,passive:!0});window.addEventListener("keydown",a,{capture:!0,passive:!0});}).call(this);
-</script><script data-bard-client-injected="true">(function() {
-  const originalConsoleLog = console.log;
-  const originalConsoleError = console.error;
-
-    /**
-   * Normalizes an error event or a promise rejection reason into a structured error object.
-   * @param {*} errorEventOrReason The error object or reason.
-   * @return {object} Structured error data { message, name, stack }.
-   */
-  function getErrorObject(errorEventOrReason) {
-    if (errorEventOrReason instanceof Error) {
-      return {
-        message: errorEventOrReason.message,
-        name: errorEventOrReason.name,
-        stack: errorEventOrReason.stack,
-      };
-    }
-    // Fallback for non-Error objects.
-    try {
-      return {
-        message: JSON.stringify(errorEventOrReason),
-        name: 'UnknownErrorType',
-        stack: null,
-      };
-    } catch (e) {
-      return {
-        message: String(errorEventOrReason),
-        name: 'UnknownErrorTypeNonStringifiable',
-        stack: null,
-      };
-    }
-  }
-
-  /**
-   * Converts an array of arguments (from log/error) into a single string.
-   * Handles Error objects specially to include their message and stack.
-   * @param {Array<*>} args - Arguments passed to console methods.
-   * @return {string} A string representation of the arguments.
-   */
-  function stringifyArgs(args) {
-    return args
-      .map((arg) => {
-        if (arg instanceof Error) {
-          const {message, stack} = arg;
-          return `Error: ${message}${stack ? ('\nStack: ' + stack) : ''}`;
-        }
-        if (typeof arg === 'object' && arg !== null) {
-          try {
-            return JSON.stringify(arg);
-          } catch (error) {
-            return '[Circular Object]';
-          }
-        } else {
-          return String(arg);
-        }
-      })
-      .join(' ');
-  }
-
-  console.log = function(...args) {
-    const logString = stringifyArgs(args);
-    window.parent.postMessage({ type: 'log', message: logString }, '*');
-    originalConsoleLog.apply(console, args);
-  };
-
-  console.error = function(...args) {
-    let errorData;
-    if (args.length > 0 && args[0] instanceof Error) {
-      const err = args[0];
-      // If the first arg is an Error, capture its details.
-      errorData = {
-        type: 'error',
-        source: 'CONSOLE_ERROR',
-        ...getErrorObject(err),
-        rawArgsString: stringifyArgs(args.slice(1)),
-        timestamp: new Date().toISOString(),
-      };
-    } else {
-      // If not an Error object, treat all args as a general error message.
-      errorData = {
-        type: 'error',
-        source: 'CONSOLE_ERROR',
-        message: stringifyArgs(args),
-        name: 'ConsoleLoggedError',
-        stack: null,
-        timestamp: new Date().toISOString(),
-      };
-    }
-    window.parent.postMessage(errorData, '*');
-    originalConsoleError.apply(console, args);
-  };
-
-  // Listen for global unhandled synchronous errors.
-  window.addEventListener('error', function(event) {
-    const errorDetails = event.error ? getErrorObject(event.error) : {
-      message: event.message,
-      name: 'GlobalError',
-      stack: null,
-      filename: event.filename,
-      lineno: event.lineno,
-      colno: event.colno,
-    };
-
-    window.parent.postMessage({
-      type: 'error',
-      source: 'global',
-      ...errorDetails,
-      message: errorDetails.message || event.message,
-      timestamp: new Date().toISOString(),
-    }, '*');
-  });
-
-  // Listen for unhandled promise rejections (asynchronous errors).
-  window.addEventListener('unhandledrejection', function(event) {
-    const errorDetails = getErrorObject(event.reason);
-
-    window.parent.postMessage({
-      type: 'error',
-      source: 'unhandledrejection',
-      ...errorDetails,
-      message: errorDetails.message || 'Unhandled Promise Rejection',
-      timestamp: new Date().toISOString(),
-    }, '*');
-  });
-
-})();</script>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>SHRIYANSH GARG — GRAPHIC DESIGNER &amp; VIDEO EDITOR (PORTFOLIO WEBSITE)</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&amp;family=Playfair+Display:ital,wght@0,600;0,700;1,600&amp;family=Plus+Jakarta+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <script>
     tailwind.config = {
       theme: {
@@ -957,7 +143,7 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
       }
     }
   </style>
-<style>*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:"Plus Jakarta Sans", sans-serif;font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.pointer-events-none{pointer-events:none}.pointer-events-auto{pointer-events:auto}.fixed{position:fixed}.absolute{position:absolute}.relative{position:relative}.sticky{position:sticky}.inset-0{inset:0px}.-bottom-10{bottom:-2.5rem}.-bottom-36{bottom:-9rem}.-left-16{left:-4rem}.-left-44{left:-11rem}.-right-10{right:-2.5rem}.-right-12{right:-3rem}.-right-36{right:-9rem}.-top-12{top:-3rem}.-top-36{top:-9rem}.bottom-5{bottom:1.25rem}.left-3\.5{left:0.875rem}.left-5{left:1.25rem}.right-1\/4{right:25%}.right-5{right:1.25rem}.top-0{top:0px}.top-1\/2{top:50%}.top-3{top:0.75rem}.top-\[28\%\]{top:28%}.z-0{z-index:0}.z-10{z-index:10}.z-30{z-index:30}.z-40{z-index:40}.z-50{z-index:50}.mx-auto{margin-left:auto;margin-right:auto}.my-4{margin-top:1rem;margin-bottom:1rem}.my-auto{margin-top:auto;margin-bottom:auto}.mb-1{margin-bottom:0.25rem}.mb-1\.5{margin-bottom:0.375rem}.mb-10{margin-bottom:2.5rem}.mb-2{margin-bottom:0.5rem}.mb-2\.5{margin-bottom:0.625rem}.mb-4{margin-bottom:1rem}.ml-1{margin-left:0.25rem}.mt-0\.5{margin-top:0.125rem}.mt-1{margin-top:0.25rem}.mt-2{margin-top:0.5rem}.mt-2\.5{margin-top:0.625rem}.mt-6{margin-top:1.5rem}.mt-auto{margin-top:auto}.block{display:block}.flex{display:flex}.inline-flex{display:inline-flex}.grid{display:grid}.hidden{display:none}.h-10{height:2.5rem}.h-11{height:2.75rem}.h-14{height:3.5rem}.h-16{height:4rem}.h-2{height:0.5rem}.h-2\.5{height:0.625rem}.h-3\.5{height:0.875rem}.h-4{height:1rem}.h-5{height:1.25rem}.h-8{height:2rem}.h-9{height:2.25rem}.h-\[480px\]{height:480px}.h-\[520px\]{height:520px}.h-\[600px\]{height:600px}.h-\[620px\]{height:620px}.h-\[660px\]{height:660px}.h-\[740px\]{height:740px}.h-full{height:100%}.max-h-\[88vh\]{max-height:88vh}.max-h-\[90vh\]{max-height:90vh}.max-h-\[92vh\]{max-height:92vh}.min-h-\[280px\]{min-height:280px}.min-h-\[320px\]{min-height:320px}.min-h-screen{min-height:100vh}.w-10{width:2.5rem}.w-11{width:2.75rem}.w-14{width:3.5rem}.w-2{width:0.5rem}.w-2\.5{width:0.625rem}.w-3\.5{width:0.875rem}.w-4{width:1rem}.w-5{width:1.25rem}.w-8{width:2rem}.w-9{width:2.25rem}.w-\[480px\]{width:480px}.w-\[520px\]{width:520px}.w-\[560px\]{width:560px}.w-\[600px\]{width:600px}.w-\[620px\]{width:620px}.w-\[660px\]{width:660px}.w-\[740px\]{width:740px}.w-full{width:100%}.min-w-0{min-width:0px}.max-w-2xl{max-width:42rem}.max-w-4xl{max-width:56rem}.max-w-6xl{max-width:72rem}.max-w-7xl{max-width:80rem}.max-w-md{max-width:28rem}.max-w-sm{max-width:24rem}.max-w-xl{max-width:36rem}.flex-1{flex:1 1 0%}.shrink-0{flex-shrink:0}.-translate-x-1\/2{--tw-translate-x:-50%;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.-translate-y-1\/2{--tw-translate-y:-50%;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}@keyframes pulse{50%{opacity:.5}}.animate-pulse{animation:pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite}.cursor-pointer{cursor:pointer}.select-all{-webkit-user-select:all;user-select:all}.grid-cols-1{grid-template-columns:repeat(1, minmax(0, 1fr))}.flex-col{flex-direction:column}.flex-wrap{flex-wrap:wrap}.items-center{align-items:center}.justify-end{justify-content:flex-end}.justify-center{justify-content:center}.justify-between{justify-content:space-between}.gap-1\.5{gap:0.375rem}.gap-10{gap:2.5rem}.gap-2{gap:0.5rem}.gap-2\.5{gap:0.625rem}.gap-3{gap:0.75rem}.gap-3\.5{gap:0.875rem}.gap-4{gap:1rem}.gap-5{gap:1.25rem}.gap-6{gap:1.5rem}.gap-7{gap:1.75rem}.gap-8{gap:2rem}.space-y-2 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.5rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.5rem * var(--tw-space-y-reverse))}.space-y-2\.5 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.625rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.625rem * var(--tw-space-y-reverse))}.space-y-3 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.75rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.75rem * var(--tw-space-y-reverse))}.space-y-4 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1rem * var(--tw-space-y-reverse))}.space-y-5 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1.25rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1.25rem * var(--tw-space-y-reverse))}.space-y-6 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1.5rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1.5rem * var(--tw-space-y-reverse))}.overflow-hidden{overflow:hidden}.overflow-x-auto{overflow-x:auto}.overflow-y-auto{overflow-y:auto}.scroll-smooth{scroll-behavior:smooth}.truncate{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.whitespace-nowrap{white-space:nowrap}.rounded{border-radius:0.25rem}.rounded-2xl{border-radius:1rem}.rounded-3xl{border-radius:1.5rem}.rounded-full{border-radius:9999px}.rounded-lg{border-radius:0.5rem}.rounded-md{border-radius:0.375rem}.rounded-xl{border-radius:0.75rem}.border{border-width:1px}.border-2{border-width:2px}.border-b{border-bottom-width:1px}.border-t{border-top-width:1px}.border-dashed{border-style:dashed}.border-espresso-600{--tw-border-opacity:1;border-color:rgb(87 83 78 / var(--tw-border-opacity, 1))}.border-espresso-800{--tw-border-opacity:1;border-color:rgb(41 37 36 / var(--tw-border-opacity, 1))}.border-espresso-900{--tw-border-opacity:1;border-color:rgb(28 25 23 / var(--tw-border-opacity, 1))}.border-sand-200{--tw-border-opacity:1;border-color:rgb(236 227 213 / var(--tw-border-opacity, 1))}.border-sand-300{--tw-border-opacity:1;border-color:rgb(230 221 208 / var(--tw-border-opacity, 1))}.border-sand-300\/80{border-color:rgb(230 221 208 / 0.8)}.border-sand-400{--tw-border-opacity:1;border-color:rgb(212 197 176 / var(--tw-border-opacity, 1))}.bg-alabaster{--tw-bg-opacity:1;background-color:rgb(251 248 243 / var(--tw-bg-opacity, 1))}.bg-amber-700{--tw-bg-opacity:1;background-color:rgb(180 83 9 / var(--tw-bg-opacity, 1))}.bg-bronze-100{--tw-bg-opacity:1;background-color:rgb(246 236 224 / var(--tw-bg-opacity, 1))}.bg-bronze-500{--tw-bg-opacity:1;background-color:rgb(140 98 57 / var(--tw-bg-opacity, 1))}.bg-emerald-400{--tw-bg-opacity:1;background-color:rgb(52 211 153 / var(--tw-bg-opacity, 1))}.bg-emerald-500{--tw-bg-opacity:1;background-color:rgb(16 185 129 / var(--tw-bg-opacity, 1))}.bg-emerald-700{--tw-bg-opacity:1;background-color:rgb(4 120 87 / var(--tw-bg-opacity, 1))}.bg-emerald-800{--tw-bg-opacity:1;background-color:rgb(6 95 70 / var(--tw-bg-opacity, 1))}.bg-espresso-800{--tw-bg-opacity:1;background-color:rgb(41 37 36 / var(--tw-bg-opacity, 1))}.bg-espresso-900{--tw-bg-opacity:1;background-color:rgb(28 25 23 / var(--tw-bg-opacity, 1))}.bg-espresso-900\/75{background-color:rgb(28 25 23 / 0.75)}.bg-espresso-900\/80{background-color:rgb(28 25 23 / 0.8)}.bg-espresso-900\/85{background-color:rgb(28 25 23 / 0.85)}.bg-ivory{--tw-bg-opacity:1;background-color:rgb(255 255 255 / var(--tw-bg-opacity, 1))}.bg-ivory\/90{background-color:rgb(255 255 255 / 0.9)}.bg-red-950\/80{background-color:rgb(69 10 10 / 0.8)}.bg-sand-100{--tw-bg-opacity:1;background-color:rgb(244 239 230 / var(--tw-bg-opacity, 1))}.bg-sand-100\/75{background-color:rgb(244 239 230 / 0.75)}.bg-sand-200{--tw-bg-opacity:1;background-color:rgb(236 227 213 / var(--tw-bg-opacity, 1))}.p-3{padding:0.75rem}.p-3\.5{padding:0.875rem}.p-4{padding:1rem}.p-5{padding:1.25rem}.p-6{padding:1.5rem}.px-1\.5{padding-left:0.375rem;padding-right:0.375rem}.px-2{padding-left:0.5rem;padding-right:0.5rem}.px-2\.5{padding-left:0.625rem;padding-right:0.625rem}.px-3{padding-left:0.75rem;padding-right:0.75rem}.px-3\.5{padding-left:0.875rem;padding-right:0.875rem}.px-4{padding-left:1rem;padding-right:1rem}.px-5{padding-left:1.25rem;padding-right:1.25rem}.px-6{padding-left:1.5rem;padding-right:1.5rem}.py-0\.5{padding-top:0.125rem;padding-bottom:0.125rem}.py-1{padding-top:0.25rem;padding-bottom:0.25rem}.py-1\.5{padding-top:0.375rem;padding-bottom:0.375rem}.py-12{padding-top:3rem;padding-bottom:3rem}.py-14{padding-top:3.5rem;padding-bottom:3.5rem}.py-2{padding-top:0.5rem;padding-bottom:0.5rem}.py-2\.5{padding-top:0.625rem;padding-bottom:0.625rem}.py-3{padding-top:0.75rem;padding-bottom:0.75rem}.py-3\.5{padding-top:0.875rem;padding-bottom:0.875rem}.py-4{padding-top:1rem;padding-bottom:1rem}.py-5{padding-top:1.25rem;padding-bottom:1.25rem}.pb-10{padding-bottom:2.5rem}.pb-12{padding-bottom:3rem}.pb-4{padding-bottom:1rem}.pb-6{padding-bottom:1.5rem}.pl-10{padding-left:2.5rem}.pr-4{padding-right:1rem}.pt-1{padding-top:0.25rem}.pt-12{padding-top:3rem}.pt-2{padding-top:0.5rem}.pt-3{padding-top:0.75rem}.pt-6{padding-top:1.5rem}.text-left{text-align:left}.text-center{text-align:center}.font-mono{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}.font-serif{font-family:"Cormorant Garamond", "Playfair Display", Georgia, serif}.text-2xl{font-size:1.5rem;line-height:2rem}.text-3xl{font-size:1.875rem;line-height:2.25rem}.text-4xl{font-size:2.25rem;line-height:2.5rem}.text-\[10px\]{font-size:10px}.text-\[11px\]{font-size:11px}.text-base{font-size:1rem;line-height:1.5rem}.text-lg{font-size:1.125rem;line-height:1.75rem}.text-sm{font-size:0.875rem;line-height:1.25rem}.text-xl{font-size:1.25rem;line-height:1.75rem}.text-xs{font-size:0.75rem;line-height:1rem}.font-bold{font-weight:700}.font-medium{font-weight:500}.font-normal{font-weight:400}.font-semibold{font-weight:600}.uppercase{text-transform:uppercase}.leading-\[1\.06\]{line-height:1.06}.leading-relaxed{line-height:1.625}.leading-tight{line-height:1.25}.tracking-\[0\.14em\]{letter-spacing:0.14em}.tracking-\[0\.16em\]{letter-spacing:0.16em}.tracking-\[0\.18em\]{letter-spacing:0.18em}.tracking-\[0\.22em\]{letter-spacing:0.22em}.tracking-\[0\.2em\]{letter-spacing:0.2em}.tracking-\[0\.3em\]{letter-spacing:0.3em}.tracking-tight{letter-spacing:-0.025em}.tracking-wide{letter-spacing:0.025em}.tracking-wider{letter-spacing:0.05em}.tracking-widest{letter-spacing:0.1em}.text-alabaster{--tw-text-opacity:1;color:rgb(251 248 243 / var(--tw-text-opacity, 1))}.text-amber-100{--tw-text-opacity:1;color:rgb(254 243 199 / var(--tw-text-opacity, 1))}.text-amber-300{--tw-text-opacity:1;color:rgb(252 211 77 / var(--tw-text-opacity, 1))}.text-bronze-500{--tw-text-opacity:1;color:rgb(140 98 57 / var(--tw-text-opacity, 1))}.text-bronze-600{--tw-text-opacity:1;color:rgb(114 78 43 / var(--tw-text-opacity, 1))}.text-espresso-400{--tw-text-opacity:1;color:rgb(140 133 123 / var(--tw-text-opacity, 1))}.text-espresso-600{--tw-text-opacity:1;color:rgb(87 83 78 / var(--tw-text-opacity, 1))}.text-espresso-800{--tw-text-opacity:1;color:rgb(41 37 36 / var(--tw-text-opacity, 1))}.text-espresso-900{--tw-text-opacity:1;color:rgb(28 25 23 / var(--tw-text-opacity, 1))}.text-red-200{--tw-text-opacity:1;color:rgb(254 202 202 / var(--tw-text-opacity, 1))}.text-red-600{--tw-text-opacity:1;color:rgb(220 38 38 / var(--tw-text-opacity, 1))}.text-sand-400{--tw-text-opacity:1;color:rgb(212 197 176 / var(--tw-text-opacity, 1))}.text-white{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}.antialiased{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}.opacity-0{opacity:0}.opacity-50{opacity:0.5}.opacity-65{opacity:0.65}.opacity-70{opacity:0.7}.opacity-75{opacity:0.75}.opacity-80{opacity:0.8}.opacity-\[0\.09\]{opacity:0.09}.opacity-\[0\.22\]{opacity:0.22}.opacity-\[0\.24\]{opacity:0.24}.shadow-2xl{--tw-shadow:0 25px 50px -12px rgb(0 0 0 / 0.25);--tw-shadow-colored:0 25px 50px -12px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-card{--tw-shadow:0 4px 24px -4px rgba(28, 25, 23, 0.05);--tw-shadow-colored:0 4px 24px -4px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-editorial{--tw-shadow:0 14px 44px -12px rgba(28, 25, 23, 0.08);--tw-shadow-colored:0 14px 44px -12px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-lg{--tw-shadow:0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-sm{--tw-shadow:0 1px 2px 0 rgb(0 0 0 / 0.05);--tw-shadow-colored:0 1px 2px 0 var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-xl{--tw-shadow:0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 20px 25px -5px var(--tw-shadow-color), 0 8px 10px -6px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.blur-3xl{--tw-blur:blur(64px);filter:var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow)}.backdrop-blur-md{--tw-backdrop-blur:blur(12px);-webkit-backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia)}.backdrop-blur-sm{--tw-backdrop-blur:blur(4px);-webkit-backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia)}.transition-all{transition-property:all;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.transition-colors{transition-property:color, background-color, border-color, fill, stroke, -webkit-text-decoration-color;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke, -webkit-text-decoration-color;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.transition-opacity{transition-property:opacity;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.transition-transform{transition-property:transform;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.duration-300{transition-duration:300ms}.duration-500{transition-duration:500ms}.ease-out{transition-timing-function:cubic-bezier(0, 0, 0.2, 1)}.selection\:bg-bronze-500 *::selection{--tw-bg-opacity:1;background-color:rgb(140 98 57 / var(--tw-bg-opacity, 1))}.selection\:text-white *::selection{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}.selection\:bg-bronze-500::selection{--tw-bg-opacity:1;background-color:rgb(140 98 57 / var(--tw-bg-opacity, 1))}.selection\:text-white::selection{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}.hover\:scale-105:hover{--tw-scale-x:1.05;--tw-scale-y:1.05;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.hover\:border-bronze-500:hover{--tw-border-opacity:1;border-color:rgb(140 98 57 / var(--tw-border-opacity, 1))}.hover\:bg-amber-600:hover{--tw-bg-opacity:1;background-color:rgb(217 119 6 / var(--tw-bg-opacity, 1))}.hover\:bg-bronze-500:hover{--tw-bg-opacity:1;background-color:rgb(140 98 57 / var(--tw-bg-opacity, 1))}.hover\:bg-bronze-600:hover{--tw-bg-opacity:1;background-color:rgb(114 78 43 / var(--tw-bg-opacity, 1))}.hover\:bg-emerald-600:hover{--tw-bg-opacity:1;background-color:rgb(5 150 105 / var(--tw-bg-opacity, 1))}.hover\:bg-emerald-700:hover{--tw-bg-opacity:1;background-color:rgb(4 120 87 / var(--tw-bg-opacity, 1))}.hover\:bg-espresso-600:hover{--tw-bg-opacity:1;background-color:rgb(87 83 78 / var(--tw-bg-opacity, 1))}.hover\:bg-espresso-900:hover{--tw-bg-opacity:1;background-color:rgb(28 25 23 / var(--tw-bg-opacity, 1))}.hover\:bg-red-800:hover{--tw-bg-opacity:1;background-color:rgb(153 27 27 / var(--tw-bg-opacity, 1))}.hover\:bg-sand-100:hover{--tw-bg-opacity:1;background-color:rgb(244 239 230 / var(--tw-bg-opacity, 1))}.hover\:bg-sand-200:hover{--tw-bg-opacity:1;background-color:rgb(236 227 213 / var(--tw-bg-opacity, 1))}.hover\:text-alabaster:hover{--tw-text-opacity:1;color:rgb(251 248 243 / var(--tw-text-opacity, 1))}.hover\:text-bronze-500:hover{--tw-text-opacity:1;color:rgb(140 98 57 / var(--tw-text-opacity, 1))}.hover\:text-espresso-900:hover{--tw-text-opacity:1;color:rgb(28 25 23 / var(--tw-text-opacity, 1))}.hover\:underline:hover{-webkit-text-decoration-line:underline;text-decoration-line:underline}.focus\:border-bronze-500:focus{--tw-border-opacity:1;border-color:rgb(140 98 57 / var(--tw-border-opacity, 1))}.focus\:outline-none:focus{outline:2px solid transparent;outline-offset:2px}.group:hover .group-hover\:bg-bronze-500{--tw-bg-opacity:1;background-color:rgb(140 98 57 / var(--tw-bg-opacity, 1))}@media (min-width: 640px){.sm\:col-span-2{grid-column:span 2 / span 2}.sm\:inline-flex{display:inline-flex}.sm\:h-20{height:5rem}.sm\:min-h-\[420px\]{min-height:420px}.sm\:grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}.sm\:grid-cols-3{grid-template-columns:repeat(3, minmax(0, 1fr))}.sm\:flex-row{flex-direction:row}.sm\:gap-2\.5{gap:0.625rem}.sm\:p-6{padding:1.5rem}.sm\:p-7{padding:1.75rem}.sm\:p-8{padding:2rem}.sm\:px-3{padding-left:0.75rem;padding-right:0.75rem}.sm\:px-6{padding-left:1.5rem;padding-right:1.5rem}.sm\:py-16{padding-top:4rem;padding-bottom:4rem}.sm\:pb-16{padding-bottom:4rem}.sm\:pt-20{padding-top:5rem}.sm\:text-left{text-align:left}.sm\:text-2xl{font-size:1.5rem;line-height:2rem}.sm\:text-3xl{font-size:1.875rem;line-height:2.25rem}.sm\:text-4xl{font-size:2.25rem;line-height:2.5rem}.sm\:text-6xl{font-size:3.75rem;line-height:1}.sm\:text-\[11px\]{font-size:11px}.sm\:text-lg{font-size:1.125rem;line-height:1.75rem}.sm\:text-sm{font-size:0.875rem;line-height:1.25rem}.sm\:text-xl{font-size:1.25rem;line-height:1.75rem}}@media (min-width: 768px){.md\:inline-block{display:inline-block}.md\:w-80{width:20rem}.md\:grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}.md\:flex-row{flex-direction:row}.md\:items-end{align-items:flex-end}}@media (min-width: 1024px){.lg\:col-span-4{grid-column:span 4 / span 4}.lg\:col-span-5{grid-column:span 5 / span 5}.lg\:col-span-7{grid-column:span 7 / span 7}.lg\:col-span-8{grid-column:span 8 / span 8}.lg\:flex{display:flex}.lg\:grid-cols-12{grid-template-columns:repeat(12, minmax(0, 1fr))}.lg\:grid-cols-3{grid-template-columns:repeat(3, minmax(0, 1fr))}.lg\:grid-cols-4{grid-template-columns:repeat(4, minmax(0, 1fr))}.lg\:gap-12{gap:3rem}.lg\:border-l{border-left-width:1px}.lg\:border-t-0{border-top-width:0px}.lg\:px-8{padding-left:2rem;padding-right:2rem}.lg\:text-\[64px\]{font-size:64px}}</style></head>
+</head>
 <body class="antialiased selection:bg-bronze-500 selection:text-white relative">
 
   <!-- ===================================================================== -->
@@ -965,100 +151,104 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
   <!-- ===================================================================== -->
   <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden" aria-hidden="true">
     <!-- Interactive Warm Champagne Cursor Aura -->
-    <div id="cursorAura" class="fixed w-[520px] h-[520px] rounded-full pointer-events-none -translate-x-1/2 -translate-y-1/2 transition-opacity duration-500 opacity-0" style="background: radial-gradient(circle, rgba(200, 150, 62, 0.12) 0%, rgba(223, 180, 104, 0.05) 45%, transparent 72%); opacity: 1; left: 135.2px; top: 101.688px;"></div>
+    <div id="cursorAura" class="fixed w-[520px] h-[520px] rounded-full pointer-events-none -translate-x-1/2 -translate-y-1/2 transition-opacity duration-500 opacity-0"
+      style="background: radial-gradient(circle, rgba(200,150,62,0.12) 0%, rgba(223,180,104,0.05) 45%, transparent 72%);"></div>
 
     <!-- Warm Champagne Silk Ambient Glows -->
-    <div class="absolute -top-36 -right-36 w-[740px] h-[740px] rounded-full blur-3xl animate-halo-pulse" style="background: radial-gradient(circle, rgba(223,180,104,0.28) 0%, rgba(236,227,213,0.45) 55%, transparent 75%);"></div>
-    <div class="absolute top-1/2 -left-44 w-[600px] h-[600px] rounded-full opacity-65 blur-3xl" style="background: radial-gradient(circle, rgba(140,98,57,0.13) 0%, rgba(236,227,213,0.35) 60%, transparent 75%);"></div>
-    <div class="absolute -bottom-36 right-1/4 w-[660px] h-[660px] rounded-full opacity-70 blur-3xl" style="background: radial-gradient(circle, rgba(200,150,62,0.16) 0%, rgba(236,227,213,0.4) 55%, transparent 72%);"></div>
+    <div class="absolute -top-36 -right-36 w-[740px] h-[740px] rounded-full blur-3xl animate-halo-pulse"
+      style="background: radial-gradient(circle, rgba(223,180,104,0.28) 0%, rgba(236,227,213,0.45) 55%, transparent 75%);"></div>
+    <div class="absolute top-1/2 -left-44 w-[600px] h-[600px] rounded-full opacity-65 blur-3xl"
+      style="background: radial-gradient(circle, rgba(140,98,57,0.13) 0%, rgba(236,227,213,0.35) 60%, transparent 75%);"></div>
+    <div class="absolute -bottom-36 right-1/4 w-[660px] h-[660px] rounded-full opacity-70 blur-3xl"
+      style="background: radial-gradient(circle, rgba(200,150,62,0.16) 0%, rgba(236,227,213,0.4) 55%, transparent 72%);"></div>
 
     <!-- Subtle Micro-Dot Drafting Grid & Editorial Horizon Lines -->
     <div class="absolute inset-0 bg-drafting-dots opacity-50"></div>
     <svg class="absolute inset-0 w-full h-full opacity-[0.09]" preserveAspectRatio="none">
-      <line x1="0%" y1="20%" x2="100%" y2="80%" stroke="#C8963E" stroke-width="1"></line>
-      <line x1="100%" y1="14%" x2="0%" y2="86%" stroke="#8C6239" stroke-width="0.9" stroke-dasharray="8 8"></line>
+      <line x1="0%" y1="20%" x2="100%" y2="80%" stroke="#C8963E" stroke-width="1"/>
+      <line x1="100%" y1="14%" x2="0%" y2="86%" stroke="#8C6239" stroke-width="0.9" stroke-dasharray="8 8"/>
     </svg>
 
     <!-- 1. UJALA (Top-Right): Warm Gold & Champagne Solar Halo & Sunbeams -->
-    <div id="parallaxUjala" class="absolute -top-12 -right-12 w-[620px] h-[620px] transition-transform duration-300 ease-out" style="transform: translate3d(0px, 4.848px, 0px);">
+    <div id="parallaxUjala" class="absolute -top-12 -right-12 w-[620px] h-[620px] transition-transform duration-300 ease-out">
       <svg class="w-full h-full opacity-[0.24]" viewBox="0 0 600 600" fill="none">
         <!-- Rotating Celestial Sunbeams & Sacred Geometry Rings -->
         <g class="animate-solar-rotate">
-          <circle cx="420" cy="180" r="250" stroke="#C8963E" stroke-width="1.1"></circle>
-          <circle cx="420" cy="180" r="195" stroke="#DFB468" stroke-width="0.9" stroke-dasharray="6 6"></circle>
-          <circle cx="420" cy="180" r="135" stroke="#C8963E" stroke-width="1.1"></circle>
-          <circle cx="420" cy="180" r="78" stroke="#8C6239" stroke-width="1"></circle>
+          <circle cx="420" cy="180" r="250" stroke="#C8963E" stroke-width="1.1"/>
+          <circle cx="420" cy="180" r="195" stroke="#DFB468" stroke-width="0.9" stroke-dasharray="6 6"/>
+          <circle cx="420" cy="180" r="135" stroke="#C8963E" stroke-width="1.1"/>
+          <circle cx="420" cy="180" r="78" stroke="#8C6239" stroke-width="1"/>
           <!-- Radiant Sunrise Rays -->
-          <line x1="420" y1="-90" x2="420" y2="450" stroke="#C8963E" stroke-width="0.7" stroke-dasharray="4 10"></line>
-          <line x1="150" y1="180" x2="690" y2="180" stroke="#C8963E" stroke-width="0.7" stroke-dasharray="4 10"></line>
-          <line x1="229" y1="-11" x2="611" y2="371" stroke="#DFB468" stroke-width="0.75"></line>
-          <line x1="611" y1="-11" x2="229" y2="371" stroke="#DFB468" stroke-width="0.75"></line>
-          <polygon points="420,45 537,247 303,247" stroke="#C8963E" stroke-width="0.85"></polygon>
-          <polygon points="420,315 537,113 303,113" stroke="#8C6239" stroke-width="0.85"></polygon>
+          <line x1="420" y1="-90" x2="420" y2="450" stroke="#C8963E" stroke-width="0.7" stroke-dasharray="4 10"/>
+          <line x1="150" y1="180" x2="690" y2="180" stroke="#C8963E" stroke-width="0.7" stroke-dasharray="4 10"/>
+          <line x1="229" y1="-11" x2="611" y2="371" stroke="#DFB468" stroke-width="0.75"/>
+          <line x1="611" y1="-11" x2="229" y2="371" stroke="#DFB468" stroke-width="0.75"/>
+          <polygon points="420,45 537,247 303,247" stroke="#C8963E" stroke-width="0.85"/>
+          <polygon points="420,315 537,113 303,113" stroke="#8C6239" stroke-width="0.85"/>
         </g>
         <!-- Designer Pen-Tool Bezier Curve & Golden Ratio Arc -->
-        <path d="M90 50 C 215 275, 415 320, 590 265" stroke="#8C6239" stroke-width="1.35"></path>
-        <line x1="145" y1="215" x2="365" y2="280" stroke="#C8963E" stroke-width="0.95" stroke-dasharray="4 4"></line>
-        <rect x="250" y="242" width="10" height="10" fill="#FBF8F3" stroke="#8C6239" stroke-width="1.5"></rect>
-        <circle cx="145" cy="215" r="4.5" fill="#C8963E"></circle>
-        <circle cx="365" cy="280" r="4.5" fill="#C8963E"></circle>
+        <path d="M90 50 C 215 275, 415 320, 590 265" stroke="#8C6239" stroke-width="1.35"/>
+        <line x1="145" y1="215" x2="365" y2="280" stroke="#C8963E" stroke-width="0.95" stroke-dasharray="4 4"/>
+        <rect x="250" y="242" width="10" height="10" fill="#FBF8F3" stroke="#8C6239" stroke-width="1.5"/>
+        <circle cx="145" cy="215" r="4.5" fill="#C8963E"/>
+        <circle cx="365" cy="280" r="4.5" fill="#C8963E"/>
       </svg>
     </div>
 
     <!-- 2. NAYI SOCH (Center-Left): Faceted Crystalline Prism & Luminous Idea Filament -->
-    <div id="parallaxNayiSoch" class="absolute top-[28%] -left-16 w-[480px] h-[480px] transition-transform duration-300 ease-out" style="transform: translate3d(0px, -4.04px, 0px);">
+    <div id="parallaxNayiSoch" class="absolute top-[28%] -left-16 w-[480px] h-[480px] transition-transform duration-300 ease-out">
       <svg class="w-full h-full opacity-[0.22] animate-prism-float" viewBox="0 0 480 480" fill="none">
         <!-- Faceted Crystal Prism -->
-        <polygon points="220,75 345,165 305,315 135,315 95,165" stroke="#8C6239" stroke-width="1.2"></polygon>
-        <polygon points="220,115 305,180 275,285 165,285 135,180" stroke="#B57B4C" stroke-width="0.95"></polygon>
-        <line x1="220" y1="75" x2="220" y2="115" stroke="#C8963E" stroke-width="0.9"></line>
-        <line x1="345" y1="165" x2="305" y2="180" stroke="#C8963E" stroke-width="0.9"></line>
-        <line x1="305" y1="315" x2="275" y2="285" stroke="#C8963E" stroke-width="0.9"></line>
-        <line x1="135" y1="315" x2="165" y2="285" stroke="#C8963E" stroke-width="0.9"></line>
-        <line x1="95" y1="165" x2="135" y2="180" stroke="#C8963E" stroke-width="0.9"></line>
+        <polygon points="220,75 345,165 305,315 135,315 95,165" stroke="#8C6239" stroke-width="1.2"/>
+        <polygon points="220,115 305,180 275,285 165,285 135,180" stroke="#B57B4C" stroke-width="0.95"/>
+        <line x1="220" y1="75" x2="220" y2="115" stroke="#C8963E" stroke-width="0.9"/>
+        <line x1="345" y1="165" x2="305" y2="180" stroke="#C8963E" stroke-width="0.9"/>
+        <line x1="305" y1="315" x2="275" y2="285" stroke="#C8963E" stroke-width="0.9"/>
+        <line x1="135" y1="315" x2="165" y2="285" stroke="#C8963E" stroke-width="0.9"/>
+        <line x1="95" y1="165" x2="135" y2="180" stroke="#C8963E" stroke-width="0.9"/>
         <!-- Luminous Idea Filament Core -->
-        <path d="M195 215 C 195 180, 245 180, 245 215 C 245 232, 232 242, 232 256 L 208 256 C 208 242, 195 232, 195 215 Z" stroke="#C8963E" stroke-width="1.35"></path>
-        <line x1="208" y1="264" x2="232" y2="264" stroke="#8C6239" stroke-width="1.3"></line>
-        <line x1="212" y1="272" x2="228" y2="272" stroke="#8C6239" stroke-width="1.3"></line>
+        <path d="M195 215 C 195 180, 245 180, 245 215 C 245 232, 232 242, 232 256 L 208 256 C 208 242, 195 232, 195 215 Z" stroke="#C8963E" stroke-width="1.35"/>
+        <line x1="208" y1="264" x2="232" y2="264" stroke="#8C6239" stroke-width="1.3"/>
+        <line x1="212" y1="272" x2="228" y2="272" stroke="#8C6239" stroke-width="1.3"/>
         <!-- Radiating Creative Spark Beams -->
-        <line x1="220" y1="35" x2="220" y2="60" stroke="#C8963E" stroke-width="1.2"></line>
-        <line x1="335" y1="95" x2="315" y2="115" stroke="#C8963E" stroke-width="1.2"></line>
-        <line x1="105" y1="95" x2="125" y2="115" stroke="#C8963E" stroke-width="1.2"></line>
-        <line x1="375" y1="215" x2="350" y2="215" stroke="#C8963E" stroke-width="1.2"></line>
-        <line x1="65" y1="215" x2="90" y2="215" stroke="#C8963E" stroke-width="1.2"></line>
+        <line x1="220" y1="35" x2="220" y2="60" stroke="#C8963E" stroke-width="1.2"/>
+        <line x1="335" y1="95" x2="315" y2="115" stroke="#C8963E" stroke-width="1.2"/>
+        <line x1="105" y1="95" x2="125" y2="115" stroke="#C8963E" stroke-width="1.2"/>
+        <line x1="375" y1="215" x2="350" y2="215" stroke="#C8963E" stroke-width="1.2"/>
+        <line x1="65" y1="215" x2="90" y2="215" stroke="#C8963E" stroke-width="1.2"/>
       </svg>
     </div>
 
     <!-- 3. JEET (Bottom-Right): Ascendant Mountain Peaks, Victory Laurel & Guiding North Star -->
-    <div id="parallaxJeet" class="absolute -bottom-10 -right-10 w-[560px] h-[520px] transition-transform duration-300 ease-out" style="transform: translate3d(0px, -5.656px, 0px);">
+    <div id="parallaxJeet" class="absolute -bottom-10 -right-10 w-[560px] h-[520px] transition-transform duration-300 ease-out">
       <svg class="w-full h-full opacity-[0.22]" viewBox="0 0 560 520" fill="none">
         <!-- Victory Laurel Arc -->
-        <path d="M160 390 C 120 300, 145 190, 235 135" stroke="#8C6239" stroke-width="1.25"></path>
-        <path d="M440 390 C 480 300, 455 190, 365 135" stroke="#8C6239" stroke-width="1.25"></path>
+        <path d="M160 390 C 120 300, 145 190, 235 135" stroke="#8C6239" stroke-width="1.25"/>
+        <path d="M440 390 C 480 300, 455 190, 365 135" stroke="#8C6239" stroke-width="1.25"/>
         <!-- Laurel Leaves Left -->
-        <path d="M145 340 Q 120 325 132 302 Q 152 318 145 340 Z" stroke="#C8963E" stroke-width="1"></path>
-        <path d="M138 282 Q 112 265 128 242 Q 148 260 138 282 Z" stroke="#C8963E" stroke-width="1"></path>
-        <path d="M152 224 Q 130 202 150 182 Q 168 202 152 224 Z" stroke="#C8963E" stroke-width="1"></path>
+        <path d="M145 340 Q 120 325 132 302 Q 152 318 145 340 Z" stroke="#C8963E" stroke-width="1"/>
+        <path d="M138 282 Q 112 265 128 242 Q 148 260 138 282 Z" stroke="#C8963E" stroke-width="1"/>
+        <path d="M152 224 Q 130 202 150 182 Q 168 202 152 224 Z" stroke="#C8963E" stroke-width="1"/>
         <!-- Laurel Leaves Right -->
-        <path d="M455 340 Q 480 325 468 302 Q 448 318 455 340 Z" stroke="#C8963E" stroke-width="1"></path>
-        <path d="M462 282 Q 488 265 472 242 Q 452 260 462 282 Z" stroke="#C8963E" stroke-width="1"></path>
-        <path d="M448 224 Q 470 202 450 182 Q 432 202 448 224 Z" stroke="#C8963E" stroke-width="1"></path>
+        <path d="M455 340 Q 480 325 468 302 Q 448 318 455 340 Z" stroke="#C8963E" stroke-width="1"/>
+        <path d="M462 282 Q 488 265 472 242 Q 452 260 462 282 Z" stroke="#C8963E" stroke-width="1"/>
+        <path d="M448 224 Q 470 202 450 182 Q 432 202 448 224 Z" stroke="#C8963E" stroke-width="1"/>
 
         <!-- Ascendant Mountain Peaks (Triumph & Elevation) -->
-        <polyline points="110,435 235,245 315,355 375,270 490,435" stroke="#6E4F32" stroke-width="1.4" stroke-linejoin="round"></polyline>
-        <polyline points="205,292 235,310 265,292" stroke="#C8963E" stroke-width="1.1"></polyline>
-        <polyline points="352,302 375,316 398,302" stroke="#C8963E" stroke-width="1.1"></polyline>
+        <polyline points="110,435 235,245 315,355 375,270 490,435" stroke="#6E4F32" stroke-width="1.4" stroke-linejoin="round"/>
+        <polyline points="205,292 235,310 265,292" stroke="#C8963E" stroke-width="1.1"/>
+        <polyline points="352,302 375,316 398,302" stroke="#C8963E" stroke-width="1.1"/>
 
         <!-- Guiding Sunburst Emblem (Clean Circular Crest) -->
         <g class="animate-star-twinkle">
-          <circle cx="300" cy="128" r="14" stroke="#C8963E" stroke-width="1.3" fill="#FBF8F3"></circle>
-          <circle cx="300" cy="128" r="5" fill="#C8963E"></circle>
+          <circle cx="300" cy="128" r="14" stroke="#C8963E" stroke-width="1.3" fill="#FBF8F3"/>
+          <circle cx="300" cy="128" r="5" fill="#C8963E"/>
         </g>
         <g class="animate-star-twinkle" style="animation-delay: 1.8s;">
-          <circle cx="210" cy="171" r="6" stroke="#B57B4C" stroke-width="1.1" fill="#FBF8F3"></circle>
+          <circle cx="210" cy="171" r="6" stroke="#B57B4C" stroke-width="1.1" fill="#FBF8F3"/>
         </g>
         <g class="animate-star-twinkle" style="animation-delay: 3.1s;">
-          <circle cx="395" cy="181" r="6" stroke="#B57B4C" stroke-width="1.1" fill="#FBF8F3"></circle>
+          <circle cx="395" cy="181" r="6" stroke="#B57B4C" stroke-width="1.1" fill="#FBF8F3"/>
         </g>
       </svg>
     </div>
@@ -1098,7 +288,8 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
         <div class="flex items-center gap-2 sm:gap-2.5 shrink-0">
           <!-- International Multi-Language Switcher -->
           <div class="relative">
-            <select id="languageSelector" onchange="changeLanguage(this.value)" aria-label="Select Language" class="px-2.5 sm:px-3 py-2 rounded-xl bg-ivory hover:bg-sand-100 text-espresso-900 border border-sand-300 text-xs font-semibold cursor-pointer focus:outline-none focus:border-bronze-500">
+            <select id="languageSelector" onchange="changeLanguage(this.value)" aria-label="Select Language"
+              class="px-2.5 sm:px-3 py-2 rounded-xl bg-ivory hover:bg-sand-100 text-espresso-900 border border-sand-300 text-xs font-semibold cursor-pointer focus:outline-none focus:border-bronze-500">
               <option value="en">EN • English</option>
               <option value="hi">HI • हिंदी</option>
               <option value="ar">AR • العربية</option>
@@ -1109,19 +300,21 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
             </select>
           </div>
 
-          <button onclick="copyPortfolioLink()" title="Copy Shareable Link" class="hidden sm:inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-sand-100 hover:bg-sand-200 text-espresso-800 text-xs font-semibold transition-colors border border-sand-300">
+          <button onclick="copyPortfolioLink()" title="Copy Shareable Link"
+            class="hidden sm:inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-sand-100 hover:bg-sand-200 text-espresso-800 text-xs font-semibold transition-colors border border-sand-300">
             <svg class="w-3.5 h-3.5 text-bronze-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
             </svg>
             <span data-i18n="shareBtn">Share</span>
           </button>
 
-          <button id="adminToggleBtn" onclick="handleAdminHeaderClick()" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-espresso-900 hover:bg-bronze-500 text-alabaster text-xs font-semibold transition-all shadow-sm">
+          <button id="adminToggleBtn" onclick="handleAdminHeaderClick()"
+            class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-espresso-900 hover:bg-bronze-500 text-alabaster text-xs font-semibold transition-all shadow-sm">
             <svg id="lockIconClosed" class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
             </svg>
-            <svg id="lockIconOpen" class="w-3.5 h-3.5 text-amber-300 hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"></path>
+            <svg id="lockIconOpen" class="w-3.5 h-3.5 hidden text-amber-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"/>
             </svg>
             <span id="adminHeaderBtnText" data-i18n="ownerLogin">Owner Login</span>
           </button>
@@ -1130,7 +323,7 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
     </header>
 
     <!-- OWNER-ONLY STUDIO CONTROL BAR (HIDDEN UNTIL PIN UNLOCKED) -->
-    <section id="adminToolbar" class="bg-espresso-900 text-alabaster border-b border-espresso-800 shadow-lg hidden">
+    <section id="adminToolbar" class="hidden bg-espresso-900 text-alabaster border-b border-espresso-800 shadow-lg">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-wrap items-center justify-between gap-3">
         <div class="flex items-center gap-2.5">
           <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
@@ -1139,31 +332,42 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
         </div>
 
         <div class="flex flex-wrap items-center gap-2">
-          <button onclick="openProjectModal()" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-bronze-500 hover:bg-bronze-600 text-white text-xs font-bold transition-colors shadow-sm">
+          <button onclick="openProjectModal()"
+            class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-bronze-500 hover:bg-bronze-600 text-white text-xs font-bold transition-colors shadow-sm">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
             </svg>
             Upload Work (Image / Video / PDF)
           </button>
 
-          <button onclick="openProfileModal()" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-espresso-800 hover:bg-espresso-600 text-alabaster text-xs font-medium border border-espresso-600 transition-colors">
+          <button onclick="openProfileModal()"
+            class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-espresso-800 hover:bg-espresso-600 text-alabaster text-xs font-medium border border-espresso-600 transition-colors">
             Edit Personal Details &amp; Email
           </button>
 
-          <button onclick="openSettingsModal()" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-espresso-800 hover:bg-espresso-600 text-alabaster text-xs font-medium border border-espresso-600 transition-colors">
+          <button onclick="openSettingsModal()"
+            class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-espresso-800 hover:bg-espresso-600 text-alabaster text-xs font-medium border border-espresso-600 transition-colors">
             Change PIN
           </button>
 
-          <button onclick="exportStandaloneHTML()" id="exportHtmlBtn" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white text-xs font-bold transition-colors">
+          <button onclick="exportStandaloneHTML()" id="exportHtmlBtn"
+            class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white text-xs font-bold transition-colors">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
             </svg>
             Export for GitHub (index.html)
           </button>
 
-          <button onclick="copyFullSourceCode()" id="copySourceBtn" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-amber-700 hover:bg-amber-600 text-white text-xs font-bold transition-colors" disabled="">Preparing Code...</button>
+          <button onclick="copyFullSourceCode()" id="copySourceBtn"
+            class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-amber-700 hover:bg-amber-600 text-white text-xs font-bold transition-colors">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+            </svg>
+            Copy HTML Code (Notepad)
+          </button>
 
-          <button onclick="logoutAdmin()" class="px-3 py-2 rounded-xl bg-red-950/80 hover:bg-red-800 text-red-200 text-xs font-semibold transition-colors">
+          <button onclick="logoutAdmin()"
+            class="px-3 py-2 rounded-xl bg-red-950/80 hover:bg-red-800 text-red-200 text-xs font-semibold transition-colors">
             Lock
           </button>
         </div>
@@ -1192,31 +396,38 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
               </p>
             </div>
 
-            <p id="heroBioText" class="text-base sm:text-lg text-espresso-600 max-w-2xl leading-relaxed font-normal">Crafting refined brand identities, tactile packaging systems, print layouts, motion graphics, and high-retention 4K video edits with disciplined visual storytelling.</p>
+            <p id="heroBioText" class="text-base sm:text-lg text-espresso-600 max-w-2xl leading-relaxed font-normal">
+              Crafting refined brand identities, tactile packaging systems, print layouts, motion graphics, and high-retention 4K video edits with disciplined visual storytelling.
+            </p>
 
             <!-- Primary CTA & Direct Contact Strip -->
             <div class="flex flex-wrap items-center gap-3 pt-1">
-              <a href="#archive" class="px-6 py-3.5 rounded-2xl bg-espresso-900 hover:bg-bronze-500 text-alabaster text-sm font-semibold transition-all shadow-editorial">
-                <span data-i18n="ctaExplore">Explore Portfolio Archive</span> ↓
+              <a href="#archive"
+                class="px-6 py-3.5 rounded-2xl bg-espresso-900 hover:bg-bronze-500 text-alabaster text-sm font-semibold transition-all shadow-editorial">
+                <span data-i18n="ctaExplore">Explore Portfolio Archive</span> &darr;
               </a>
 
-              <a id="heroWhatsappBtn" href="https://wa.me/917974871219" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 px-5 py-3.5 rounded-2xl bg-emerald-800 hover:bg-emerald-700 text-white text-sm font-semibold transition-all shadow-card">
+              <a id="heroWhatsappBtn" href="https://wa.me/917974871219" target="_blank" rel="noopener noreferrer"
+                class="inline-flex items-center gap-2 px-5 py-3.5 rounded-2xl bg-emerald-800 hover:bg-emerald-700 text-white text-sm font-semibold transition-all shadow-card">
                 <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.274.072.376-.043c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564.289.13.332.202c.045.072.045.419-.1.824z"></path>
+                  <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.274.072.376-.043c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564.289.13.332.202c.045.072.045.419-.1.824z"/>
                 </svg>
                 <span data-i18n="ctaWhatsapp">WhatsApp Direct</span>
               </a>
 
-              <a id="heroCallBtn" href="tel:+917974871219" class="inline-flex items-center gap-2 px-4 py-3.5 rounded-2xl bg-ivory hover:bg-sand-100 text-espresso-900 border border-sand-300 text-sm font-semibold transition-colors shadow-card" target="_blank" rel="noopener noreferrer">
+              <a id="heroCallBtn" href="tel:+917974871219"
+                class="inline-flex items-center gap-2 px-4 py-3.5 rounded-2xl bg-ivory hover:bg-sand-100 text-espresso-900 border border-sand-300 text-sm font-semibold transition-colors shadow-card">
                 <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
                 <span id="heroPhoneDisplay">+91 79748 71219</span>
               </a>
 
               <div class="inline-flex items-center gap-1.5 px-4 py-3 rounded-2xl bg-ivory/90 border border-sand-300 shadow-card">
-                <a id="heroEmailBtn" href="mailto:shriyanshgarg555@gmail.com" class="text-xs sm:text-sm font-semibold text-espresso-900 hover:text-bronze-500 transition-colors" target="_blank" rel="noopener noreferrer">
+                <a id="heroEmailBtn" href="mailto:shriyanshgarg555@gmail.com"
+                  class="text-xs sm:text-sm font-semibold text-espresso-900 hover:text-bronze-500 transition-colors">
                   <span id="heroEmailDisplay">shriyanshgarg555@gmail.com</span>
                 </a>
-                <button type="button" onclick="copyEmailAddress()" title="Copy Email Address" class="ml-1 px-2 py-0.5 rounded-lg bg-sand-100 hover:bg-espresso-900 hover:text-alabaster text-[10px] font-bold uppercase tracking-wider text-espresso-800 transition-colors">
+                <button type="button" onclick="copyEmailAddress()" title="Copy Email Address"
+                  class="ml-1 px-2 py-0.5 rounded-lg bg-sand-100 hover:bg-espresso-900 hover:text-alabaster text-[10px] font-bold uppercase tracking-wider text-espresso-800 transition-colors">
                   Copy
                 </button>
               </div>
@@ -1275,31 +486,38 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
 
             <!-- Search Input -->
             <div class="w-full md:w-80 relative">
-              <input type="text" id="searchInput" oninput="renderGallery()" placeholder="Search title, technique, 4K, masking..." class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-alabaster border border-sand-300 text-xs sm:text-sm text-espresso-900 focus:outline-none focus:border-bronze-500">
+              <input type="text" id="searchInput" oninput="renderGallery()" placeholder="Search title, technique, 4K, masking..."
+                class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-alabaster border border-sand-300 text-xs sm:text-sm text-espresso-900 focus:outline-none focus:border-bronze-500" />
               <svg class="w-4 h-4 text-espresso-400 absolute left-3.5 top-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
               </svg>
             </div>
           </div>
 
           <!-- Category Filter Pills -->
           <div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-5">
-            <button onclick="setCategory('All')" data-cat="All" data-i18n="catAll" class="filter-btn active px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all bg-espresso-900 text-alabaster shadow-sm">
+            <button onclick="setCategory('All')" data-cat="All" data-i18n="catAll"
+              class="filter-btn active px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all bg-espresso-900 text-alabaster shadow-sm">
               All Works
             </button>
-            <button onclick="setCategory('Graphic Design')" data-cat="Graphic Design" data-i18n="catGraphic" class="filter-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-medium whitespace-nowrap transition-all bg-sand-100 text-espresso-800 hover:bg-sand-200">
+            <button onclick="setCategory('Graphic Design')" data-cat="Graphic Design" data-i18n="catGraphic"
+              class="filter-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-medium whitespace-nowrap transition-all bg-sand-100 text-espresso-800 hover:bg-sand-200">
               Graphic Design
             </button>
-            <button onclick="setCategory('Packaging &amp; Print')" data-cat="Packaging &amp; Print" data-i18n="catPackaging" class="filter-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-medium whitespace-nowrap transition-all bg-sand-100 text-espresso-800 hover:bg-sand-200">
+            <button onclick="setCategory('Packaging & Print')" data-cat="Packaging & Print" data-i18n="catPackaging"
+              class="filter-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-medium whitespace-nowrap transition-all bg-sand-100 text-espresso-800 hover:bg-sand-200">
               Packaging &amp; Print
             </button>
-            <button onclick="setCategory('Video Editing')" data-cat="Video Editing" data-i18n="catVideo" class="filter-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-medium whitespace-nowrap transition-all bg-sand-100 text-espresso-800 hover:bg-sand-200">
+            <button onclick="setCategory('Video Editing')" data-cat="Video Editing" data-i18n="catVideo"
+              class="filter-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-medium whitespace-nowrap transition-all bg-sand-100 text-espresso-800 hover:bg-sand-200">
               Video Editing
             </button>
-            <button onclick="setCategory('Color Grading')" data-cat="Color Grading" data-i18n="catColor" class="filter-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-medium whitespace-nowrap transition-all bg-sand-100 text-espresso-800 hover:bg-sand-200">
+            <button onclick="setCategory('Color Grading')" data-cat="Color Grading" data-i18n="catColor"
+              class="filter-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-medium whitespace-nowrap transition-all bg-sand-100 text-espresso-800 hover:bg-sand-200">
               Color Grading
             </button>
-            <button onclick="setCategory('Motion Graphics')" data-cat="Motion Graphics" data-i18n="catMotion" class="filter-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-medium whitespace-nowrap transition-all bg-sand-100 text-espresso-800 hover:bg-sand-200">
+            <button onclick="setCategory('Motion Graphics')" data-cat="Motion Graphics" data-i18n="catMotion"
+              class="filter-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-medium whitespace-nowrap transition-all bg-sand-100 text-espresso-800 hover:bg-sand-200">
               Motion Graphics
             </button>
           </div>
@@ -1308,13 +526,20 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
           <div id="portfolioGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-2"></div>
 
           <!-- Clean Empty State -->
-          <div id="emptyState" class="py-14 px-6 rounded-3xl bg-alabaster border-2 border-dashed border-sand-300 text-center max-w-2xl mx-auto my-4">
+          <div id="emptyState" class="hidden py-14 px-6 rounded-3xl bg-alabaster border-2 border-dashed border-sand-300 text-center max-w-2xl mx-auto my-4">
             <div class="w-14 h-14 rounded-2xl bg-bronze-100 text-bronze-600 mx-auto flex items-center justify-center font-serif font-bold text-2xl mb-4">
               SG
             </div>
-            <h3 id="emptyStateTitle" class="font-serif text-2xl sm:text-3xl font-bold text-espresso-900">Owner Studio Unlocked — Ready to Upload</h3>
-            <p id="emptyStateDesc" class="text-xs sm:text-sm text-espresso-600 mt-2.5 leading-relaxed">Your portfolio gallery is clean and ready. Click below to upload your first graphic design, packaging layout, 4K video edit, or print PDF.</p>
-            <button id="emptyStateActionBtn" onclick="handleEmptyStateAction()" class="mt-6 px-6 py-3 rounded-2xl bg-espresso-900 hover:bg-bronze-500 text-alabaster text-xs sm:text-sm font-semibold transition-colors shadow-sm">+ Upload Your First Work</button>
+            <h3 id="emptyStateTitle" class="font-serif text-2xl sm:text-3xl font-bold text-espresso-900">
+              Your Personal Portfolio Canvas is Ready
+            </h3>
+            <p id="emptyStateDesc" class="text-xs sm:text-sm text-espresso-600 mt-2.5 leading-relaxed">
+              No sample files are pre-loaded so only your authentic graphic designs, videos, and print PDFs appear here. Click <strong>Owner Login</strong> (PIN: <code class="px-1.5 py-0.5 rounded bg-sand-200 text-espresso-900 font-semibold">1234</code>) to upload your first project.
+            </p>
+            <button id="emptyStateActionBtn" onclick="handleEmptyStateAction()"
+              class="mt-6 px-6 py-3 rounded-2xl bg-espresso-900 hover:bg-bronze-500 text-alabaster text-xs sm:text-sm font-semibold transition-colors shadow-sm">
+              Unlock Owner Mode &amp; Upload First Work
+            </button>
           </div>
         </div>
       </div>
@@ -1389,13 +614,15 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
               </p>
             </div>
 
-            <p id="profileAboutText" class="text-sm text-espresso-600 leading-relaxed max-w-2xl">I am a dedicated Graphic Designer and Video Editor focused on building memorable brand identities, tactile packaging, editorial print layouts, and high-impact 4K video edits. Every project is executed with clean composition, color precision, and clear visual communication.</p>
+            <p id="profileAboutText" class="text-sm text-espresso-600 leading-relaxed max-w-2xl">
+              I am a dedicated Graphic Designer and Video Editor focused on building memorable brand identities, tactile packaging, editorial print layouts, and high-impact 4K video edits. Every project is executed with clean composition, color precision, and clear visual communication.
+            </p>
 
             <div>
               <p data-i18n="toolsHeading" class="text-xs font-bold uppercase tracking-wider text-espresso-800 mb-2.5">
                 Core Creative Software Suite
               </p>
-              <div id="profileSkillsList" class="flex flex-wrap gap-2"><span class="px-3.5 py-1.5 rounded-xl bg-ivory border border-sand-300 text-xs font-semibold text-espresso-900">Adobe Illustrator</span><span class="px-3.5 py-1.5 rounded-xl bg-ivory border border-sand-300 text-xs font-semibold text-espresso-900">Adobe Photoshop</span><span class="px-3.5 py-1.5 rounded-xl bg-ivory border border-sand-300 text-xs font-semibold text-espresso-900">Adobe InDesign</span><span class="px-3.5 py-1.5 rounded-xl bg-ivory border border-sand-300 text-xs font-semibold text-espresso-900">Adobe Premiere Pro</span><span class="px-3.5 py-1.5 rounded-xl bg-ivory border border-sand-300 text-xs font-semibold text-espresso-900">Adobe After Effects</span></div>
+              <div id="profileSkillsList" class="flex flex-wrap gap-2"></div>
             </div>
 
             <div id="socialLinksContainer" class="flex flex-wrap gap-2 pt-1"></div>
@@ -1437,10 +664,11 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
                 <div class="flex items-center justify-between py-2 border-b border-sand-200 gap-2">
                   <span data-i18n="lblPhone" class="text-espresso-600 font-medium">Phone / WhatsApp</span>
                   <div class="flex items-center gap-2">
-                    <a id="detailPhoneLink" href="tel:+917974871219" class="font-bold text-espresso-900 hover:text-bronze-500" target="_blank" rel="noopener noreferrer">
+                    <a id="detailPhoneLink" href="tel:+917974871219" class="font-bold text-espresso-900 hover:text-bronze-500">
                       <span id="detailPhone">+91 79748 71219</span>
                     </a>
-                    <a id="detailWhatsappLink" href="https://wa.me/917974871219" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 rounded-lg bg-emerald-800 hover:bg-emerald-700 text-white text-[11px] font-bold">
+                    <a id="detailWhatsappLink" href="https://wa.me/917974871219" target="_blank" rel="noopener noreferrer"
+                      class="px-2.5 py-1 rounded-lg bg-emerald-800 hover:bg-emerald-700 text-white text-[11px] font-bold">
                       WhatsApp
                     </a>
                   </div>
@@ -1449,17 +677,19 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
                 <div class="flex items-center justify-between py-2 gap-2">
                   <span data-i18n="lblEmail" class="text-espresso-600 font-medium">Email Address</span>
                   <div class="flex items-center gap-1.5 min-w-0">
-                    <a id="detailEmailLink" href="mailto:shriyanshgarg555@gmail.com" class="font-bold text-espresso-900 hover:text-bronze-500 truncate" target="_blank" rel="noopener noreferrer">
+                    <a id="detailEmailLink" href="mailto:shriyanshgarg555@gmail.com" class="font-bold text-espresso-900 hover:text-bronze-500 truncate">
                       <span id="detailEmail">shriyanshgarg555@gmail.com</span>
                     </a>
-                    <button type="button" onclick="copyEmailAddress()" class="px-2 py-0.5 rounded-md bg-sand-100 hover:bg-espresso-900 hover:text-alabaster text-[10px] font-bold uppercase text-espresso-800 shrink-0">
+                    <button type="button" onclick="copyEmailAddress()"
+                      class="px-2 py-0.5 rounded-md bg-sand-100 hover:bg-espresso-900 hover:text-alabaster text-[10px] font-bold uppercase text-espresso-800 shrink-0">
                       Copy
                     </button>
                   </div>
                 </div>
               </div>
 
-              <button onclick="copyPortfolioLink()" class="w-full py-3 rounded-2xl bg-espresso-900 hover:bg-bronze-500 text-alabaster text-xs font-bold uppercase tracking-wider transition-colors">
+              <button onclick="copyPortfolioLink()"
+                class="w-full py-3 rounded-2xl bg-espresso-900 hover:bg-bronze-500 text-alabaster text-xs font-bold uppercase tracking-wider transition-colors">
                 <span data-i18n="copyLinkBtn">Copy Shareable Portfolio Link</span>
               </button>
             </div>
@@ -1473,7 +703,7 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
           </p>
           <div class="flex items-center gap-4">
             <span>PORTFOLIO WEBSITE</span>
-            <a href="#top" data-i18n="backToTop" class="font-semibold text-bronze-600 hover:underline">Back to Top ↑</a>
+            <a href="#top" data-i18n="backToTop" class="font-semibold text-bronze-600 hover:underline">Back to Top &uarr;</a>
           </div>
         </div>
       </div>
@@ -1481,9 +711,10 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
   </div>
 
   <!-- FLOATING WHATSAPP QUICK CONNECT BUTTON -->
-  <a id="floatingWhatsappBtn" href="https://wa.me/917974871219" target="_blank" rel="noopener noreferrer" class="fixed bottom-5 right-5 z-30 inline-flex items-center gap-2 px-4 py-3 rounded-full bg-emerald-800 hover:bg-emerald-700 text-white text-xs font-bold shadow-xl transition-transform hover:scale-105">
+  <a id="floatingWhatsappBtn" href="https://wa.me/917974871219" target="_blank" rel="noopener noreferrer"
+    class="fixed bottom-5 right-5 z-30 inline-flex items-center gap-2 px-4 py-3 rounded-full bg-emerald-800 hover:bg-emerald-700 text-white text-xs font-bold shadow-xl transition-transform hover:scale-105">
     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-      <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.274.072.376-.043c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564.289.13.332.202c.045.072.045.419-.1.824z"></path>
+      <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.274.072.376-.043c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564.289.13.332.202c.045.072.045.419-.1.824z"/>
     </svg>
     <span data-i18n="whatsappQuick">WhatsApp</span>
   </a>
@@ -1505,13 +736,14 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
         </div>
         <button onclick="closeNotepadCodeModal()" class="w-9 h-9 rounded-xl bg-ivory hover:bg-sand-200 flex items-center justify-center text-espresso-800 border border-sand-300 shrink-0">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
           </svg>
         </button>
       </div>
 
       <div class="p-5 flex-1 overflow-hidden flex flex-col">
-        <textarea id="notepadSourceTextarea" readonly="" class="w-full flex-1 min-h-[320px] p-4 rounded-2xl bg-espresso-900 text-amber-100 font-mono text-xs leading-relaxed border border-espresso-800 focus:outline-none select-all"></textarea>
+        <textarea id="notepadSourceTextarea" readonly
+          class="w-full flex-1 min-h-[320px] p-4 rounded-2xl bg-espresso-900 text-amber-100 font-mono text-xs leading-relaxed border border-espresso-800 focus:outline-none select-all"></textarea>
       </div>
 
       <div class="px-6 py-3.5 bg-sand-100 border-t border-sand-300 flex flex-wrap items-center justify-between gap-2">
@@ -1531,14 +763,14 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
   <!-- ===================================================================== -->
   <!-- OWNER PIN LOGIN MODAL                                                 -->
   <!-- ===================================================================== -->
-  <div id="pinModal" class="fixed inset-0 z-50 bg-espresso-900/75 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+  <div id="pinModal" class="fixed inset-0 z-50 hidden bg-espresso-900/75 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="w-full max-w-md bg-ivory rounded-3xl border border-sand-300 shadow-2xl overflow-hidden">
       <div class="px-6 py-4 bg-sand-100 border-b border-sand-300 flex items-center justify-between">
         <div>
           <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-bronze-500 block">PRIVATE ACCESS</span>
           <h3 class="font-serif text-2xl font-bold text-espresso-900">Owner Studio Login</h3>
         </div>
-        <button onclick="closePinModal()" class="w-8 h-8 rounded-xl bg-ivory hover:bg-sand-200 flex items-center justify-center text-espresso-800 border border-sand-300">×</button>
+        <button onclick="closePinModal()" class="w-8 h-8 rounded-xl bg-ivory hover:bg-sand-200 flex items-center justify-center text-espresso-800 border border-sand-300">&times;</button>
       </div>
       <form onsubmit="submitPinLogin(event)" class="p-6 space-y-4">
         <p class="text-xs text-espresso-600 leading-relaxed">
@@ -1546,8 +778,9 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
         </p>
         <div>
           <label class="block text-xs font-bold uppercase tracking-wider text-espresso-800 mb-1.5">Security PIN</label>
-          <input type="password" id="pinInput" inputmode="numeric" maxlength="10" placeholder="Enter PIN (1234)" required="" class="w-full px-4 py-3 rounded-xl bg-alabaster border border-sand-300 text-center text-lg font-bold tracking-[0.3em] text-espresso-900 focus:outline-none focus:border-bronze-500">
-          <p id="pinError" class="text-xs font-semibold text-red-600 mt-2">Incorrect PIN. Please try again.</p>
+          <input type="password" id="pinInput" inputmode="numeric" maxlength="10" placeholder="Enter PIN (1234)" required
+            class="w-full px-4 py-3 rounded-xl bg-alabaster border border-sand-300 text-center text-lg font-bold tracking-[0.3em] text-espresso-900 focus:outline-none focus:border-bronze-500" />
+          <p id="pinError" class="hidden text-xs font-semibold text-red-600 mt-2">Incorrect PIN. Please try again.</p>
         </div>
         <div class="flex items-center justify-end gap-2 pt-2">
           <button type="button" onclick="closePinModal()" class="px-4 py-2.5 rounded-xl bg-sand-100 text-espresso-800 text-xs font-semibold">Cancel</button>
@@ -1567,19 +800,21 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
           <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-bronze-500 block">PORTFOLIO STUDIO</span>
           <h3 id="projectModalTitle" class="font-serif text-2xl font-bold text-espresso-900">Upload Design / Video / PDF</h3>
         </div>
-        <button onclick="closeProjectModal()" class="w-9 h-9 rounded-xl bg-ivory hover:bg-sand-200 flex items-center justify-center text-espresso-800 border border-sand-300">×</button>
+        <button onclick="closeProjectModal()" class="w-9 h-9 rounded-xl bg-ivory hover:bg-sand-200 flex items-center justify-center text-espresso-800 border border-sand-300">&times;</button>
       </div>
 
       <form id="projectForm" onsubmit="saveProject(event)" class="p-6 space-y-5 overflow-y-auto">
-        <input type="hidden" id="editProjectId" value="">
+        <input type="hidden" id="editProjectId" value="" />
 
         <!-- Source Mode Toggle -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <button type="button" id="modeLocalBtn" onclick="switchUploadSource('local')" class="p-3.5 rounded-2xl border-2 border-espresso-900 bg-espresso-900 text-alabaster text-left transition-all">
+          <button type="button" id="modeLocalBtn" onclick="switchUploadSource('local')"
+            class="p-3.5 rounded-2xl border-2 border-espresso-900 bg-espresso-900 text-alabaster text-left transition-all">
             <span class="text-xs font-bold block">Direct Device File</span>
             <span class="text-[11px] opacity-80 block mt-0.5">Images, Videos &amp; PDFs (Auto-Specs)</span>
           </button>
-          <button type="button" id="modeLinkBtn" onclick="switchUploadSource('link')" class="p-3.5 rounded-2xl border-2 border-sand-300 bg-alabaster text-espresso-900 text-left transition-all">
+          <button type="button" id="modeLinkBtn" onclick="switchUploadSource('link')"
+            class="p-3.5 rounded-2xl border-2 border-sand-300 bg-alabaster text-espresso-900 text-left transition-all">
             <span class="text-xs font-bold block">Google Drive / YouTube Link</span>
             <span class="text-[11px] opacity-75 block mt-0.5">Best for 10GB+ 4K Videos on GitHub</span>
           </button>
@@ -1587,10 +822,10 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
 
         <!-- Local File Upload Box -->
         <div id="localUploadBox" class="p-5 rounded-2xl bg-alabaster border-2 border-dashed border-sand-400 text-center">
-          <input type="file" id="localFileInput" accept="image/*,video/*,application/pdf" onchange="handleLocalFileSelect(event)" class="hidden">
+          <input type="file" id="localFileInput" accept="image/*,video/*,application/pdf,.zip,.rar" onchange="handleLocalFileSelect(event)" class="hidden" />
           <label for="localFileInput" class="cursor-pointer block">
             <span class="inline-flex items-center justify-center w-11 h-11 rounded-2xl bg-bronze-100 text-bronze-600 font-bold text-lg mb-2">+</span>
-            <span id="selectedFileName" class="block text-xs sm:text-sm font-bold text-espresso-900">Click to choose Image, Video (MP4/MOV/WebM), or PDF</span>
+            <span id="selectedFileName" class="block text-xs sm:text-sm font-bold text-espresso-900">Click to choose Image, Video (MP4/MOV/WebM), PDF, or ZIP</span>
             <span id="selectedFileMeta" class="block text-[11px] text-espresso-600 mt-1">No size cap — quality, dimensions &amp; story auto-generate below</span>
           </label>
         </div>
@@ -1608,30 +843,19 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
             </div>
             <div class="sm:col-span-2">
               <label class="block text-[11px] font-bold uppercase text-espresso-700 mb-1">Google Drive / YouTube / Direct URL</label>
-              <input type="url" id="mediaExternalUrl" oninput="handleExternalUrlChange()" placeholder="https://drive.google.com/file/d/.../view" class="w-full px-3.5 py-2.5 rounded-xl bg-ivory border border-sand-300 text-xs text-espresso-900 focus:outline-none focus:border-bronze-500">
+              <input type="url" id="mediaExternalUrl" oninput="handleExternalUrlChange()" placeholder="https://drive.google.com/file/d/.../view"
+                class="w-full px-3.5 py-2.5 rounded-xl bg-ivory border border-sand-300 text-xs text-espresso-900 focus:outline-none focus:border-bronze-500" />
             </div>
           </div>
           <div>
             <label class="block text-[11px] font-bold uppercase text-espresso-700 mb-1">Custom Cover Image URL (Optional)</label>
-            <input type="url" id="customThumbUrl" placeholder="Optional thumbnail URL for card preview" class="w-full px-3.5 py-2 rounded-xl bg-ivory border border-sand-300 text-xs text-espresso-900 focus:outline-none focus:border-bronze-500">
-          </div>
-        </div>
-
-        <!-- Title & Category -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label class="block text-xs font-bold text-espresso-800 mb-1">Project Title *</label>
-            <input type="text" id="projectTitle" oninput="autoComposeCreativeStory()" required="" placeholder="e.g., Luxury Perfume Packaging &amp; Film" class="w-full px-3.5 py-2.5 rounded-xl bg-alabaster border border-sand-300 text-xs sm:text-sm text-espresso-900 focus:outline-none focus:border-bronze-500">
+            <input type="url" id="customThumbUrl" placeholder="Optional thumbnail URL for card preview"
+              class="w-full px-3.5 py-2 rounded-xl bg-ivory border border-sand-300 text-xs text-espresso-900 focus:outline-none focus:border-bronze-500" />
           </div>
           <div>
-            <label class="block text-xs font-bold text-espresso-800 mb-1">Category</label>
-            <select id="projectCategory" onchange="autoComposeCreativeStory()" class="w-full px-3.5 py-2.5 rounded-xl bg-alabaster border border-sand-300 text-xs sm:text-sm font-semibold text-espresso-900 focus:outline-none focus:border-bronze-500">
-              <option value="Graphic Design">Graphic Design</option>
-              <option value="Packaging &amp; Print">Packaging &amp; Print</option>
-              <option value="Video Editing">Video Editing</option>
-              <option value="Color Grading">Color Grading</option>
-              <option value="Motion Graphics">Motion Graphics</option>
-            </select>
+            <label class="block text-[11px] font-bold uppercase text-espresso-700 mb-1">Project Assets / ZIP Folder Link (Optional)</label>
+            <input type="url" id="projectFolderUrl" placeholder="Optional Google Drive folder or .zip link for raw/project files"
+              class="w-full px-3.5 py-2 rounded-xl bg-ivory border border-sand-300 text-xs text-espresso-900 focus:outline-none focus:border-bronze-500" />
           </div>
         </div>
 
@@ -1642,8 +866,10 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
             <span id="autoDetectStatus" class="text-[11px] font-semibold text-bronze-600">Auto-fills on file selection • Freely editable</span>
           </div>
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <input type="text" id="projectQuality" placeholder="e.g., 4K UHD • 3840×2160 • 60fps" class="sm:col-span-2 px-3.5 py-2.5 rounded-xl bg-ivory border border-sand-300 text-xs font-semibold text-espresso-900 focus:outline-none focus:border-bronze-500">
-            <input type="text" id="projectFileSize" placeholder="Size (e.g., 450 MB)" class="px-3.5 py-2.5 rounded-xl bg-ivory border border-sand-300 text-xs text-espresso-900 focus:outline-none focus:border-bronze-500">
+            <input type="text" id="projectQuality" placeholder="e.g., 4K UHD • 3840×2160 • 60fps"
+              class="sm:col-span-2 px-3.5 py-2.5 rounded-xl bg-ivory border border-sand-300 text-xs font-semibold text-espresso-900 focus:outline-none focus:border-bronze-500" />
+            <input type="text" id="projectFileSize" placeholder="Size (e.g., 450 MB)"
+              class="px-3.5 py-2.5 rounded-xl bg-ivory border border-sand-300 text-xs text-espresso-900 focus:outline-none focus:border-bronze-500" />
           </div>
           <div class="flex flex-wrap gap-1.5">
             <button type="button" onclick="applyQualityPreset('4K UHD • 3840×2160 Master')" class="px-2.5 py-1 rounded-lg bg-sand-100 hover:bg-sand-200 text-[11px] font-semibold text-espresso-800">4K UHD</button>
@@ -1660,11 +886,12 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
             <button type="button" onclick="toggleTechniqueChip(this, 'Kinetic Typography')" class="tech-chip px-3 py-1.5 rounded-xl bg-ivory border border-sand-300 text-xs font-medium text-espresso-800 hover:border-bronze-500 transition-colors">+ Kinetic Typography</button>
             <button type="button" onclick="toggleTechniqueChip(this, 'Advanced Masking')" class="tech-chip px-3 py-1.5 rounded-xl bg-ivory border border-sand-300 text-xs font-medium text-espresso-800 hover:border-bronze-500 transition-colors">+ Advanced Masking</button>
             <button type="button" onclick="toggleTechniqueChip(this, 'Cinematic Color Grading')" class="tech-chip px-3 py-1.5 rounded-xl bg-ivory border border-sand-300 text-xs font-medium text-espresso-800 hover:border-bronze-500 transition-colors">+ Cinematic Color Grading</button>
-            <button type="button" onclick="toggleTechniqueChip(this, 'Speed Ramping &amp; Transitions')" class="tech-chip px-3 py-1.5 rounded-xl bg-ivory border border-sand-300 text-xs font-medium text-espresso-800 hover:border-bronze-500 transition-colors">+ Speed Ramping &amp; Transitions</button>
+            <button type="button" onclick="toggleTechniqueChip(this, 'Speed Ramping & Transitions')" class="tech-chip px-3 py-1.5 rounded-xl bg-ivory border border-sand-300 text-xs font-medium text-espresso-800 hover:border-bronze-500 transition-colors">+ Speed Ramping &amp; Transitions</button>
             <button type="button" onclick="toggleTechniqueChip(this, 'Custom Die-Cut Packaging')" class="tech-chip px-3 py-1.5 rounded-xl bg-ivory border border-sand-300 text-xs font-medium text-espresso-800 hover:border-bronze-500 transition-colors">+ Custom Die-Cut Packaging</button>
-            <button type="button" onclick="toggleTechniqueChip(this, 'Brand Identity &amp; Logo')" class="tech-chip px-3 py-1.5 rounded-xl bg-ivory border border-sand-300 text-xs font-medium text-espresso-800 hover:border-bronze-500 transition-colors">+ Brand Identity &amp; Logo</button>
+            <button type="button" onclick="toggleTechniqueChip(this, 'Brand Identity & Logo')" class="tech-chip px-3 py-1.5 rounded-xl bg-ivory border border-sand-300 text-xs font-medium text-espresso-800 hover:border-bronze-500 transition-colors">+ Brand Identity &amp; Logo</button>
           </div>
-          <input type="text" id="projectHighlights" oninput="syncTechniqueChipsFromInput(); autoComposeCreativeStory();" placeholder="e.g., Kinetic Typography, Masking, Sound Design, Gold Foil Print" class="w-full px-3.5 py-2.5 rounded-xl bg-alabaster border border-sand-300 text-xs text-espresso-900 focus:outline-none focus:border-bronze-500">
+          <input type="text" id="projectHighlights" oninput="syncTechniqueChipsFromInput(); autoComposeCreativeStory();" placeholder="e.g., Kinetic Typography, Masking, Sound Design, Gold Foil Print"
+            class="w-full px-3.5 py-2.5 rounded-xl bg-alabaster border border-sand-300 text-xs text-espresso-900 focus:outline-none focus:border-bronze-500" />
         </div>
 
         <!-- Creative Story & Software -->
@@ -1673,17 +900,20 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
             <label class="text-xs font-bold text-espresso-800">Project Story &amp; Concept (Auto-translates to 7 Languages)</label>
             <button type="button" onclick="autoComposeCreativeStory(true)" class="text-[11px] font-bold text-bronze-600 hover:underline">Regenerate Story</button>
           </div>
-          <textarea id="projectDescription" rows="3" placeholder="Describe what makes this design or video special..." class="w-full px-3.5 py-2.5 rounded-xl bg-alabaster border border-sand-300 text-xs sm:text-sm text-espresso-900 focus:outline-none focus:border-bronze-500"></textarea>
+          <textarea id="projectDescription" rows="3" placeholder="Describe what makes this design or video special..."
+            class="w-full px-3.5 py-2.5 rounded-xl bg-alabaster border border-sand-300 text-xs sm:text-sm text-espresso-900 focus:outline-none focus:border-bronze-500"></textarea>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div class="sm:col-span-2">
             <label class="block text-xs font-bold text-espresso-800 mb-1">Software Used</label>
-            <input type="text" id="projectSoftware" value="Adobe Premiere Pro, After Effects, Illustrator" class="w-full px-3.5 py-2.5 rounded-xl bg-alabaster border border-sand-300 text-xs text-espresso-900 focus:outline-none focus:border-bronze-500">
+            <input type="text" id="projectSoftware" value="Adobe Premiere Pro, After Effects, Illustrator"
+              class="w-full px-3.5 py-2.5 rounded-xl bg-alabaster border border-sand-300 text-xs text-espresso-900 focus:outline-none focus:border-bronze-500" />
           </div>
           <div>
             <label class="block text-xs font-bold text-espresso-800 mb-1">Display Priority</label>
-            <input type="number" id="projectOrder" min="1" value="1" class="w-full px-3.5 py-2.5 rounded-xl bg-alabaster border border-sand-300 text-xs text-espresso-900 focus:outline-none focus:border-bronze-500">
+            <input type="number" id="projectOrder" min="1" value="1"
+              class="w-full px-3.5 py-2.5 rounded-xl bg-alabaster border border-sand-300 text-xs text-espresso-900 focus:outline-none focus:border-bronze-500" />
           </div>
         </div>
 
@@ -1707,27 +937,27 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
           <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-bronze-500 block">PERSONAL IDENTITY</span>
           <h3 class="font-serif text-2xl font-bold text-espresso-900">Edit Personal Details &amp; Email</h3>
         </div>
-        <button onclick="closeProfileModal()" class="w-8 h-8 rounded-xl bg-ivory hover:bg-sand-200 flex items-center justify-center text-espresso-800 border border-sand-300">×</button>
+        <button onclick="closeProfileModal()" class="w-8 h-8 rounded-xl bg-ivory hover:bg-sand-200 flex items-center justify-center text-espresso-800 border border-sand-300">&times;</button>
       </div>
       <form onsubmit="saveProfileDetails(event)" class="p-6 space-y-4 overflow-y-auto">
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label class="block text-xs font-bold text-espresso-800 mb-1">Email Address</label>
-            <input type="email" id="inputEmail" required="" class="w-full px-3.5 py-2.5 rounded-xl bg-alabaster border border-sand-300 text-xs sm:text-sm text-espresso-900">
+            <input type="email" id="inputEmail" required class="w-full px-3.5 py-2.5 rounded-xl bg-alabaster border border-sand-300 text-xs sm:text-sm text-espresso-900" />
           </div>
           <div>
             <label class="block text-xs font-bold text-espresso-800 mb-1">Phone / WhatsApp Number</label>
-            <input type="text" id="inputPhone" required="" class="w-full px-3.5 py-2.5 rounded-xl bg-alabaster border border-sand-300 text-xs sm:text-sm text-espresso-900">
+            <input type="text" id="inputPhone" required class="w-full px-3.5 py-2.5 rounded-xl bg-alabaster border border-sand-300 text-xs sm:text-sm text-espresso-900" />
           </div>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label class="block text-xs font-bold text-espresso-800 mb-1">Current Base</label>
-            <input type="text" id="inputLocation" required="" class="w-full px-3.5 py-2.5 rounded-xl bg-alabaster border border-sand-300 text-xs sm:text-sm text-espresso-900">
+            <input type="text" id="inputLocation" required class="w-full px-3.5 py-2.5 rounded-xl bg-alabaster border border-sand-300 text-xs sm:text-sm text-espresso-900" />
           </div>
           <div>
             <label class="block text-xs font-bold text-espresso-800 mb-1">Hometown</label>
-            <input type="text" id="inputHometown" required="" class="w-full px-3.5 py-2.5 rounded-xl bg-alabaster border border-sand-300 text-xs sm:text-sm text-espresso-900">
+            <input type="text" id="inputHometown" required class="w-full px-3.5 py-2.5 rounded-xl bg-alabaster border border-sand-300 text-xs sm:text-sm text-espresso-900" />
           </div>
         </div>
         <div>
@@ -1740,20 +970,20 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
         </div>
         <div>
           <label class="block text-xs font-bold text-espresso-800 mb-1">Software Suite (Comma Separated)</label>
-          <input type="text" id="inputSkills" class="w-full px-3.5 py-2.5 rounded-xl bg-alabaster border border-sand-300 text-xs text-espresso-900">
+          <input type="text" id="inputSkills" class="w-full px-3.5 py-2.5 rounded-xl bg-alabaster border border-sand-300 text-xs text-espresso-900" />
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
             <label class="block text-[11px] font-bold text-espresso-700 mb-1">Instagram URL</label>
-            <input type="url" id="inputInstagram" placeholder="https://instagram.com/..." class="w-full px-3 py-2 rounded-xl bg-alabaster border border-sand-300 text-xs text-espresso-900">
+            <input type="url" id="inputInstagram" placeholder="https://instagram.com/..." class="w-full px-3 py-2 rounded-xl bg-alabaster border border-sand-300 text-xs text-espresso-900" />
           </div>
           <div>
             <label class="block text-[11px] font-bold text-espresso-700 mb-1">YouTube URL</label>
-            <input type="url" id="inputYoutube" placeholder="https://youtube.com/..." class="w-full px-3 py-2 rounded-xl bg-alabaster border border-sand-300 text-xs text-espresso-900">
+            <input type="url" id="inputYoutube" placeholder="https://youtube.com/..." class="w-full px-3 py-2 rounded-xl bg-alabaster border border-sand-300 text-xs text-espresso-900" />
           </div>
           <div>
             <label class="block text-[11px] font-bold text-espresso-700 mb-1">Behance / Drive URL</label>
-            <input type="url" id="inputBehance" placeholder="https://behance.net/..." class="w-full px-3 py-2 rounded-xl bg-alabaster border border-sand-300 text-xs text-espresso-900">
+            <input type="url" id="inputBehance" placeholder="https://behance.net/..." class="w-full px-3 py-2 rounded-xl bg-alabaster border border-sand-300 text-xs text-espresso-900" />
           </div>
         </div>
         <div class="pt-3 border-t border-sand-300 flex items-center justify-end gap-2">
@@ -1771,12 +1001,13 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
     <div class="w-full max-w-sm bg-ivory rounded-3xl border border-sand-300 shadow-2xl overflow-hidden">
       <div class="px-6 py-4 bg-sand-100 border-b border-sand-300 flex items-center justify-between">
         <h3 class="font-serif text-xl font-bold text-espresso-900">Change Owner PIN</h3>
-        <button onclick="closeSettingsModal()" class="w-8 h-8 rounded-xl bg-ivory flex items-center justify-center text-espresso-800 border border-sand-300">×</button>
+        <button onclick="closeSettingsModal()" class="w-8 h-8 rounded-xl bg-ivory flex items-center justify-center text-espresso-800 border border-sand-300">&times;</button>
       </div>
       <form onsubmit="updateOwnerPin(event)" class="p-6 space-y-4">
         <div>
           <label class="block text-xs font-bold text-espresso-800 mb-1">New Security PIN (Min 4 digits)</label>
-          <input type="password" id="newPinInput" minlength="4" maxlength="10" required="" placeholder="Enter new PIN" class="w-full px-4 py-2.5 rounded-xl bg-alabaster border border-sand-300 text-center font-bold tracking-widest text-espresso-900">
+          <input type="password" id="newPinInput" minlength="4" maxlength="10" required placeholder="Enter new PIN"
+            class="w-full px-4 py-2.5 rounded-xl bg-alabaster border border-sand-300 text-center font-bold tracking-widest text-espresso-900" />
         </div>
         <div class="flex justify-end gap-2">
           <button type="button" onclick="closeSettingsModal()" class="px-4 py-2 rounded-xl bg-sand-100 text-espresso-800 text-xs font-semibold">Cancel</button>
@@ -1800,7 +1031,8 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
         </div>
 
         <div class="flex items-center gap-2">
-          <select id="lbLanguageSelector" onchange="changeLanguage(this.value)" aria-label="Story Language" class="px-2.5 py-1.5 rounded-xl bg-alabaster border border-sand-300 text-xs font-semibold text-espresso-900">
+          <select id="lbLanguageSelector" onchange="changeLanguage(this.value)" aria-label="Story Language"
+            class="px-2.5 py-1.5 rounded-xl bg-alabaster border border-sand-300 text-xs font-semibold text-espresso-900">
             <option value="en">EN • English</option>
             <option value="hi">HI • हिंदी</option>
             <option value="ar">AR • العربية</option>
@@ -1810,13 +1042,14 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
             <option value="ja">JA • 日本語</option>
           </select>
 
-          <button onclick="toggleStoryNarration()" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-bronze-500 hover:bg-bronze-600 text-white text-xs font-bold transition-colors">
-            <span>🔊</span>
+          <button onclick="toggleStoryNarration()"
+            class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-bronze-500 hover:bg-bronze-600 text-white text-xs font-bold transition-colors">
+            <span>&#128266;</span>
             <span id="narrateBtnLabel" data-i18n="listenStory">Listen to Story</span>
           </button>
 
           <button onclick="closeLightbox()" class="w-9 h-9 rounded-xl bg-sand-100 hover:bg-espresso-900 hover:text-alabaster flex items-center justify-center text-espresso-900 font-bold transition-colors">
-            ×
+            &times;
           </button>
         </div>
       </div>
@@ -1851,28 +1084,30 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
   <!-- ===================================================================== -->
   <!-- EMBEDDED PORTFOLIO SEED STATE (ZERO DEMO PROJECTS — 100% CLEAN)       -->
   <!-- ===================================================================== -->
-  <script id="embeddedPortfolioSeed" type="application/json">{
-  "pin": "1234",
-  "profile": {
-    "heroBio": "Crafting refined brand identities, tactile packaging systems, print layouts, motion graphics, and high-retention 4K video edits with disciplined visual storytelling.",
-    "aboutBio": "I am a dedicated Graphic Designer and Video Editor focused on building memorable brand identities, tactile packaging, editorial print layouts, and high-impact 4K video edits. Every project is executed with clean composition, color precision, and clear visual communication.",
-    "location": "Jaipur",
-    "hometown": "Sheopur, Madhya Pradesh",
-    "phone": "+91 79748 71219",
-    "email": "shriyanshgarg555@gmail.com",
-    "skills": [
-      "Adobe Illustrator",
-      "Adobe Photoshop",
-      "Adobe InDesign",
-      "Adobe Premiere Pro",
-      "Adobe After Effects"
-    ],
-    "instagram": "",
-    "youtube": "",
-    "behance": ""
-  },
-  "projects": []
-}</script>
+  <script id="embeddedPortfolioSeed" type="application/json">
+  {
+    "pin": "1234",
+    "profile": {
+      "heroBio": "Crafting refined brand identities, tactile packaging systems, print layouts, motion graphics, and high-retention 4K video edits with disciplined visual storytelling.",
+      "aboutBio": "I am a dedicated Graphic Designer and Video Editor focused on building memorable brand identities, tactile packaging, editorial print layouts, and high-impact 4K video edits. Every project is executed with clean composition, color precision, and clear visual communication.",
+      "location": "Jaipur",
+      "hometown": "Sheopur, Madhya Pradesh",
+      "phone": "+91 79748 71219",
+      "email": "shriyanshgarg555@gmail.com",
+      "skills": [
+        "Adobe Illustrator",
+        "Adobe Photoshop",
+        "Adobe InDesign",
+        "Adobe Premiere Pro",
+        "Adobe After Effects"
+      ],
+      "instagram": "",
+      "youtube": "",
+      "behance": ""
+    },
+    "projects": []
+  }
+  </script>
 
   <!-- ===================================================================== -->
   <!-- APPLICATION ENGINE: INDEXEDDB + 7-LANG STORYTELLING + VOICE NARRATOR  -->
@@ -2649,11 +1884,13 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
           if (categorySelect.value === 'Video Editing' || categorySelect.value === 'Color Grading') {
             categorySelect.value = 'Graphic Design';
           }
+          autoSuggestCreativeTechniques(titleInput.value, categorySelect.value);
           autoComposeCreativeStory();
           URL.revokeObjectURL(tempUrl);
         };
         img.onerror = () => {
           qualityInput.value = `High-Res Design • ${ext} • ${sizeStr}`;
+          autoSuggestCreativeTechniques(titleInput.value, categorySelect.value);
           autoComposeCreativeStory();
           URL.revokeObjectURL(tempUrl);
         };
@@ -2673,11 +1910,13 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
           const aspect = h > w ? '9:16 Vertical' : '16:9 Cinema';
           qualityInput.value = `${resLabel} • ${w}×${h} • ${ext} (${aspect}${dur ? ' • ' + dur : ''})`;
           statusBadge.textContent = `Auto-Detected Video (${resLabel}, ${w}×${h})`;
+          autoSuggestCreativeTechniques(titleInput.value, categorySelect.value);
           autoComposeCreativeStory();
           URL.revokeObjectURL(tempUrl);
         };
         video.onerror = () => {
           qualityInput.value = `4K / HD Video Master • ${ext} • ${sizeStr}`;
+          autoSuggestCreativeTechniques(titleInput.value, categorySelect.value);
           autoComposeCreativeStory();
           URL.revokeObjectURL(tempUrl);
         };
@@ -2686,11 +1925,49 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
         categorySelect.value = 'Packaging & Print';
         qualityInput.value = `Print-Ready Vector PDF • ${sizeStr}`;
         statusBadge.textContent = `Auto-Detected PDF Document (${sizeStr})`;
+        autoSuggestCreativeTechniques(titleInput.value, categorySelect.value);
+        autoComposeCreativeStory();
+      } else if (file.name.toLowerCase().endsWith('.zip') || file.name.toLowerCase().endsWith('.rar')) {
+        qualityInput.value = `Complete Project Archive (${ext}) • ${sizeStr}`;
+        statusBadge.textContent = `Auto-Detected Project Archive (${ext}, ${sizeStr})`;
+        autoSuggestCreativeTechniques(titleInput.value, categorySelect.value);
         autoComposeCreativeStory();
       } else {
         qualityInput.value = `Master Creative File • ${sizeStr}`;
+        autoSuggestCreativeTechniques(titleInput.value, categorySelect.value);
         autoComposeCreativeStory();
       }
+    }
+
+    function autoSuggestCreativeTechniques(titleText, category) {
+      const highlightsInput = document.getElementById('projectHighlights');
+      const softwareInput = document.getElementById('projectSoftware');
+      if (!highlightsInput || highlightsInput.dataset.userEdited === 'true') return;
+
+      const t = (titleText || '').toLowerCase();
+      let suggested = [];
+
+      if (category === 'Video Editing' || category === 'Color Grading' || category === 'Motion Graphics') {
+        if (t.includes('trailer') || t.includes('teaser') || t.includes('promo') || t.includes('film')) {
+          suggested = ['Cinematic Color Grading', 'Speed Ramping & Transitions', 'Kinetic Typography'];
+        } else if (t.includes('reel') || t.includes('short') || t.includes('montage')) {
+          suggested = ['Speed Ramping & Transitions', 'Advanced Masking', 'Kinetic Typography'];
+        } else if (category === 'Color Grading' || t.includes('grade') || t.includes('lut')) {
+          suggested = ['Cinematic Color Grading', 'Advanced Masking'];
+        } else {
+          suggested = ['Kinetic Typography', 'Advanced Masking', 'Cinematic Color Grading'];
+        }
+        if (softwareInput) softwareInput.value = 'Adobe Premiere Pro, After Effects';
+      } else if (category === 'Packaging & Print') {
+        suggested = ['Custom Die-Cut Packaging', 'Brand Identity & Logo'];
+        if (softwareInput) softwareInput.value = 'Adobe Illustrator, InDesign, Photoshop';
+      } else {
+        suggested = ['Brand Identity & Logo', 'Kinetic Typography'];
+        if (softwareInput) softwareInput.value = 'Adobe Illustrator, Photoshop';
+      }
+
+      highlightsInput.value = suggested.join(', ');
+      syncTechniqueChipsFromInput();
     }
 
     function handleExternalUrlChange() {
@@ -2698,21 +1975,37 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
       const typeSelect = document.getElementById('linkMediaType');
       const qualityInput = document.getElementById('projectQuality');
       const statusBadge = document.getElementById('autoDetectStatus');
+      const titleInput = document.getElementById('projectTitle');
 
       if (!url) return;
+
+      if (url.includes('/drive/folders/')) {
+        statusBadge.textContent = '⚠ Folder link detected — please copy individual file link (/file/d/...)';
+        statusBadge.className = 'text-[11px] font-bold text-red-600';
+        showToast('Please open the Drive folder and copy the individual video/image file link (/file/d/...).', 'error');
+        return;
+      } else {
+        statusBadge.className = 'text-[11px] font-semibold text-bronze-600';
+      }
 
       if (url.includes('youtube.com') || url.includes('youtu.be') || url.includes('vimeo.com')) {
         typeSelect.value = 'video';
         if (!qualityInput.value) qualityInput.value = '4K UHD Stream • 60fps Master';
         statusBadge.textContent = 'YouTube / Vimeo Stream Detected';
+        if (!titleInput.value.trim()) titleInput.value = '4K Video Production Showcase';
       } else if (url.includes('drive.google.com')) {
         if (!qualityInput.value) qualityInput.value = '4K Google Drive Master • Uncompressed';
-        statusBadge.textContent = 'Google Drive Multi-GB Link Detected';
+        statusBadge.textContent = 'Google Drive File Link Ready';
+        if (!titleInput.value.trim()) {
+          titleInput.value = typeSelect.value === 'video' ? '4K Video Edit Master' : 'High-Resolution Design Showcase';
+        }
       } else if (url.toLowerCase().endsWith('.pdf')) {
         typeSelect.value = 'pdf';
         if (!qualityInput.value) qualityInput.value = 'Print-Ready Vector PDF • 300 DPI';
         statusBadge.textContent = 'PDF Document URL Detected';
+        if (!titleInput.value.trim()) titleInput.value = 'Editorial Print & Brand Dossier';
       }
+      autoSuggestCreativeTechniques(titleInput.value, document.getElementById('projectCategory').value);
       autoComposeCreativeStory();
     }
 
@@ -3115,7 +2408,12 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
           <a href="${escapeHtml(project.externalUrl)}" target="_blank" rel="noopener noreferrer"
             class="w-full text-center px-4 py-2.5 rounded-xl bg-espresso-900 hover:bg-bronze-500 text-alabaster text-xs font-semibold transition-colors">
             Open Full Master Link &nearr;
-          </a>`;
+          </a>
+          ${project.folderUrl ? `
+          <a href="${escapeHtml(project.folderUrl)}" target="_blank" rel="noopener noreferrer"
+            class="w-full text-center px-4 py-2.5 rounded-xl bg-sand-100 hover:bg-sand-200 text-espresso-900 border border-sand-300 text-xs font-bold transition-colors">
+            View Project Folder / Raw Assets (.ZIP) &nearr;
+          </a>` : ''}`;
       }
 
       document.getElementById('lightboxModal').classList.remove('hidden');
@@ -3279,6 +2577,7 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
           document.getElementById('linkMediaType').value = proj.mediaType || 'video';
           document.getElementById('mediaExternalUrl').value = proj.externalUrl || '';
           document.getElementById('customThumbUrl').value = proj.customThumbUrl || '';
+          document.getElementById('projectFolderUrl').value = proj.folderUrl || '';
         } else {
           switchUploadSource('local');
           document.getElementById('selectedFileName').textContent = 'Existing file attached (Select new file only to replace)';
@@ -3333,6 +2632,7 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
           sourceType: existing ? existing.sourceType : currentUploadSource,
           externalUrl: existing ? existing.externalUrl : '',
           customThumbUrl: existing ? existing.customThumbUrl : '',
+          folderUrl: existing ? existing.folderUrl : '',
           embeddedDataUrl: existing ? existing.embeddedDataUrl : ''
         };
 
@@ -3364,6 +2664,7 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
           projectObj.mediaType = document.getElementById('linkMediaType').value;
           projectObj.externalUrl = extUrl;
           projectObj.customThumbUrl = document.getElementById('customThumbUrl').value.trim();
+          projectObj.folderUrl = document.getElementById('projectFolderUrl').value.trim();
           projectObj.embeddedDataUrl = '';
         }
 
@@ -3765,5 +3066,5 @@ url:e,reason:"blocked_domain_not_allowlisted"},b.parentOrigin);throw new DOMExce
       await renderGallery();
     });
   </script>
-
-</body></html>
+</body>
+</html>
