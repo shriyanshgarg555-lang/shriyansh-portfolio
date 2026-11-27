@@ -1810,6 +1810,14 @@
     // -----------------------------------------------------------------------
     function getCategoryCoverDataUri(mediaType) {
       const svgs = {
+        zip: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500">
+          <rect width="800" height="500" fill="#1C1917"/>
+          <rect x="36" y="36" width="728" height="428" rx="18" fill="none" stroke="#8C6239" stroke-width="1.5"/>
+          <rect x="335" y="155" width="130" height="90" rx="16" fill="#8C6239"/>
+          <text x="400" y="210" font-family="sans-serif" font-size="24" font-weight="bold" fill="#FBF8F3" text-anchor="middle" letter-spacing="3">ZIP</text>
+          <text x="400" y="295" font-family="sans-serif" font-size="13" font-weight="bold" fill="#FBF8F3" text-anchor="middle" letter-spacing="4">PROJECT ARCHIVE &amp; RAW ASSETS</text>
+          <text x="400" y="320" font-family="sans-serif" font-size="11" fill="#D4C5B0" text-anchor="middle" letter-spacing="2">SHRIYANSH GARG</text>
+        </svg>`,
         video: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500">
           <rect width="800" height="500" fill="#1C1917"/>
           <rect x="36" y="36" width="728" height="428" rx="18" fill="none" stroke="#57534E" stroke-width="1.5"/>
@@ -2070,145 +2078,6 @@
       autoComposeCreativeStory(true);
     }
 
-      const statusBadge = document.getElementById('autoDetectStatus');
-      const qualityInput = document.getElementById('projectQuality');
-      const categorySelect = document.getElementById('projectCategory');
-
-      if (file.type.startsWith('image/')) {
-        const tempUrl = URL.createObjectURL(file);
-        const img = new Image();
-        img.onload = () => {
-          const resLabel = classifyResolutionLabel(img.naturalWidth, img.naturalHeight);
-          qualityInput.value = `${resLabel} • ${img.naturalWidth}×${img.naturalHeight} px (${ext})`;
-          statusBadge.textContent = `Auto-Detected Image (${img.naturalWidth}×${img.naturalHeight})`;
-          if (categorySelect.value === 'Video Editing' || categorySelect.value === 'Color Grading') {
-            categorySelect.value = 'Graphic Design';
-          }
-          autoSuggestCreativeTechniques(titleInput.value, categorySelect.value);
-          autoComposeCreativeStory();
-          URL.revokeObjectURL(tempUrl);
-        };
-        img.onerror = () => {
-          qualityInput.value = `High-Res Design • ${ext} • ${sizeStr}`;
-          autoSuggestCreativeTechniques(titleInput.value, categorySelect.value);
-          autoComposeCreativeStory();
-          URL.revokeObjectURL(tempUrl);
-        };
-        img.src = tempUrl;
-      } else if (file.type.startsWith('video/')) {
-        if (categorySelect.value === 'Graphic Design' || categorySelect.value === 'Packaging & Print') {
-          categorySelect.value = 'Video Editing';
-        }
-        const tempUrl = URL.createObjectURL(file);
-        const video = document.createElement('video');
-        video.preload = 'metadata';
-        video.onloadedmetadata = () => {
-          const w = video.videoWidth;
-          const h = video.videoHeight;
-          const dur = formatDuration(video.duration);
-          const resLabel = classifyResolutionLabel(w, h);
-          const aspect = h > w ? '9:16 Vertical' : '16:9 Cinema';
-          qualityInput.value = `${resLabel} • ${w}×${h} • ${ext} (${aspect}${dur ? ' • ' + dur : ''})`;
-          statusBadge.textContent = `Auto-Detected Video (${resLabel}, ${w}×${h})`;
-          autoSuggestCreativeTechniques(titleInput.value, categorySelect.value);
-          autoComposeCreativeStory();
-          URL.revokeObjectURL(tempUrl);
-        };
-        video.onerror = () => {
-          qualityInput.value = `4K / HD Video Master • ${ext} • ${sizeStr}`;
-          autoSuggestCreativeTechniques(titleInput.value, categorySelect.value);
-          autoComposeCreativeStory();
-          URL.revokeObjectURL(tempUrl);
-        };
-        video.src = tempUrl;
-      } else if (file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')) {
-        categorySelect.value = 'Packaging & Print';
-        qualityInput.value = `Print-Ready Vector PDF • ${sizeStr}`;
-        statusBadge.textContent = `Auto-Detected PDF Document (${sizeStr})`;
-        autoSuggestCreativeTechniques(titleInput.value, categorySelect.value);
-        autoComposeCreativeStory();
-      } else if (file.name.toLowerCase().endsWith('.zip') || file.name.toLowerCase().endsWith('.rar')) {
-        qualityInput.value = `Complete Project Archive (${ext}) • ${sizeStr}`;
-        statusBadge.textContent = `Auto-Detected Project Archive (${ext}, ${sizeStr})`;
-        autoSuggestCreativeTechniques(titleInput.value, categorySelect.value);
-        autoComposeCreativeStory();
-      } else {
-        qualityInput.value = `Master Creative File • ${sizeStr}`;
-        autoSuggestCreativeTechniques(titleInput.value, categorySelect.value);
-        autoComposeCreativeStory();
-      }
-    }
-
-    function autoSuggestCreativeTechniques(titleText, category) {
-      const highlightsInput = document.getElementById('projectHighlights');
-      const softwareInput = document.getElementById('projectSoftware');
-      if (!highlightsInput || highlightsInput.dataset.userEdited === 'true') return;
-
-      const t = (titleText || '').toLowerCase();
-      let suggested = [];
-
-      if (category === 'Video Editing' || category === 'Color Grading' || category === 'Motion Graphics') {
-        if (t.includes('trailer') || t.includes('teaser') || t.includes('promo') || t.includes('film')) {
-          suggested = ['Cinematic Color Grading', 'Speed Ramping & Transitions', 'Kinetic Typography'];
-        } else if (t.includes('reel') || t.includes('short') || t.includes('montage')) {
-          suggested = ['Speed Ramping & Transitions', 'Advanced Masking', 'Kinetic Typography'];
-        } else if (category === 'Color Grading' || t.includes('grade') || t.includes('lut')) {
-          suggested = ['Cinematic Color Grading', 'Advanced Masking'];
-        } else {
-          suggested = ['Kinetic Typography', 'Advanced Masking', 'Cinematic Color Grading'];
-        }
-        if (softwareInput) softwareInput.value = 'Adobe Premiere Pro, After Effects';
-      } else if (category === 'Packaging & Print') {
-        suggested = ['Custom Die-Cut Packaging', 'Brand Identity & Logo'];
-        if (softwareInput) softwareInput.value = 'Adobe Illustrator, InDesign, Photoshop';
-      } else {
-        suggested = ['Brand Identity & Logo', 'Kinetic Typography'];
-        if (softwareInput) softwareInput.value = 'Adobe Illustrator, Photoshop';
-      }
-
-      highlightsInput.value = suggested.join(', ');
-      syncTechniqueChipsFromInput();
-    }
-
-    function handleExternalUrlChange() {
-      const url = document.getElementById('mediaExternalUrl').value.trim();
-      const typeSelect = document.getElementById('linkMediaType');
-      const qualityInput = document.getElementById('projectQuality');
-      const statusBadge = document.getElementById('autoDetectStatus');
-      const titleInput = document.getElementById('projectTitle');
-
-      if (!url) return;
-
-      if (url.includes('/drive/folders/')) {
-        statusBadge.textContent = '⚠ Folder link detected — please copy individual file link (/file/d/...)';
-        statusBadge.className = 'text-[11px] font-bold text-red-600';
-        showToast('Please open the Drive folder and copy the individual video/image file link (/file/d/...).', 'error');
-        return;
-      } else {
-        statusBadge.className = 'text-[11px] font-semibold text-bronze-600';
-      }
-
-      if (url.includes('youtube.com') || url.includes('youtu.be') || url.includes('vimeo.com')) {
-        typeSelect.value = 'video';
-        if (!qualityInput.value) qualityInput.value = '4K UHD Stream • 60fps Master';
-        statusBadge.textContent = 'YouTube / Vimeo Stream Detected';
-        if (!titleInput.value.trim()) titleInput.value = '4K Video Production Showcase';
-      } else if (url.includes('drive.google.com')) {
-        if (!qualityInput.value) qualityInput.value = '4K Google Drive Master • Uncompressed';
-        statusBadge.textContent = 'Google Drive File Link Ready';
-        if (!titleInput.value.trim()) {
-          titleInput.value = typeSelect.value === 'video' ? '4K Video Edit Master' : 'High-Resolution Design Showcase';
-        }
-      } else if (url.toLowerCase().endsWith('.pdf')) {
-        typeSelect.value = 'pdf';
-        if (!qualityInput.value) qualityInput.value = 'Print-Ready Vector PDF • 300 DPI';
-        statusBadge.textContent = 'PDF Document URL Detected';
-        if (!titleInput.value.trim()) titleInput.value = 'Editorial Print & Brand Dossier';
-      }
-      autoSuggestCreativeTechniques(titleInput.value, document.getElementById('projectCategory').value);
-      autoComposeCreativeStory();
-    }
-
     function applyQualityPreset(text) {
       document.getElementById('projectQuality').value = text;
       showToast(`Quality badge set to: ${text}`);
@@ -2216,6 +2085,7 @@
 
     function toggleTechniqueChip(btn, label) {
       const input = document.getElementById('projectHighlights');
+      input.dataset.userEdited = 'true';
       let items = input.value.split(',').map(s => s.trim()).filter(Boolean);
 
       if (items.includes(label)) {
@@ -2229,7 +2099,7 @@
       }
 
       input.value = items.join(', ');
-      autoComposeCreativeStory();
+      autoComposeCreativeStory(false);
     }
 
     function syncTechniqueChipsFromInput() {
@@ -2249,7 +2119,7 @@
 
     function autoComposeCreativeStory(forceOverwrite = false) {
       const descEl = document.getElementById('projectDescription');
-      // Only auto-write if empty or previously auto-generated or forced
+      if (!descEl) return;
       if (!forceOverwrite && descEl.dataset.userEdited === 'true' && descEl.value.trim().length > 0) {
         return;
       }
@@ -2259,6 +2129,11 @@
 
       const techClause = highlights
         ? ` Crafted with specialized focus on ${highlights} to deliver crisp visual rhythm, balance, and clarity.`
+        : ' Executed with disciplined composition, color balance, and clear visual hierarchy.';
+
+      descEl.value = `"${title}" is a bespoke ${category.toLowerCase()} showcase created to communicate a clear visual narrative.${techClause}`;
+    }
+
     // Track manual edits on description & highlights so auto-composer respects owner's custom words
     document.addEventListener('DOMContentLoaded', () => {
       const descEl = document.getElementById('projectDescription');
@@ -2406,32 +2281,43 @@
                   <svg class="w-5 h-5 ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                 </div>
               </div>`;
+          } else if (project.mediaType === 'zip') {
+            thumbHtml = `<img src="${getCategoryCoverDataUri('zip')}" alt="${escapeHtml(project.title)}" class="w-full h-full object-cover" />`;
           } else {
             thumbHtml = `<img src="${getCategoryCoverDataUri('pdf')}" alt="${escapeHtml(project.title)}" class="w-full h-full object-cover" />`;
           }
         } else if (project.sourceType === 'local') {
           const record = await getBlobFromIndexedDB(project.id);
           if (record && record.blob) {
-            const blobUrl = URL.createObjectURL(record.blob);
-            objectUrlRegistry.push(blobUrl);
-
-            if (project.mediaType === 'image') {
-              thumbHtml = `<img src="${blobUrl}" alt="${escapeHtml(project.title)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />`;
-            } else if (project.mediaType === 'video') {
+            if (project.mediaType === 'zip') {
               thumbHtml = `
-                <video src="${blobUrl}#t=0.5" muted preload="metadata" playsinline class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"></video>
-                <div class="absolute inset-0 bg-espresso-900/25 flex items-center justify-center">
-                  <div class="w-12 h-12 rounded-full bg-ivory/95 text-espresso-900 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-                    <svg class="w-5 h-5 ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-                  </div>
+                <div class="w-full h-full bg-espresso-900 flex flex-col items-center justify-center p-6 text-center">
+                  <div class="px-4 py-2 rounded-2xl bg-bronze-500 text-white font-serif font-bold text-lg tracking-widest mb-2 shadow-sm">ZIP ARCHIVE</div>
+                  <span class="text-xs font-bold text-alabaster line-clamp-1">${escapeHtml(record.fileName || project.title)}</span>
+                  <span class="text-[11px] text-sand-400 mt-1">Click to Read Story &amp; Download Assets</span>
                 </div>`;
             } else {
-              thumbHtml = `
-                <div class="w-full h-full bg-sand-100 flex flex-col items-center justify-center p-6 text-center">
-                  <div class="w-14 h-14 rounded-2xl bg-bronze-500 text-white flex items-center justify-center font-serif font-bold text-xl mb-2 shadow-sm">PDF</div>
-                  <span class="text-xs font-bold text-espresso-900 line-clamp-1">${escapeHtml(record.fileName || project.title)}</span>
-                  <span class="text-[11px] text-espresso-600 mt-1">Click to Read Story &amp; Document</span>
-                </div>`;
+              const blobUrl = URL.createObjectURL(record.blob);
+              objectUrlRegistry.push(blobUrl);
+
+              if (project.mediaType === 'image') {
+                thumbHtml = `<img src="${blobUrl}" alt="${escapeHtml(project.title)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />`;
+              } else if (project.mediaType === 'video') {
+                thumbHtml = `
+                  <video src="${blobUrl}#t=0.5" muted preload="metadata" playsinline class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"></video>
+                  <div class="absolute inset-0 bg-espresso-900/25 flex items-center justify-center">
+                    <div class="w-12 h-12 rounded-full bg-ivory/95 text-espresso-900 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                      <svg class="w-5 h-5 ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                    </div>
+                  </div>`;
+              } else {
+                thumbHtml = `
+                  <div class="w-full h-full bg-sand-100 flex flex-col items-center justify-center p-6 text-center">
+                    <div class="w-14 h-14 rounded-2xl bg-bronze-500 text-white flex items-center justify-center font-serif font-bold text-xl mb-2 shadow-sm">PDF</div>
+                    <span class="text-xs font-bold text-espresso-900 line-clamp-1">${escapeHtml(record.fileName || project.title)}</span>
+                    <span class="text-[11px] text-espresso-600 mt-1">Click to Read Story &amp; Document</span>
+                  </div>`;
+              }
             }
           } else {
             thumbHtml = `<img src="${getCategoryCoverDataUri(project.mediaType)}" alt="${escapeHtml(project.title)}" class="w-full h-full object-cover" />`;
@@ -2564,6 +2450,8 @@
           stage.innerHTML = `<img src="${project.embeddedDataUrl}" alt="${escapeHtml(project.title)}" class="max-h-[65vh] w-auto object-contain" />`;
         } else if (project.mediaType === 'video') {
           stage.innerHTML = `<video src="${project.embeddedDataUrl}" controls autoplay playsinline class="w-full max-h-[65vh] bg-black"></video>`;
+        } else if (project.mediaType === 'zip') {
+          stage.innerHTML = `<img src="${getCategoryCoverDataUri('zip')}" alt="${escapeHtml(project.title)}" class="max-h-[65vh] w-auto object-contain" />`;
         } else if (project.mediaType === 'pdf') {
           stage.innerHTML = `<iframe src="${project.embeddedDataUrl}" class="w-full h-[65vh] bg-white" title="${escapeHtml(project.title)}"></iframe>`;
         }
@@ -2582,6 +2470,13 @@
             stage.innerHTML = `<img src="${blobUrl}" alt="${escapeHtml(project.title)}" class="max-h-[65vh] w-auto object-contain" />`;
           } else if (project.mediaType === 'video') {
             stage.innerHTML = `<video src="${blobUrl}" controls autoplay playsinline class="w-full max-h-[65vh] bg-black"></video>`;
+          } else if (project.mediaType === 'zip') {
+            stage.innerHTML = `
+              <div class="p-10 text-center text-alabaster space-y-3">
+                <div class="inline-block px-5 py-2.5 rounded-2xl bg-bronze-500 font-serif font-bold text-2xl tracking-widest">ZIP ARCHIVE</div>
+                <p class="text-sm font-semibold">${escapeHtml(record.fileName || project.title)}</p>
+                <p class="text-xs text-sand-400">Complete project source archive ready for download below.</p>
+              </div>`;
           } else if (project.mediaType === 'pdf') {
             stage.innerHTML = `<iframe src="${blobUrl}" class="w-full h-[65vh] bg-white" title="${escapeHtml(project.title)}"></iframe>`;
           }
@@ -2589,7 +2484,7 @@
           actions.innerHTML = `
             <a href="${blobUrl}" download="${escapeHtml(record.fileName || project.title)}"
               class="w-full text-center px-4 py-2.5 rounded-xl bg-espresso-900 hover:bg-bronze-500 text-alabaster text-xs font-semibold transition-colors">
-              Download Original File
+              Download Original File (${escapeHtml(project.fileSize || 'Master')})
             </a>`;
         } else {
           stage.innerHTML = `<div class="p-8 text-center text-sand-200 text-sm">Original file is stored in the owner's local IndexedDB database.</div>`;
@@ -2839,8 +2734,10 @@
         if (currentUploadSource === 'local') {
           if (pendingLocalFile) {
             let mType = 'image';
+            const lowerName = pendingLocalFile.name.toLowerCase();
             if (pendingLocalFile.type.startsWith('video/')) mType = 'video';
-            else if (pendingLocalFile.type === 'application/pdf' || pendingLocalFile.name.toLowerCase().endsWith('.pdf')) mType = 'pdf';
+            else if (pendingLocalFile.type === 'application/pdf' || lowerName.endsWith('.pdf')) mType = 'pdf';
+            else if (lowerName.endsWith('.zip') || lowerName.endsWith('.rar')) mType = 'zip';
 
             await saveBlobToIndexedDB(id, pendingLocalFile, pendingLocalFile.name, pendingLocalFile.type);
             projectObj.mediaType = mType;
@@ -3006,6 +2903,40 @@
     // -----------------------------------------------------------------------
     // 14. STANDALONE GITHUB PAGES / NETLIFY HTML EXPORTER
     // -----------------------------------------------------------------------
+    function buildCleanStandaloneDocument(exportPayload) {
+      const clonedDoc = document.documentElement.cloneNode(true);
+
+      // Reset all admin & modal states so exported file opens cleanly for visitors
+      ['adminToolbar', 'notepadCodeModal', 'pinModal', 'projectModal', 'profileModal', 'settingsModal', 'lightboxModal'].forEach(modalId => {
+        const el = clonedDoc.querySelector('#' + modalId);
+        if (el) el.classList.add('hidden');
+      });
+
+      const notepadArea = clonedDoc.querySelector('#notepadSourceTextarea');
+      if (notepadArea) {
+        notepadArea.value = '';
+        notepadArea.textContent = '';
+      }
+      const grid = clonedDoc.querySelector('#portfolioGrid');
+      if (grid) grid.innerHTML = '';
+      const toastBox = clonedDoc.querySelector('#toastContainer');
+      if (toastBox) toastBox.innerHTML = '';
+
+      const lockClosed = clonedDoc.querySelector('#lockIconClosed');
+      const lockOpen = clonedDoc.querySelector('#lockIconOpen');
+      const headerBtnText = clonedDoc.querySelector('#adminHeaderBtnText');
+      if (lockClosed) lockClosed.classList.remove('hidden');
+      if (lockOpen) lockOpen.classList.add('hidden');
+      if (headerBtnText) headerBtnText.textContent = 'Owner Login';
+
+      const seedNode = clonedDoc.querySelector('#embeddedPortfolioSeed');
+      if (seedNode) {
+        seedNode.textContent = JSON.stringify(exportPayload, null, 2);
+      }
+
+      return '<!DOCTYPE html>\n' + clonedDoc.outerHTML;
+    }
+
     function blobToDataURL(blob) {
       return new Promise((resolve) => {
         const reader = new FileReader();
@@ -3039,29 +2970,12 @@
           exportProjects.push(clone);
         }
 
-        const exportPayload = {
+        const finalHtml = buildCleanStandaloneDocument({
           pin: appState.pin,
           profile: appState.profile,
           projects: exportProjects
-        };
+        });
 
-        const clonedDoc = document.documentElement.cloneNode(true);
-        // Ensure exported file always opens locked in public visitor mode
-        const toolbar = clonedDoc.querySelector('#adminToolbar');
-        if (toolbar) toolbar.classList.add('hidden');
-        const lockClosed = clonedDoc.querySelector('#lockIconClosed');
-        const lockOpen = clonedDoc.querySelector('#lockIconOpen');
-        const headerBtnText = clonedDoc.querySelector('#adminHeaderBtnText');
-        if (lockClosed) lockClosed.classList.remove('hidden');
-        if (lockOpen) lockOpen.classList.add('hidden');
-        if (headerBtnText) headerBtnText.textContent = 'Owner Login';
-
-        const seedNode = clonedDoc.querySelector('#embeddedPortfolioSeed');
-        if (seedNode) {
-          seedNode.textContent = JSON.stringify(exportPayload, null, 2);
-        }
-
-        const finalHtml = '<!DOCTYPE html>\n' + clonedDoc.outerHTML;
         const downloadBlob = new Blob([finalHtml], { type: 'text/html;charset=utf-8' });
         const downloadUrl = URL.createObjectURL(downloadBlob);
 
@@ -3091,28 +3005,12 @@
       btn.textContent = 'Preparing Code...';
 
       try {
-        const clonedDoc = document.documentElement.cloneNode(true);
-        const toolbar = clonedDoc.querySelector('#adminToolbar');
-        if (toolbar) toolbar.classList.add('hidden');
-        const notepadModal = clonedDoc.querySelector('#notepadCodeModal');
-        if (notepadModal) notepadModal.classList.add('hidden');
-        const lockClosed = clonedDoc.querySelector('#lockIconClosed');
-        const lockOpen = clonedDoc.querySelector('#lockIconOpen');
-        const headerBtnText = clonedDoc.querySelector('#adminHeaderBtnText');
-        if (lockClosed) lockClosed.classList.remove('hidden');
-        if (lockOpen) lockOpen.classList.add('hidden');
-        if (headerBtnText) headerBtnText.textContent = 'Owner Login';
+        const fullCode = buildCleanStandaloneDocument({
+          pin: appState.pin,
+          profile: appState.profile,
+          projects: appState.projects
+        });
 
-        const seedNode = clonedDoc.querySelector('#embeddedPortfolioSeed');
-        if (seedNode) {
-          seedNode.textContent = JSON.stringify({
-            pin: appState.pin,
-            profile: appState.profile,
-            projects: appState.projects
-          }, null, 2);
-        }
-
-        const fullCode = '<!DOCTYPE html>\n' + clonedDoc.outerHTML;
         const textarea = document.getElementById('notepadSourceTextarea');
         textarea.value = fullCode;
         document.getElementById('notepadCodeModal').classList.remove('hidden');
@@ -3215,11 +3113,10 @@
         closeProjectModal();
         closeProfileModal();
         closeSettingsModal();
+        closeNotepadCodeModal();
       }
     });
 
-    // -----------------------------------------------------------------------
-    // 16. INITIALIZE ON PAGE LOAD
     // -----------------------------------------------------------------------
     // 16. AMBIENT CURSOR SPOTLIGHT & SCROLL DEPTH PARALLAX
     // -----------------------------------------------------------------------
