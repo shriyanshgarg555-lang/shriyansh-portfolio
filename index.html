@@ -862,8 +862,27 @@
         <!-- Auto-Detected Quality + File Size -->
         <div class="p-4 rounded-2xl bg-alabaster border border-sand-300 space-y-3">
           <div class="flex items-center justify-between gap-2">
+            <label class="text-xs font-bold text-espresso-900">Project Title &amp; Category (Auto-Detected • Editable)</label>
+            <span id="autoDetectStatus" class="text-[11px] font-semibold text-bronze-600">Auto-fills on file/link • Freely editable</span>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <input type="text" id="projectTitle" required oninput="onTitleOrCategoryEdit()" placeholder="Project Title (Auto-fills from file/link)"
+              class="sm:col-span-2 px-3.5 py-2.5 rounded-xl bg-ivory border border-sand-300 text-xs sm:text-sm font-semibold text-espresso-900 focus:outline-none focus:border-bronze-500" />
+            <select id="projectCategory" onchange="onTitleOrCategoryEdit()"
+              class="px-3.5 py-2.5 rounded-xl bg-ivory border border-sand-300 text-xs font-semibold text-espresso-900 focus:outline-none focus:border-bronze-500">
+              <option value="Graphic Design">Graphic Design</option>
+              <option value="Packaging & Print">Packaging &amp; Print</option>
+              <option value="Video Editing">Video Editing</option>
+              <option value="Color Grading">Color Grading</option>
+              <option value="Motion Graphics">Motion Graphics</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-alabaster border border-sand-300 space-y-3">
+          <div class="flex items-center justify-between gap-2">
             <label class="text-xs font-bold text-espresso-900">Technical Quality &amp; Specs</label>
-            <span id="autoDetectStatus" class="text-[11px] font-semibold text-bronze-600">Auto-fills on file selection • Freely editable</span>
+            <span class="text-[11px] font-medium text-espresso-500">Click preset or type custom specs</span>
           </div>
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <input type="text" id="projectQuality" placeholder="e.g., 4K UHD • 3840×2160 • 60fps"
@@ -1852,6 +1871,30 @@
       return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
     }
 
+    function inferCategoryFromKeywords(rawName, fallbackCat = 'Graphic Design') {
+      const s = (rawName || '').toLowerCase();
+      if (/(color|grade|grading|lut|davinci|cinematic tone|look)/.test(s)) return 'Color Grading';
+      if (/(motion|kinetic|animation|animated|intro|outro|logo reveal|vfx|after effects|transition)/.test(s)) return 'Motion Graphics';
+      if (/(packaging|box|label|pouch|dieline|print|brochure|flyer|menu|catalog|catalogue|lookbook|magazine|pdf|card|banner|hoarding)/.test(s)) return 'Packaging & Print';
+      if (/(video|edit|trailer|teaser|reel|short|film|commercial|ad|promo|vlog|documentary|montage|mp4|mov|mkv|webm)/.test(s)) return 'Video Editing';
+      if (/(logo|brand|identity|poster|social|thumbnail|mockup|illustration|vector|typography|design)/.test(s)) return 'Graphic Design';
+      return fallbackCat;
+    }
+
+    function formatCleanProjectTitle(rawName) {
+      if (!rawName) return '';
+      const withoutExt = rawName.replace(/\.[^/.]+$/, '');
+      const spaced = withoutExt.replace(/[-_+]+/g, ' ').replace(/\s+/g, ' ').trim();
+      return spaced.split(' ').map(w => w ? (w[0].toUpperCase() + w.slice(1)) : '').join(' ');
+    }
+
+    function onTitleOrCategoryEdit() {
+      const titleVal = document.getElementById('projectTitle').value.trim();
+      const catVal = document.getElementById('projectCategory').value;
+      autoSuggestCreativeTechniques(titleVal, catVal, false);
+      autoComposeCreativeStory(false);
+    }
+
     function handleLocalFileSelect(event) {
       const file = event.target.files[0];
       if (!file) return;
@@ -1865,10 +1908,167 @@
       document.getElementById('projectFileSize').value = sizeStr;
 
       const titleInput = document.getElementById('projectTitle');
-      if (!titleInput.value.trim()) {
-        const cleanName = file.name.replace(/\.[^/.]+$/, '').replace(/[-_]+/g, ' ');
-        titleInput.value = cleanName.charAt(0).toUpperCase() + cleanName.slice(1);
+      const statusBadge = document.getElementById('autoDetectStatus');
+      const qualityInput = document.getElementById('projectQuality');
+      const categorySelect = document.getElementById('projectCategory');
+
+      // Reset auto-fill flags when a new file is selected so all fields refresh smartly
+      document.getElementById('projectHighlights').dataset.userEdited = 'false';
+      document.getElementById('projectDescription').dataset.userEdited = 'false';
+
+      const cleanTitle = formatCleanProjectTitle(file.name);
+      titleInput.value = cleanTitle;
+
+      if (file.type.startsWith('image/')) {
+        categorySelect.value = inferCategoryFromKeywords(file.name, 'Graphic Design');
+        const tempUrl = URL.createObjectURL(file);
+        const img = new Image();
+        img.onload = () => {
+          const resLabel = classifyResolutionLabel(img.naturalWidth, img.naturalHeight);
+          const ratio = img.naturalWidth === img.naturalHeight ? '1:1 Square' : (img.naturalWidth > img.naturalHeight ? 'Landscape' : 'Portrait');
+          qualityInput.value = `${resLabel} • ${img.naturalWidth}×${img.naturalHeight} px (${ratio} • ${ext})`;
+          statusBadge.textContent = `✓ All Details Auto-Filled (${resLabel}, ${img.naturalWidth}×${img.naturalHeight})`;
+          autoSuggestCreativeTechniques(titleInput.value, categorySelect.value, true);
+          autoComposeCreativeStory(true);
+          URL.revokeObjectURL(tempUrl);
+        };
+        img.onerror = () => {
+          qualityInput.value = `High-Res Design • ${ext} • ${sizeStr}`;
+          autoSuggestCreativeTechniques(titleInput.value, categorySelect.value, true);
+          autoComposeCreativeStory(true);
+          URL.revokeObjectURL(tempUrl);
+        };
+        img.src = tempUrl;
+      } else if (file.type.startsWith('video/')) {
+        categorySelect.value = inferCategoryFromKeywords(file.name, 'Video Editing');
+        const tempUrl = URL.createObjectURL(file);
+        const video = document.createElement('video');
+        video.preload = 'metadata';
+        video.onloadedmetadata = () => {
+          const w = video.videoWidth;
+          const h = video.videoHeight;
+          const dur = formatDuration(video.duration);
+          const resLabel = classifyResolutionLabel(w, h);
+          const aspect = h > w ? '9:16 Vertical' : '16:9 Cinema';
+          qualityInput.value = `${resLabel} • ${w}×${h} • ${ext} (${aspect}${dur ? ' • ' + dur : ''})`;
+          statusBadge.textContent = `✓ All Details Auto-Filled (${resLabel}, ${w}×${h})`;
+          autoSuggestCreativeTechniques(titleInput.value, categorySelect.value, true);
+          autoComposeCreativeStory(true);
+          URL.revokeObjectURL(tempUrl);
+        };
+        video.onerror = () => {
+          qualityInput.value = `4K / HD Video Master • ${ext} • ${sizeStr}`;
+          autoSuggestCreativeTechniques(titleInput.value, categorySelect.value, true);
+          autoComposeCreativeStory(true);
+          URL.revokeObjectURL(tempUrl);
+        };
+        video.src = tempUrl;
+      } else if (file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')) {
+        categorySelect.value = 'Packaging & Print';
+        qualityInput.value = `Print-Ready Vector PDF • 300 DPI • ${sizeStr}`;
+        statusBadge.textContent = `✓ All Details Auto-Filled (PDF • ${sizeStr})`;
+        autoSuggestCreativeTechniques(titleInput.value, categorySelect.value, true);
+        autoComposeCreativeStory(true);
+      } else if (file.name.toLowerCase().endsWith('.zip') || file.name.toLowerCase().endsWith('.rar')) {
+        categorySelect.value = inferCategoryFromKeywords(file.name, 'Video Editing');
+        qualityInput.value = `Complete Project Archive (${ext}) • ${sizeStr}`;
+        statusBadge.textContent = `✓ All Details Auto-Filled (${ext} Archive • ${sizeStr})`;
+        autoSuggestCreativeTechniques(titleInput.value, categorySelect.value, true);
+        autoComposeCreativeStory(true);
+      } else {
+        categorySelect.value = inferCategoryFromKeywords(file.name, 'Graphic Design');
+        qualityInput.value = `Master Creative File • ${sizeStr}`;
+        autoSuggestCreativeTechniques(titleInput.value, categorySelect.value, true);
+        autoComposeCreativeStory(true);
       }
+    }
+
+    function autoSuggestCreativeTechniques(titleText, category, forceOverwrite = false) {
+      const highlightsInput = document.getElementById('projectHighlights');
+      const softwareInput = document.getElementById('projectSoftware');
+      if (!highlightsInput) return;
+      if (!forceOverwrite && highlightsInput.dataset.userEdited === 'true') return;
+
+      const t = (titleText || '').toLowerCase();
+      let suggested = [];
+
+      if (category === 'Video Editing' || category === 'Color Grading' || category === 'Motion Graphics') {
+        if (t.includes('trailer') || t.includes('teaser') || t.includes('promo') || t.includes('film')) {
+          suggested = ['Cinematic Color Grading', 'Speed Ramping & Transitions', 'Kinetic Typography'];
+        } else if (t.includes('reel') || t.includes('short') || t.includes('montage')) {
+          suggested = ['Speed Ramping & Transitions', 'Advanced Masking', 'Kinetic Typography'];
+        } else if (category === 'Color Grading' || t.includes('grade') || t.includes('lut')) {
+          suggested = ['Cinematic Color Grading', 'Advanced Masking'];
+        } else if (category === 'Motion Graphics') {
+          suggested = ['Kinetic Typography', 'Advanced Masking', 'Speed Ramping & Transitions'];
+        } else {
+          suggested = ['Kinetic Typography', 'Advanced Masking', 'Cinematic Color Grading'];
+        }
+        if (softwareInput) softwareInput.value = 'Adobe Premiere Pro, After Effects';
+      } else if (category === 'Packaging & Print') {
+        suggested = ['Custom Die-Cut Packaging', 'Brand Identity & Logo'];
+        if (softwareInput) softwareInput.value = 'Adobe Illustrator, InDesign, Photoshop';
+      } else {
+        suggested = ['Brand Identity & Logo', 'Kinetic Typography'];
+        if (softwareInput) softwareInput.value = 'Adobe Illustrator, Photoshop';
+      }
+
+      highlightsInput.value = suggested.join(', ');
+      syncTechniqueChipsFromInput();
+    }
+
+    function handleExternalUrlChange() {
+      const url = document.getElementById('mediaExternalUrl').value.trim();
+      const typeSelect = document.getElementById('linkMediaType');
+      const qualityInput = document.getElementById('projectQuality');
+      const statusBadge = document.getElementById('autoDetectStatus');
+      const titleInput = document.getElementById('projectTitle');
+      const categorySelect = document.getElementById('projectCategory');
+
+      if (!url) return;
+
+      if (url.includes('/drive/folders/')) {
+        statusBadge.textContent = '⚠ Folder link detected — copy individual file link (/file/d/...) for video playback';
+        statusBadge.className = 'text-[11px] font-bold text-red-600';
+        showToast('Open the Drive folder and copy the individual video/image file link (/file/d/...).', 'error');
+        return;
+      } else {
+        statusBadge.className = 'text-[11px] font-semibold text-bronze-600';
+      }
+
+      if (url.includes('youtube.com') || url.includes('youtu.be') || url.includes('vimeo.com')) {
+        typeSelect.value = 'video';
+        categorySelect.value = 'Video Editing';
+        qualityInput.value = '4K UHD Stream • 60fps Master';
+        statusBadge.textContent = '✓ All Details Auto-Filled (YouTube / Vimeo Video)';
+        if (!titleInput.value.trim()) titleInput.value = '4K Commercial Video Production';
+      } else if (url.includes('drive.google.com')) {
+        qualityInput.value = typeSelect.value === 'video' ? '4K Google Drive Master • Uncompressed' : 'High-Resolution Google Drive Master';
+        categorySelect.value = typeSelect.value === 'video' ? 'Video Editing' : (typeSelect.value === 'pdf' ? 'Packaging & Print' : 'Graphic Design');
+        statusBadge.textContent = '✓ All Details Auto-Filled (Google Drive Link)';
+        if (!titleInput.value.trim()) {
+          titleInput.value = typeSelect.value === 'video' ? '4K Video Edit Master' : 'High-Resolution Design Showcase';
+        }
+      } else if (url.toLowerCase().endsWith('.pdf')) {
+        typeSelect.value = 'pdf';
+        categorySelect.value = 'Packaging & Print';
+        qualityInput.value = 'Print-Ready Vector PDF • 300 DPI';
+        statusBadge.textContent = '✓ All Details Auto-Filled (PDF Document)';
+        if (!titleInput.value.trim()) titleInput.value = 'Editorial Print & Brand Dossier';
+      } else {
+        // Extract filename from direct URL if present
+        const urlFileName = decodeURIComponent(url.split('/').pop().split('?')[0] || '');
+        if (urlFileName && urlFileName.includes('.')) {
+          titleInput.value = formatCleanProjectTitle(urlFileName);
+          categorySelect.value = inferCategoryFromKeywords(urlFileName, 'Graphic Design');
+        }
+        qualityInput.value = 'High-Resolution Master File';
+        statusBadge.textContent = '✓ All Details Auto-Filled from Link';
+      }
+
+      autoSuggestCreativeTechniques(titleInput.value, categorySelect.value, true);
+      autoComposeCreativeStory(true);
+    }
 
       const statusBadge = document.getElementById('autoDetectStatus');
       const qualityInput = document.getElementById('projectQuality');
@@ -2059,18 +2259,18 @@
 
       const techClause = highlights
         ? ` Crafted with specialized focus on ${highlights} to deliver crisp visual rhythm, balance, and clarity.`
-        : ` Executed with disciplined composition, color balance, and clear visual hierarchy.`;
-
-      descEl.value = `"${title}" is a bespoke ${category.toLowerCase()} showcase created to communicate a clear visual narrative.${techClause}`;
-      descEl.dataset.userEdited = 'false';
-    }
-
-    // Track manual edits on description so auto-composer respects owner's custom words
+    // Track manual edits on description & highlights so auto-composer respects owner's custom words
     document.addEventListener('DOMContentLoaded', () => {
       const descEl = document.getElementById('projectDescription');
       if (descEl) {
         descEl.addEventListener('input', () => {
           descEl.dataset.userEdited = 'true';
+        });
+      }
+      const highEl = document.getElementById('projectHighlights');
+      if (highEl) {
+        highEl.addEventListener('input', () => {
+          highEl.dataset.userEdited = 'true';
         });
       }
     });
