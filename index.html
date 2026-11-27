@@ -300,6 +300,13 @@
             </select>
           </div>
 
+          <!-- Soft Ambient Piano Melody Toggle -->
+          <button id="pianoToggleBtn" onclick="toggleAmbientPiano()" title="Play / Pause Soft Piano Melody"
+            class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-bronze-100 hover:bg-bronze-500 hover:text-white text-bronze-600 text-xs font-bold transition-all border border-sand-300">
+            <span id="pianoWaveIcon" class="text-sm leading-none">&#9835;</span>
+            <span id="pianoBtnText" class="hidden sm:inline">Piano</span>
+          </button>
+
           <button onclick="copyPortfolioLink()" title="Copy Shareable Link"
             class="hidden sm:inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-sand-100 hover:bg-sand-200 text-espresso-800 text-xs font-semibold transition-colors border border-sand-300">
             <svg class="w-3.5 h-3.5 text-bronze-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -347,7 +354,15 @@
 
           <button onclick="openSettingsModal()"
             class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-espresso-800 hover:bg-espresso-600 text-alabaster text-xs font-medium border border-espresso-600 transition-colors">
-            Change PIN
+            GitHub Auto-Sync &amp; PIN
+          </button>
+
+          <button onclick="syncLiveToGitHub(true)" id="githubLiveSyncBtn"
+            class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-sky-700 hover:bg-sky-600 text-white text-xs font-bold transition-colors shadow-sm">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+            </svg>
+            Sync Live to GitHub
           </button>
 
           <button onclick="exportStandaloneHTML()" id="exportHtmlBtn"
@@ -461,6 +476,92 @@
                 <div class="p-3.5 rounded-2xl bg-alabaster border border-sand-300/80 flex items-center justify-between">
                   <span data-i18n="metricStory" class="text-xs font-semibold text-espresso-600">Auto Visual Storytelling</span>
                   <span class="text-xs font-bold text-espresso-900 bg-sand-200 px-2.5 py-1 rounded-lg">7 Languages + Audio</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SOFTWARE-WISE CINEMATIC PORTFOLIO TEASER SHOWREEL -->
+    <section id="teaser" class="py-8 sm:py-12">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="rounded-3xl bg-espresso-900 text-alabaster border border-espresso-800 shadow-editorial overflow-hidden">
+          <!-- Top Showreel Header & Software Chapter Tabs -->
+          <div class="px-6 py-5 border-b border-espresso-800 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            <div>
+              <span class="text-[10px] font-bold uppercase tracking-[0.22em] text-amber-400 block">SOFTWARE SHOWREEL TEASER</span>
+              <h2 class="font-serif text-2xl sm:text-3xl font-bold text-alabaster mt-0.5">
+                Discipline-Wise Portfolio Teaser
+              </h2>
+            </div>
+
+            <!-- 4 Dedicated Software Chapter Tabs -->
+            <div class="flex flex-wrap items-center gap-2">
+              <button type="button" onclick="selectTeaserChapter('Illustrator')" data-teaser="Illustrator"
+                class="teaser-tab px-3.5 py-2 rounded-xl text-xs font-bold transition-all bg-bronze-500 text-white shadow-sm">
+                Ai • Illustrator
+              </button>
+              <button type="button" onclick="selectTeaserChapter('Photoshop')" data-teaser="Photoshop"
+                class="teaser-tab px-3.5 py-2 rounded-xl text-xs font-semibold transition-all bg-espresso-800 text-sand-200 hover:bg-espresso-600">
+                Ps • Photoshop
+              </button>
+              <button type="button" onclick="selectTeaserChapter('Premiere Pro')" data-teaser="Premiere Pro"
+                class="teaser-tab px-3.5 py-2 rounded-xl text-xs font-semibold transition-all bg-espresso-800 text-sand-200 hover:bg-espresso-600">
+                Pr • Premiere Pro
+              </button>
+              <button type="button" onclick="selectTeaserChapter('After Effects')" data-teaser="After Effects"
+                class="teaser-tab px-3.5 py-2 rounded-xl text-xs font-semibold transition-all bg-espresso-800 text-sand-200 hover:bg-espresso-600">
+                Ae • After Effects
+              </button>
+              <button type="button" onclick="toggleTeaserAutoplay()" id="teaserAutoBtn"
+                class="px-3 py-2 rounded-xl bg-alabaster text-espresso-900 text-xs font-bold hover:bg-amber-300 transition-colors">
+                &#9654; Auto Reel
+              </button>
+            </div>
+          </div>
+
+          <!-- Teaser Stage Grid -->
+          <div class="grid grid-cols-1 lg:grid-cols-12">
+            <!-- Left Dynamic Visual Preview Stage -->
+            <div id="teaserVisualStage" class="lg:col-span-7 relative min-h-[260px] sm:min-h-[340px] bg-black flex items-center justify-center overflow-hidden"></div>
+
+            <!-- Right Software Craft Breakdown -->
+            <div class="lg:col-span-5 p-6 sm:p-8 flex flex-col justify-between bg-espresso-900/95 border-t lg:border-t-0 lg:border-l border-espresso-800 space-y-5">
+              <div class="space-y-3">
+                <div class="flex items-center justify-between">
+                  <span id="teaserBadge" class="px-3 py-1 rounded-lg bg-bronze-500/20 border border-bronze-500/40 text-amber-300 text-[11px] font-bold uppercase tracking-wider">
+                    ADOBE ILLUSTRATOR
+                  </span>
+                  <span id="teaserWorkCount" class="text-xs font-semibold text-sand-400">Chapter 01 / 04</span>
+                </div>
+
+                <h3 id="teaserHeading" class="font-serif text-2xl sm:text-3xl font-bold text-alabaster">
+                  Vector Brand Architecture &amp; Precision Dielines
+                </h3>
+
+                <p id="teaserSummary" class="text-xs sm:text-sm text-sand-200 leading-relaxed">
+                  Constructing mathematically balanced logotypes, Bezier typography, scalable vector emblems, and CMYK 300 DPI packaging dielines built for sharp print and digital clarity.
+                </p>
+
+                <div id="teaserCapabilities" class="flex flex-wrap gap-1.5 pt-1"></div>
+              </div>
+
+              <!-- Progress Bar & Chapter Actions -->
+              <div class="space-y-3 pt-3 border-t border-espresso-800">
+                <div class="w-full h-1.5 rounded-full bg-espresso-800 overflow-hidden">
+                  <div id="teaserProgressBar" class="h-full bg-amber-400 transition-all duration-300" style="width: 25%;"></div>
+                </div>
+                <div class="flex items-center justify-between gap-2">
+                  <button type="button" onclick="filterGalleryBySoftwareChapter()"
+                    class="px-4 py-2 rounded-xl bg-bronze-500 hover:bg-bronze-600 text-white text-xs font-bold transition-colors">
+                    Explore Matching Works &darr;
+                  </button>
+                  <button type="button" onclick="nextTeaserChapter()"
+                    class="px-3.5 py-2 rounded-xl bg-espresso-800 hover:bg-espresso-600 text-sand-200 text-xs font-semibold transition-colors">
+                    Next Software &rarr;
+                  </button>
                 </div>
               </div>
             </div>
@@ -810,13 +911,13 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <button type="button" id="modeLocalBtn" onclick="switchUploadSource('local')"
             class="p-3.5 rounded-2xl border-2 border-espresso-900 bg-espresso-900 text-alabaster text-left transition-all">
-            <span class="text-xs font-bold block">Direct Device File</span>
-            <span class="text-[11px] opacity-80 block mt-0.5">Images, Videos &amp; PDFs (Auto-Specs)</span>
+            <span class="text-xs font-bold block">Direct Device File (Up to 15 MB for GitHub)</span>
+            <span class="text-[11px] opacity-80 block mt-0.5">Best for Images, Logos, PDFs &amp; Short Clips</span>
           </button>
           <button type="button" id="modeLinkBtn" onclick="switchUploadSource('link')"
             class="p-3.5 rounded-2xl border-2 border-sand-300 bg-alabaster text-espresso-900 text-left transition-all">
-            <span class="text-xs font-bold block">Google Drive / YouTube Link</span>
-            <span class="text-[11px] opacity-75 block mt-0.5">Best for 10GB+ 4K Videos on GitHub</span>
+            <span class="text-xs font-bold block">Google Drive / YouTube Link (No Limit • GBs)</span>
+            <span class="text-[11px] opacity-75 block mt-0.5">Use for 15 MB to 20 GB+ 4K Videos on GitHub</span>
           </button>
         </div>
 
@@ -835,7 +936,7 @@
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
               <label class="block text-[11px] font-bold uppercase text-espresso-700 mb-1">Media Type</label>
-              <select id="linkMediaType" class="w-full px-3 py-2.5 rounded-xl bg-ivory border border-sand-300 text-xs font-semibold text-espresso-900">
+              <select id="linkMediaType" onchange="handleExternalUrlChange()" class="w-full px-3 py-2.5 rounded-xl bg-ivory border border-sand-300 text-xs font-semibold text-espresso-900">
                 <option value="video">Video (Drive / YouTube)</option>
                 <option value="image">High-Res Image</option>
                 <option value="pdf">PDF Document</option>
@@ -1016,21 +1117,52 @@
   <!-- ===================================================================== -->
   <!-- CHANGE OWNER SECURITY PIN MODAL                                       -->
   <!-- ===================================================================== -->
-  <div id="settingsModal" class="fixed inset-0 z-50 hidden bg-espresso-900/75 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="w-full max-w-sm bg-ivory rounded-3xl border border-sand-300 shadow-2xl overflow-hidden">
+  <div id="settingsModal" class="fixed inset-0 z-50 hidden bg-espresso-900/75 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+    <div class="w-full max-w-md bg-ivory rounded-3xl border border-sand-300 shadow-2xl overflow-hidden my-auto">
       <div class="px-6 py-4 bg-sand-100 border-b border-sand-300 flex items-center justify-between">
-        <h3 class="font-serif text-xl font-bold text-espresso-900">Change Owner PIN</h3>
+        <div>
+          <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-bronze-500 block">AUTOMATION &amp; SECURITY</span>
+          <h3 class="font-serif text-xl font-bold text-espresso-900">GitHub Auto-Publish &amp; PIN</h3>
+        </div>
         <button onclick="closeSettingsModal()" class="w-8 h-8 rounded-xl bg-ivory flex items-center justify-center text-espresso-800 border border-sand-300">&times;</button>
       </div>
-      <form onsubmit="updateOwnerPin(event)" class="p-6 space-y-4">
+      <form onsubmit="saveAutomationAndPin(event)" class="p-6 space-y-4">
+        <div class="p-3.5 rounded-2xl bg-alabaster border border-sand-300 space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-espresso-900">1-Click Automatic GitHub Sync</span>
+            <span id="githubSyncStatusBadge" class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-sand-200 text-espresso-800">Not Connected</span>
+          </div>
+          <p class="text-[11px] text-espresso-600 leading-relaxed">
+            Save your GitHub Token once here—after that, every upload or edit automatically updates your live GitHub website without downloading or replacing files!
+          </p>
+          <div class="grid grid-cols-2 gap-2.5">
+            <div>
+              <label class="block text-[10px] font-bold uppercase text-espresso-700 mb-1">GitHub Username</label>
+              <input type="text" id="ghOwnerInput" value="shriyanshgarg555-lang" required
+                class="w-full px-3 py-2 rounded-xl bg-ivory border border-sand-300 text-xs font-semibold text-espresso-900" />
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold uppercase text-espresso-700 mb-1">Repository Name</label>
+              <input type="text" id="ghRepoInput" value="shriyansh-portfolio" required
+                class="w-full px-3 py-2 rounded-xl bg-ivory border border-sand-300 text-xs font-semibold text-espresso-900" />
+            </div>
+          </div>
+          <div>
+            <label class="block text-[10px] font-bold uppercase text-espresso-700 mb-1">GitHub Personal Access Token (PAT)</label>
+            <input type="password" id="ghTokenInput" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"
+              class="w-full px-3 py-2 rounded-xl bg-ivory border border-sand-300 text-xs font-mono text-espresso-900" />
+            <span class="block text-[10px] text-espresso-500 mt-1">Stored privately in your browser only (never exported into public HTML).</span>
+          </div>
+        </div>
+
         <div>
-          <label class="block text-xs font-bold text-espresso-800 mb-1">New Security PIN (Min 4 digits)</label>
-          <input type="password" id="newPinInput" minlength="4" maxlength="10" required placeholder="Enter new PIN"
+          <label class="block text-xs font-bold text-espresso-800 mb-1">Change Owner Security PIN (Optional)</label>
+          <input type="password" id="newPinInput" minlength="4" maxlength="10" placeholder="Leave blank to keep current PIN"
             class="w-full px-4 py-2.5 rounded-xl bg-alabaster border border-sand-300 text-center font-bold tracking-widest text-espresso-900" />
         </div>
-        <div class="flex justify-end gap-2">
+        <div class="flex justify-end gap-2 pt-1">
           <button type="button" onclick="closeSettingsModal()" class="px-4 py-2 rounded-xl bg-sand-100 text-espresso-800 text-xs font-semibold">Cancel</button>
-          <button type="submit" class="px-5 py-2 rounded-xl bg-espresso-900 hover:bg-bronze-500 text-alabaster text-xs font-bold">Update PIN</button>
+          <button type="submit" class="px-5 py-2 rounded-xl bg-espresso-900 hover:bg-bronze-500 text-alabaster text-xs font-bold">Save &amp; Connect GitHub</button>
         </div>
       </form>
     </div>
@@ -1139,7 +1271,7 @@
     const DB_VERSION = 1;
     const STORE_FILES = 'mediaFiles';
     const STORAGE_META_KEY = 'shriyansh_garg_portfolio_meta_v4';
-
+    const GITHUB_SYNC_KEY = 'shriyansh_github_autosync_secret_v1';
     let dbInstance = null;
     let isOwnerUnlocked = false;
     let currentCategory = 'All';
@@ -1562,49 +1694,184 @@
     };
 
     // Generates a rich 3-part narrative story in any of the 7 languages
+    function generateRealityCaptionData(project) {
+      const title = (project.title || 'Creative Work').trim();
+      const tLow = title.toLowerCase();
+      const cat = project.category || 'Graphic Design';
+      const quality = (project.quality || '').trim();
+      const size = (project.fileSize || '').trim();
+      const mediaType = project.mediaType || 'image';
+
+      // 1. Detect real-world creative format from actual project title & media type
+      let archetype = 'general';
+      if (/(trailer|teaser|promo|commercial|ad\b|film|documentary|intro)/.test(tLow)) archetype = 'trailer';
+      else if (/(reel|short|montage|edit|vlog|transition|beat|sync)/.test(tLow)) archetype = 'reel';
+      else if (/(color|grade|grading|lut|cinematic|tone)/.test(tLow) || cat === 'Color Grading') archetype = 'grading';
+      else if (/(motion|kinetic|animation|reveal|vfx|3d)/.test(tLow) || cat === 'Motion Graphics') archetype = 'motion';
+      else if (/(packaging|box|label|pouch|dieline|brochure|catalog|menu|pdf|print|magazine|book)/.test(tLow) || cat === 'Packaging & Print' || mediaType === 'pdf') archetype = 'packaging';
+      else if (/(logo|brand|identity|monogram|emblem|icon)/.test(tLow)) archetype = 'logo';
+      else if (/(poster|thumbnail|banner|social|cover|flyer|mockup|art)/.test(tLow)) archetype = 'poster';
+      else if (mediaType === 'video' || cat === 'Video Editing') archetype = 'reel';
+
+      // 2. Auto-infer authentic tools & special strengths if missing or generic
+      const existingHigh = (project.highlights || '').trim();
+      let strengths = existingHigh ? existingHigh.split(',').map(s => s.trim()).filter(Boolean) : [];
+      let tools = (project.software || '').trim();
+
+      const archetypePresets = {
+        trailer: {
+          tools: 'Adobe Premiere Pro, After Effects',
+          strengths: ['Dramatic Trailer Pacing', 'Cinematic Color Grading', 'Kinetic Title Reveals', 'Layered SFX & Audio Ducking'],
+          visionEn: `Cut as a high-impact theatrical showcase for "${title}", building suspense through tight rhythmic pacing, dramatic audio risers, and bold focal framing.`,
+          craftEn: `Assembled in ${tools || 'Adobe Premiere Pro & After Effects'} with beat-synced cuts, optical speed ramps, custom title animation, and filmic contrast grading.`,
+          impactEn: `Delivers immediate hook retention and cinema-grade polish${quality ? ` in ${quality}` : ''}${size ? ` (${size})` : ''}.`
+        },
+        reel: {
+          tools: 'Adobe Premiere Pro, After Effects',
+          strengths: ['High-Retention Hook Cut', 'Velocity Speed Ramping', 'Precision Masking Transitions', 'Beat-Synced Sound Design'],
+          visionEn: `Edited for instant viewer retention on "${title}", opening with a crisp visual hook and maintaining uninterrupted momentum from first frame to end.`,
+          craftEn: `Crafted in ${tools || 'Adobe Premiere Pro & After Effects'} using frame-accurate masking transitions, smooth speed ramping, keyframed motion zooms, and punchy SFX.`,
+          impactEn: `Engineered for maximum watch-through clarity and crisp motion detail${quality ? ` (${quality})` : ''}.`
+        },
+        grading: {
+          tools: 'Adobe Premiere Pro, After Effects',
+          strengths: ['Filmic LUT Color Grading', 'Skin-Tone & Highlight Balance', 'Selective Masking & Vignette', 'Dynamic Contrast Curve'],
+          visionEn: `Graded to give "${title}" a cohesive, mood-driven cinema palette with rich shadow depth and natural tonal separation.`,
+          craftEn: `Balanced inside ${tools || 'Adobe Premiere Pro'} using custom S-curve contrast, secondary HSL qualifiers, selective power-window masking, and halation glow.`,
+          impactEn: `Transforms raw footage into a broadcast-ready visual atmosphere${quality ? ` in ${quality}` : ''}.`
+        },
+        motion: {
+          tools: 'Adobe After Effects, Illustrator',
+          strengths: ['Kinetic Typography', 'Graph-Editor Easing', 'Layered Vector Masking', 'Clean Motion Choreography'],
+          visionEn: `Designed to bring "${title}" to life through expressive kinetic movement, clean spatial timing, and unmistakable visual rhythm.`,
+          craftEn: `Animated in ${tools || 'Adobe After Effects & Illustrator'} with custom Bezier speed-graph curves, multi-plane masking, and crisp vector layer rigging.`,
+          impactEn: `Communicates complex visual cues effortlessly at high frame clarity${quality ? ` (${quality})` : ''}.`
+        },
+        packaging: {
+          tools: 'Adobe Illustrator, InDesign, Photoshop',
+          strengths: ['CMYK 300 DPI Print Precision', 'Structural Dieline & Bleed Setup', 'Tactile Typography Hierarchy', 'Realistic 3D Surface Mockup'],
+          visionEn: `Structured for "${title}" to command instant shelf presence while keeping every ingredient, fold, and brand detail effortlessly legible.`,
+          craftEn: `Engineered in ${tools || 'Adobe Illustrator & InDesign'} with exact CMYK color profiles, 300 DPI vector typography, safe bleed margins, and print-finishing callouts.`,
+          impactEn: `Press-ready production file verified for sharp physical print reproduction${quality ? ` (${quality})` : ''}.`
+        },
+        logo: {
+          tools: 'Adobe Illustrator, Photoshop',
+          strengths: ['Golden-Ratio Vector Geometry', 'Balanced Negative Space', 'Custom Letterform Kerning', 'Scalable Monochrome & Color Marks'],
+          visionEn: `Built as a timeless, unmistakable visual signature for "${title}" that stays sharp from a tiny mobile icon to a large-format signboard.`,
+          craftEn: `Constructed in ${tools || 'Adobe Illustrator'} on a disciplined geometric grid with clean Bezier anchor points, optical kerning, and brand color contrast.`,
+          impactEn: `Provides a versatile, production-ready brand identity asset${quality ? ` (${quality})` : ''}.`
+        },
+        poster: {
+          tools: 'Adobe Photoshop, Illustrator',
+          strengths: ['Multi-Layer Photo Compositing', 'Dramatic Rim Lighting & Depth', 'Bold Display Typography', 'Color Harmony & Focal Contrast'],
+          visionEn: `Composed to capture immediate eye-tracking attention for "${title}", guiding the viewer from the hero subject straight to the core message.`,
+          craftEn: `Retouched and composited in ${tools || 'Adobe Photoshop & Illustrator'} using non-destructive adjustment layers, edge-light blending, and crisp type hierarchy.`,
+          impactEn: `High-contrast key visual optimized for both digital screens and print display${quality ? ` (${quality})` : ''}.`
+        },
+        general: {
+          tools: tools || 'Adobe Creative Suite',
+          strengths: ['Disciplined Visual Hierarchy', 'Custom Color Calibration', 'Precision Layer Composition'],
+          visionEn: `Tailored specifically for "${title}" (${cat}), translating the creative brief into a clean, purposeful visual composition.`,
+          craftEn: `Produced in ${tools || 'Adobe Creative Suite'} with careful attention to proportion, tonal balance, and crisp detail execution.`,
+          impactEn: `Finished as a high-clarity master deliverable${quality ? ` in ${quality}` : ''}${size ? ` (${size})` : ''}.`
+        }
+      };
+
+      const preset = archetypePresets[archetype] || archetypePresets.general;
+      if (strengths.length === 0) strengths = preset.strengths;
+      if (!tools) tools = preset.tools;
+
+      return {
+        archetype,
+        tools,
+        strengths,
+        strengthsText: strengths.join(' • '),
+        visionEn: preset.visionEn,
+        craftEn: preset.craftEn,
+        impactEn: preset.impactEn,
+        shortSummaryEn: `${preset.visionEn} Tools & Strengths: ${tools} (${strengths.slice(0, 3).join(', ')}).`
+      };
+    }
+
+    function isGenericAutoCaption(text) {
+      if (!text || !text.trim()) return true;
+      const t = text.toLowerCase();
+      return (
+        t.includes('is a bespoke') ||
+        t.includes('created to communicate a clear visual narrative') ||
+        t.includes('is a custom') && t.includes('crafted around its unique visual brief')
+      );
+    }
+
+    function upgradeLegacyProjectCaptions() {
+      let updatedCount = 0;
+      appState.projects = appState.projects.map(proj => {
+        const reality = generateRealityCaptionData(proj);
+        const needsDescUpgrade = isGenericAutoCaption(proj.description);
+        const needsHighUpgrade = !(proj.highlights || '').trim();
+        const needsToolsUpgrade = !(proj.software || '').trim() || proj.software === 'Adobe Premiere Pro, After Effects, Illustrator';
+
+        if (needsDescUpgrade || needsHighUpgrade || needsToolsUpgrade) {
+          updatedCount++;
+          return {
+            ...proj,
+            highlights: needsHighUpgrade ? reality.strengths.join(', ') : proj.highlights,
+            software: needsToolsUpgrade ? reality.tools : proj.software,
+            description: needsDescUpgrade ? reality.shortSummaryEn : proj.description
+          };
+        }
+        return proj;
+      });
+      if (updatedCount > 0) {
+        persistPortfolioState();
+      }
+    }
+
     function buildLocalizedProjectStory(project, lang) {
       const t = I18N_UI[lang] || I18N_UI.en;
       const title = project.title || 'Creative Work';
       const cat = project.category || 'Graphic Design';
-      const highlights = project.highlights || project.quality || 'Precision Craft & Visual Balance';
-      const customNote = (project.description || '').trim();
-      const tools = project.software || 'Adobe Creative Suite';
+      const reality = generateRealityCaptionData(project);
+      const customNote = !isGenericAutoCaption(project.description) ? (project.description || '').trim() : '';
+      const tools = reality.tools;
+      const specificHighlightsLabel = reality.strengthsText;
+      const quality = project.quality || 'High-Resolution Master';
 
       const templates = {
         en: {
-          s1: customNote || `"${title}" was conceived as a refined ${cat.toLowerCase()} piece designed to capture immediate viewer attention through clean visual hierarchy and purposeful storytelling.`,
-          s2: `Crafted using ${tools}, this work highlights specialized techniques including ${highlights}—ensuring crisp frame-by-frame pacing, accurate color harmony, and technical discipline.`,
-          s3: `Delivered in ${project.quality || 'master resolution'}, the final composition communicates its message effortlessly across international screens and print formats.`
+          s1: customNote || reality.visionEn,
+          s2: reality.craftEn,
+          s3: reality.impactEn
         },
         hi: {
-          s1: customNote || `"${title}" को एक प्रभावशाली ${cat} प्रोजेक्ट के रूप में तैयार किया गया है, जिसका उद्देश्य साफ़ विज़ुअल संरचना और सार्थक कहानी के माध्यम से दर्शकों का ध्यान तुरंत आकर्षित करना है।`,
-          s2: `${tools} का उपयोग करते हुए, इस कार्य में ${highlights} जैसी विशेष तकनीकों को शामिल किया गया है—जिससे सटीक रंग संतुलन, स्पष्ट टाइपोग्राफी और बेहतरीन रिद्म प्राप्त होता है।`,
-          s3: `${project.quality || 'उच्च गुणवत्ता'} में तैयार यह अंतिम रचना अंतरराष्ट्रीय दर्शकों और डिजिटल व प्रिंट प्लेटफ़ॉर्म पर अपनी गहरी छाप छोड़ती है।`
+          s1: customNote || `"${title}" (${cat}) के लिए तैयार यह वास्तविक प्रोजेक्ट अपने विषय के अनुसार स्पष्ट फ़्रेमिंग और आकर्षक विज़ुअल प्रस्तुति देता है।`,
+          s2: `इसमें ${tools} का उपयोग करते हुए ${specificHighlightsLabel} जैसी ख़ूबियों और टूल्स पर बारीकी से काम किया गया है।`,
+          s3: `${quality}${project.fileSize ? ` (${project.fileSize})` : ''} में तैयार यह फ़ाइल हर स्क्रीन और प्रिंट पर साफ़ और प्रभावशाली दिखती है।`
         },
         ar: {
-          s1: customNote || `تم تصميم "${title}" كعمل إبداعي متكامل في مجال ${cat} بهدف جذب انتباه المشاهد فوراً من خلال التوازن البصري والسرد القصصي الواضح.`,
-          s2: `باستخدام برامج ${tools}، يبرز هذا العمل تقنيات متقدمة تشمل ${highlights} لضمان دقة التفاصيل وتناغم الألوان والإيقاع البصري الاحترافي.`,
-          s3: `تم إخراج العمل بجودة ${project.quality || 'فائقة الدقة'} ليصل إلى الجمهور العالمي بأعلى مستوى من الاحترافية والوضوح.`
+          s1: customNote || `تم تنفيذ "${title}" في مجال ${cat} برؤية بصرية مخصصة تبرز تفاصيل العمل بوضوح وجاذبية.`,
+          s2: `اعتمد العمل على ${tools} مع تطبيق ${specificHighlightsLabel} بدقة احترافية في كل تفصيلة.`,
+          s3: `تم إخراج النسخة النهائية بجودة ${quality} لضمان أعلى وضوح وتأثير بصري.`
         },
         es: {
-          s1: customNote || `"${title}" fue concebido como una pieza de ${cat} diseñada para captar la atención inmediata mediante una jerarquía visual limpia y una narrativa clara.`,
-          s2: `Desarrollado con ${tools}, este proyecto destaca técnicas como ${highlights}, logrando precisión cromática, ritmo visual y acabado profesional.`,
-          s3: `Entregado en ${project.quality || 'alta resolución'}, el resultado final comunica su mensaje con claridad en plataformas internacionales.`
+          s1: customNote || `Desarrollado específicamente para "${title}" en ${cat}, con una composición pensada para captar la atención desde el primer segundo.`,
+          s2: `Realizado con ${tools}, aplicando ${specificHighlightsLabel} con precisión técnica en cada capa y ajuste.`,
+          s3: `Masterizado en ${quality}${project.fileSize ? ` (${project.fileSize})` : ''} para máxima nitidez profesional.`
         },
         fr: {
-          s1: customNote || `« ${title} » a été conçu comme une création en ${cat} visant à capter immédiatement l’attention grâce à une hiérarchie visuelle épurée et une narration maîtrisée.`,
-          s2: `Réalisé avec ${tools}, ce projet met en valeur des techniques telles que ${highlights}, garantissant précision colorimétrique et fluidité visuelle.`,
-          s3: `Livré en ${project.quality || 'haute définition'}, le rendu final transmet son message avec élégance auprès d’un public international.`
+          s1: customNote || `Conçu sur mesure pour « ${title} » (${cat}), avec une mise en scène visuelle pensée pour captiver immédiatement le regard.`,
+          s2: `Réalisé sous ${tools} en intégrant ${specificHighlightsLabel} avec une précision artisanale sur chaque détail.`,
+          s3: `Finalisé en ${quality}${project.fileSize ? ` (${project.fileSize})` : ''} pour un rendu net et percutant.`
         },
         de: {
-          s1: customNote || `„${title}“ wurde als ausdrucksstarkes Werk im Bereich ${cat} konzipiert, um durch klare visuelle Struktur und gezieltes Storytelling sofort zu überzeugen.`,
-          s2: `Umgesetzt mit ${tools}, vereint dieses Projekt Techniken wie ${highlights} für präzise Farbharmonie, dynamisches Timing und höchste Detailtreue.`,
-          s3: `Ausgeliefert in ${project.quality || 'höchster Auflösung'}, entfaltet die finale Komposition eine starke visuelle Wirkung auf internationalen Plattformen.`
+          s1: customNote || `Individuell für „${title}“ (${cat}) gestaltet – mit klarer visueller Führung und starker Ausdruckskraft.`,
+          s2: `Umgesetzt mit ${tools} unter Einsatz von ${specificHighlightsLabel} für höchste gestalterische Präzision.`,
+          s3: `Ausgeliefert in ${quality}${project.fileSize ? ` (${project.fileSize})` : ''} für gestochen scharfe Darstellung.`
         },
         ja: {
-          s1: customNote || `「${title}」は、洗練された視覚構成と明確なストーリーテリングによって、見る人の心を瞬時に捉える${cat}作品として制作されました。`,
-          s2: `${tools}を駆使し、${highlights}などの専門技術を取り入れることで、緻密な色彩バランスと美しい映像・デザイン表現を実現しています。`,
-          s3: `${project.quality || '高解像度マスター'}で仕上げられた本作は、国内外のあらゆるメディアで強い視覚的インパクトを与えます。`
+          s1: customNote || `「${title}」（${cat}）のために制作されたオリジナル作品で、テーマの魅力を直感的に伝える構成に仕上げています。`,
+          s2: `${tools}を使用し、${specificHighlightsLabel}の専門技術と細部へのこだわりを詰め込みました。`,
+          s3: `${quality}${project.fileSize ? ` (${project.fileSize})` : ''}のマスター品質で鮮明な視覚体験を提供します。`
         }
       };
 
@@ -1677,6 +1944,7 @@
       const fullNarrative = `${activeLightboxProject.title}. ` + stages.map(s => `${s.heading}. ${s.body}`).join(' ');
 
       window.speechSynthesis.cancel();
+      if (isPianoPlaying) pauseAmbientPianoForMedia();
       const utterance = new SpeechSynthesisUtterance(fullNarrative);
       utterance.lang = t.speechLang || 'en-US';
       utterance.rate = 0.96;
@@ -1997,31 +2265,14 @@
       if (!highlightsInput) return;
       if (!forceOverwrite && highlightsInput.dataset.userEdited === 'true') return;
 
-      const t = (titleText || '').toLowerCase();
-      let suggested = [];
+      const reality = generateRealityCaptionData({
+        title: titleText,
+        category: category,
+        mediaType: currentUploadSource === 'link' ? document.getElementById('linkMediaType').value : (pendingLocalFile && pendingLocalFile.type.startsWith('video/') ? 'video' : 'image')
+      });
 
-      if (category === 'Video Editing' || category === 'Color Grading' || category === 'Motion Graphics') {
-        if (t.includes('trailer') || t.includes('teaser') || t.includes('promo') || t.includes('film')) {
-          suggested = ['Cinematic Color Grading', 'Speed Ramping & Transitions', 'Kinetic Typography'];
-        } else if (t.includes('reel') || t.includes('short') || t.includes('montage')) {
-          suggested = ['Speed Ramping & Transitions', 'Advanced Masking', 'Kinetic Typography'];
-        } else if (category === 'Color Grading' || t.includes('grade') || t.includes('lut')) {
-          suggested = ['Cinematic Color Grading', 'Advanced Masking'];
-        } else if (category === 'Motion Graphics') {
-          suggested = ['Kinetic Typography', 'Advanced Masking', 'Speed Ramping & Transitions'];
-        } else {
-          suggested = ['Kinetic Typography', 'Advanced Masking', 'Cinematic Color Grading'];
-        }
-        if (softwareInput) softwareInput.value = 'Adobe Premiere Pro, After Effects';
-      } else if (category === 'Packaging & Print') {
-        suggested = ['Custom Die-Cut Packaging', 'Brand Identity & Logo'];
-        if (softwareInput) softwareInput.value = 'Adobe Illustrator, InDesign, Photoshop';
-      } else {
-        suggested = ['Brand Identity & Logo', 'Kinetic Typography'];
-        if (softwareInput) softwareInput.value = 'Adobe Illustrator, Photoshop';
-      }
-
-      highlightsInput.value = suggested.join(', ');
+      if (softwareInput) softwareInput.value = reality.tools;
+      highlightsInput.value = reality.strengths.join(', ');
       syncTechniqueChipsFromInput();
     }
 
@@ -2123,15 +2374,23 @@
       if (!forceOverwrite && descEl.dataset.userEdited === 'true' && descEl.value.trim().length > 0) {
         return;
       }
-      const title = document.getElementById('projectTitle').value.trim() || 'This creative piece';
+      const title = document.getElementById('projectTitle').value.trim() || 'Creative Work';
       const category = document.getElementById('projectCategory').value;
       const highlights = document.getElementById('projectHighlights').value.trim();
+      const software = document.getElementById('projectSoftware').value.trim();
+      const quality = document.getElementById('projectQuality').value.trim();
+      const fileSize = document.getElementById('projectFileSize').value.trim();
 
-      const techClause = highlights
-        ? ` Crafted with specialized focus on ${highlights} to deliver crisp visual rhythm, balance, and clarity.`
-        : ' Executed with disciplined composition, color balance, and clear visual hierarchy.';
+      const reality = generateRealityCaptionData({
+        title,
+        category,
+        highlights,
+        software,
+        quality,
+        fileSize
+      });
 
-      descEl.value = `"${title}" is a bespoke ${category.toLowerCase()} showcase created to communicate a clear visual narrative.${techClause}`;
+      descEl.value = reality.shortSummaryEn;
     }
 
     // Track manual edits on description & highlights so auto-composer respects owner's custom words
@@ -2431,7 +2690,7 @@
       if (!project) return;
       activeLightboxProject = project;
       stopStoryNarration();
-
+      if (isPianoPlaying) pauseAmbientPianoForMedia();
       document.getElementById('lbCategory').textContent = project.category;
       document.getElementById('lbQuality').textContent = project.quality || 'Master Quality';
       document.getElementById('lbFileSize').textContent = project.fileSize ? `• ${project.fileSize}` : '';
@@ -2598,7 +2857,19 @@
 
     function openSettingsModal() {
       if (!isOwnerUnlocked) return;
+      const cfg = getGitHubSyncConfig();
+      document.getElementById('ghOwnerInput').value = cfg.owner || 'shriyanshgarg555-lang';
+      document.getElementById('ghRepoInput').value = cfg.repo || 'shriyansh-portfolio';
+      document.getElementById('ghTokenInput').value = cfg.token || '';
       document.getElementById('newPinInput').value = '';
+      const badge = document.getElementById('githubSyncStatusBadge');
+      if (cfg.token) {
+        badge.textContent = 'Connected ✓';
+        badge.className = 'text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800';
+      } else {
+        badge.textContent = 'Not Connected';
+        badge.className = 'text-[10px] font-bold px-2 py-0.5 rounded-md bg-sand-200 text-espresso-800';
+      }
       document.getElementById('settingsModal').classList.remove('hidden');
     }
 
@@ -2606,37 +2877,36 @@
       document.getElementById('settingsModal').classList.add('hidden');
     }
 
-    function updateOwnerPin(e) {
-      e.preventDefault();
-      if (!isOwnerUnlocked) return;
-      const newPin = document.getElementById('newPinInput').value.trim();
-      if (newPin.length < 4) return;
-      appState.pin = newPin;
-      persistPortfolioState();
-      closeSettingsModal();
-      showToast('Owner Security PIN updated!');
+    function getGitHubSyncConfig() {
+      try {
+        return JSON.parse(localStorage.getItem(GITHUB_SYNC_KEY) || '{}');
+      } catch (e) {
+        return {};
+      }
     }
 
-    // -----------------------------------------------------------------------
-    // 12. ADD / EDIT / DELETE PROJECTS
-    // -----------------------------------------------------------------------
-    function switchUploadSource(mode) {
-      currentUploadSource = mode;
-      const localBtn = document.getElementById('modeLocalBtn');
-      const linkBtn = document.getElementById('modeLinkBtn');
-      const localBox = document.getElementById('localUploadBox');
-      const linkBox = document.getElementById('linkUploadBox');
+    async function saveAutomationAndPin(e) {
+      e.preventDefault();
+      if (!isOwnerUnlocked) return;
 
-      if (mode === 'local') {
-        localBtn.className = 'p-3.5 rounded-2xl border-2 border-espresso-900 bg-espresso-900 text-alabaster text-left transition-all';
-        linkBtn.className = 'p-3.5 rounded-2xl border-2 border-sand-300 bg-alabaster text-espresso-900 text-left transition-all';
-        localBox.classList.remove('hidden');
-        linkBox.classList.add('hidden');
+      const owner = document.getElementById('ghOwnerInput').value.trim() || 'shriyanshgarg555-lang';
+      const repo = document.getElementById('ghRepoInput').value.trim() || 'shriyansh-portfolio';
+      const token = document.getElementById('ghTokenInput').value.trim();
+
+      localStorage.setItem(GITHUB_SYNC_KEY, JSON.stringify({ owner, repo, token }));
+
+      const newPin = document.getElementById('newPinInput').value.trim();
+      if (newPin.length >= 4) {
+        appState.pin = newPin;
+        persistPortfolioState();
+      }
+
+      closeSettingsModal();
+      if (token) {
+        showToast('GitHub Auto-Sync connected! Syncing your live website now...');
+        await syncLiveToGitHub(true);
       } else {
-        linkBtn.className = 'p-3.5 rounded-2xl border-2 border-espresso-900 bg-espresso-900 text-alabaster text-left transition-all';
-        localBtn.className = 'p-3.5 rounded-2xl border-2 border-sand-300 bg-alabaster text-espresso-900 text-left transition-all';
-        linkBox.classList.remove('hidden');
-        localBox.classList.add('hidden');
+        showToast('Settings saved!');
       }
     }
 
@@ -2647,8 +2917,11 @@
       document.getElementById('projectForm').reset();
       const descEl = document.getElementById('projectDescription');
       descEl.dataset.userEdited = 'false';
+      document.getElementById('projectHighlights').dataset.userEdited = 'false';
       document.getElementById('editProjectId').value = projectId || '';
-      document.getElementById('selectedFileName').textContent = 'Click to choose Image, Video (MP4/MOV/WebM), or PDF';
+      document.getElementById('projectFolderUrl').value = '';
+      document.getElementById('customThumbUrl').value = '';
+      document.getElementById('selectedFileName').textContent = 'Click to choose Image, Video (MP4/MOV/WebM), PDF, or ZIP';
       document.getElementById('selectedFileMeta').textContent = 'No size cap — quality, dimensions & story auto-generate below';
       document.getElementById('autoDetectStatus').textContent = 'Auto-fills on file selection • Freely editable';
 
@@ -2685,6 +2958,26 @@
       }
 
       document.getElementById('projectModal').classList.remove('hidden');
+    }
+
+    function switchUploadSource(mode) {
+      currentUploadSource = mode === 'link' ? 'link' : 'local';
+      const localBtn = document.getElementById('modeLocalBtn');
+      const linkBtn = document.getElementById('modeLinkBtn');
+      const localBox = document.getElementById('localUploadBox');
+      const linkBox = document.getElementById('linkUploadBox');
+
+      if (currentUploadSource === 'local') {
+        localBtn.className = 'p-3.5 rounded-2xl border-2 border-espresso-900 bg-espresso-900 text-alabaster text-left transition-all';
+        linkBtn.className = 'p-3.5 rounded-2xl border-2 border-sand-300 bg-alabaster text-espresso-900 text-left transition-all';
+        localBox.classList.remove('hidden');
+        linkBox.classList.add('hidden');
+      } else {
+        linkBtn.className = 'p-3.5 rounded-2xl border-2 border-espresso-900 bg-espresso-900 text-alabaster text-left transition-all';
+        localBtn.className = 'p-3.5 rounded-2xl border-2 border-sand-300 bg-alabaster text-espresso-900 text-left transition-all';
+        linkBox.classList.remove('hidden');
+        localBox.classList.add('hidden');
+      }
     }
 
     function closeProjectModal() {
@@ -2775,7 +3068,9 @@
         persistPortfolioState();
         closeProjectModal();
         await renderGallery();
-        showToast(existing ? 'Project updated!' : 'Published with 7-language storytelling!');
+        renderSoftwareTeaser();
+        showToast(existing ? 'Project updated!' : 'Published with custom story & software teaser!');
+        await syncLiveToGitHub(false);
       } catch (err) {
         console.error(err);
         showToast('Error saving project. Please try again.', 'error');
@@ -2791,7 +3086,9 @@
       await deleteBlobFromIndexedDB(projectId);
       persistPortfolioState();
       await renderGallery();
+      renderSoftwareTeaser();
       showToast('Project deleted from portfolio.');
+      await syncLiveToGitHub(false);
     }
 
     // -----------------------------------------------------------------------
@@ -2898,102 +3195,231 @@
       renderPersonalProfile();
       closeProfileModal();
       showToast('Personal details & contact updated!');
+      syncLiveToGitHub(false);
     }
 
     // -----------------------------------------------------------------------
-    // 14. STANDALONE GITHUB PAGES / NETLIFY HTML EXPORTER
+    // 14. STANDALONE GITHUB PAGES / NETLIFY HTML EXPORTER & AUTO-SYNC API
     // -----------------------------------------------------------------------
-    function buildCleanStandaloneDocument(exportPayload) {
-      const clonedDoc = document.documentElement.cloneNode(true);
-
-      // Reset all admin & modal states so exported file opens cleanly for visitors
-      ['adminToolbar', 'notepadCodeModal', 'pinModal', 'projectModal', 'profileModal', 'settingsModal', 'lightboxModal'].forEach(modalId => {
-        const el = clonedDoc.querySelector('#' + modalId);
-        if (el) el.classList.add('hidden');
-      });
-
-      const notepadArea = clonedDoc.querySelector('#notepadSourceTextarea');
-      if (notepadArea) {
-        notepadArea.value = '';
-        notepadArea.textContent = '';
-      }
-      const grid = clonedDoc.querySelector('#portfolioGrid');
-      if (grid) grid.innerHTML = '';
-      const toastBox = clonedDoc.querySelector('#toastContainer');
-      if (toastBox) toastBox.innerHTML = '';
-
-      const lockClosed = clonedDoc.querySelector('#lockIconClosed');
-      const lockOpen = clonedDoc.querySelector('#lockIconOpen');
-      const headerBtnText = clonedDoc.querySelector('#adminHeaderBtnText');
-      if (lockClosed) lockClosed.classList.remove('hidden');
-      if (lockOpen) lockOpen.classList.add('hidden');
-      if (headerBtnText) headerBtnText.textContent = 'Owner Login';
-
-      const seedNode = clonedDoc.querySelector('#embeddedPortfolioSeed');
-      if (seedNode) {
-        seedNode.textContent = JSON.stringify(exportPayload, null, 2);
-      }
-
-      return '<!DOCTYPE html>\n' + clonedDoc.outerHTML;
-    }
-
     function blobToDataURL(blob) {
       return new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.onloadend = () => resolve(reader.result);
-        reader.onerror = () => resolve(null);
-        reader.readAsDataURL(blob);
+        try {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result || null);
+          reader.onerror = () => resolve(null);
+          reader.readAsDataURL(blob);
+        } catch (e) {
+          resolve(null);
+        }
       });
+    }
+
+    function buildCleanStandaloneDocument(seedPayload) {
+      const cloneDoc = document.documentElement.cloneNode(true);
+
+      // Reset transient runtime UI on the cloned DOM so visitors see a clean public view
+      const toolbar = cloneDoc.querySelector('#adminToolbar');
+      if (toolbar) toolbar.classList.add('hidden');
+
+      const headerBtnText = cloneDoc.querySelector('#adminHeaderBtnText');
+      if (headerBtnText) headerBtnText.textContent = 'Owner Login';
+
+      const lockClosed = cloneDoc.querySelector('#lockIconClosed');
+      const lockOpen = cloneDoc.querySelector('#lockIconOpen');
+      if (lockClosed) lockClosed.classList.remove('hidden');
+      if (lockOpen) lockOpen.classList.add('hidden');
+
+      ['pinModal', 'projectModal', 'profileModal', 'settingsModal', 'lightboxModal', 'notepadCodeModal'].forEach(id => {
+        const modal = cloneDoc.querySelector('#' + id);
+        if (modal) modal.classList.add('hidden');
+      });
+
+      const notepadArea = cloneDoc.querySelector('#notepadSourceTextarea');
+      if (notepadArea) notepadArea.textContent = '';
+
+      const grid = cloneDoc.querySelector('#portfolioGrid');
+      if (grid) grid.innerHTML = '';
+
+      const toastBox = cloneDoc.querySelector('#toastContainer');
+      if (toastBox) toastBox.innerHTML = '';
+
+      // Inject latest state cleanly into embeddedPortfolioSeed (never includes private GitHub PAT)
+      const seedScript = cloneDoc.querySelector('#embeddedPortfolioSeed');
+      if (seedScript) {
+        const safeJson = JSON.stringify(seedPayload, null, 2).replace(/<\/script>/gi, '<\\/script>');
+        seedScript.textContent = '\n  ' + safeJson + '\n  ';
+      }
+
+      return '<!DOCTYPE html>\n' + cloneDoc.outerHTML;
     }
 
     async function exportStandaloneHTML() {
       if (!isOwnerUnlocked) return;
       const btn = document.getElementById('exportHtmlBtn');
-      const origHtml = btn.innerHTML;
-      btn.disabled = true;
-      btn.textContent = 'Packaging Standalone index.html...';
+      const origHtml = btn ? btn.innerHTML : '';
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = 'Packing index.html...';
+      }
 
       try {
-        const exportProjects = [];
-        for (const proj of appState.projects) {
-          const clone = { ...proj };
-          if (clone.sourceType === 'local') {
-            const rec = await getBlobFromIndexedDB(clone.id);
-            if (rec && rec.blob && rec.blob.size <= 15 * 1024 * 1024) {
+        const exportProjects = await buildExportableProjectsList();
+        const htmlContent = buildCleanStandaloneDocument({
+          pin: appState.pin,
+          profile: appState.profile,
+          projects: exportProjects
+        });
+
+        const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'index.html';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(url), 2000);
+        showToast('Exported index.html with all embedded projects!');
+      } catch (err) {
+        console.error(err);
+        showToast('Could not export file. Try Copy HTML Code (Notepad).', 'error');
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = origHtml;
+        }
+      }
+    }
+
+    function utf8ToBase64(str) {
+      const bytes = new TextEncoder().encode(str);
+      let binary = '';
+      const chunkSize = 0x8000;
+      for (let i = 0; i < bytes.length; i += chunkSize) {
+        binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunkSize));
+      }
+      return btoa(binary);
+    }
+
+    async function buildExportableProjectsList() {
+      const exportProjects = [];
+      let skippedLargeVideos = 0;
+      for (const proj of appState.projects) {
+        const clone = { ...proj };
+        if (clone.sourceType === 'local') {
+          const rec = await getBlobFromIndexedDB(clone.id);
+          if (rec && rec.blob) {
+            if (rec.blob.size <= 15 * 1024 * 1024) {
               const dataUrl = await blobToDataURL(rec.blob);
               if (dataUrl) {
                 clone.sourceType = 'embedded-data';
                 clone.embeddedDataUrl = dataUrl;
               }
+            } else {
+              skippedLargeVideos++;
             }
           }
-          exportProjects.push(clone);
+        }
+        exportProjects.push(clone);
+      }
+      if (skippedLargeVideos > 0) {
+        showToast(`Note: ${skippedLargeVideos} large file(s) >15MB need a Google Drive link to play on GitHub.`, 'error');
+      }
+      return exportProjects;
+    }
+
+    async function syncLiveToGitHub(manualClick = false) {
+      if (!isOwnerUnlocked) return;
+      const cfg = getGitHubSyncConfig();
+      if (!cfg.token) {
+        if (manualClick) {
+          openSettingsModal();
+          showToast('Enter your GitHub Token once to enable 1-click auto-sync.');
+        }
+        return;
+      }
+
+      const syncBtn = document.getElementById('githubLiveSyncBtn');
+      const origText = syncBtn ? syncBtn.innerHTML : '';
+      if (syncBtn) {
+        syncBtn.disabled = true;
+        syncBtn.textContent = 'Syncing to GitHub...';
+      }
+
+      try {
+        const owner = cfg.owner || 'shriyanshgarg555-lang';
+        const repo = cfg.repo || 'shriyansh-portfolio';
+        const repoApiUrl = `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}`;
+        const apiUrl = `${repoApiUrl}/contents/index.html`;
+
+        // 0. Detect repository default branch cleanly (main or master)
+        let targetBranch = 'main';
+        const repoRes = await fetch(repoApiUrl, {
+          headers: {
+            'Authorization': `Bearer ${cfg.token}`,
+            'Accept': 'application/vnd.github+json'
+          }
+        });
+        if (repoRes.ok) {
+          const repoMeta = await repoRes.json();
+          if (repoMeta && repoMeta.default_branch) targetBranch = repoMeta.default_branch;
+        } else if (repoRes.status === 401 || repoRes.status === 403) {
+          throw new Error('Invalid or expired GitHub Token.');
         }
 
+        // 1. Fetch current index.html SHA from GitHub
+        let currentSha = null;
+        const getRes = await fetch(`${apiUrl}?ref=${encodeURIComponent(targetBranch)}`, {
+          headers: {
+            'Authorization': `Bearer ${cfg.token}`,
+            'Accept': 'application/vnd.github+json'
+          }
+        });
+        if (getRes.ok) {
+          const fileMeta = await getRes.json();
+          currentSha = fileMeta.sha;
+        }
+
+        // 2. Build clean standalone index.html with latest projects & profile
+        const exportProjects = await buildExportableProjectsList();
         const finalHtml = buildCleanStandaloneDocument({
           pin: appState.pin,
           profile: appState.profile,
           projects: exportProjects
         });
 
-        const downloadBlob = new Blob([finalHtml], { type: 'text/html;charset=utf-8' });
-        const downloadUrl = URL.createObjectURL(downloadBlob);
+        // 3. Push directly to GitHub repository via Contents API
+        const putBody = {
+          message: `Auto-update portfolio (${exportProjects.length} works)`,
+          content: utf8ToBase64(finalHtml),
+          branch: targetBranch
+        };
+        if (currentSha) putBody.sha = currentSha;
 
-        const a = document.createElement('a');
-        a.href = downloadUrl;
-        a.download = 'index.html';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        setTimeout(() => URL.revokeObjectURL(downloadUrl), 2000);
+        const putRes = await fetch(apiUrl, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${cfg.token}`,
+            'Accept': 'application/vnd.github+json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(putBody)
+        });
 
-        showToast('Standalone index.html exported! Ready to upload on GitHub.');
+        if (!putRes.ok) {
+          const errData = await putRes.json().catch(() => ({}));
+          throw new Error(errData.message || 'GitHub sync failed.');
+        }
+
+        showToast('✓ Live GitHub website updated automatically! (Live in ~45s)');
       } catch (err) {
-        console.error(err);
-        showToast('Export failed. Please try again.', 'error');
+        console.error('GitHub Auto-Sync Error:', err);
+        showToast(`GitHub Sync: ${err.message}`, 'error');
       } finally {
-        btn.disabled = false;
-        btn.innerHTML = origHtml;
+        if (syncBtn) {
+          syncBtn.disabled = false;
+          syncBtn.innerHTML = origText;
+        }
       }
     }
 
@@ -3153,14 +3579,327 @@
     }
 
     // -----------------------------------------------------------------------
-    // 17. INITIALIZE ON PAGE LOAD
+    // 17. SOFT AMBIENT GRAND PIANO MELODY SYNTHESIZER (ZERO EXTERNAL AUDIO)
+    // -----------------------------------------------------------------------
+    let pianoAudioCtx = null;
+    let isPianoPlaying = false;
+    let pianoTimerId = null;
+    let pianoStepIndex = 0;
+
+    // Gentle warm F-major7 -> C-major9 -> D-minor9 -> Bb-major7 arpeggio progression (Hz)
+    const PIANO_PROGRESSION = [
+      [174.61, 261.63, 329.63, 349.23, 440.00, 523.25], // Fmaj7
+      [130.81, 196.00, 293.66, 329.63, 392.00, 493.88], // Cmaj9
+      [146.83, 220.00, 261.63, 329.63, 349.23, 440.00], // Dm9
+      [116.54, 174.61, 261.63, 293.66, 349.23, 440.00]  // Bbmaj7
+    ];
+
+    function playWarmPianoNote(freq, duration = 2.6, volume = 0.045) {
+      if (!pianoAudioCtx) return;
+      const now = pianoAudioCtx.currentTime;
+
+      const osc1 = pianoAudioCtx.createOscillator();
+      const osc2 = pianoAudioCtx.createOscillator();
+      const filter = pianoAudioCtx.createBiquadFilter();
+      const gain = pianoAudioCtx.createGain();
+
+      osc1.type = 'sine';
+      osc1.frequency.setValueAtTime(freq, now);
+
+      osc2.type = 'triangle';
+      osc2.frequency.setValueAtTime(freq * 2, now); // Soft harmonic overtone
+
+      const overtoneGain = pianoAudioCtx.createGain();
+      overtoneGain.gain.setValueAtTime(0.14, now);
+
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(1150, now);
+      filter.frequency.exponentialRampToValueAtTime(340, now + duration);
+
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.linearRampToValueAtTime(volume, now + 0.045);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+
+      osc1.connect(filter);
+      osc2.connect(overtoneGain);
+      overtoneGain.connect(filter);
+      filter.connect(gain);
+      gain.connect(pianoAudioCtx.destination);
+
+      osc1.start(now);
+      osc2.start(now);
+      osc1.stop(now + duration + 0.05);
+      osc2.stop(now + duration + 0.05);
+    }
+
+    function scheduleNextPianoNote() {
+      if (!isPianoPlaying) return;
+      const chordIdx = Math.floor(pianoStepIndex / 6) % PIANO_PROGRESSION.length;
+      const noteIdx = pianoStepIndex % 6;
+      const chord = PIANO_PROGRESSION[chordIdx];
+      const freq = chord[noteIdx];
+
+      // Bass note slightly richer, upper melody delicate
+      const vol = noteIdx === 0 ? 0.055 : 0.036;
+      playWarmPianoNote(freq, noteIdx === 0 ? 3.4 : 2.5, vol);
+
+      pianoStepIndex++;
+      pianoTimerId = setTimeout(scheduleNextPianoNote, 680);
+    }
+
+    function updatePianoButtonUI() {
+      const btn = document.getElementById('pianoToggleBtn');
+      const txt = document.getElementById('pianoBtnText');
+      if (!btn) return;
+      if (isPianoPlaying) {
+        btn.className = 'inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-bronze-500 text-white text-xs font-bold transition-all border border-bronze-600 shadow-sm';
+        if (txt) txt.textContent = 'Piano On';
+      } else {
+        btn.className = 'inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-bronze-100 hover:bg-bronze-500 hover:text-white text-bronze-600 text-xs font-bold transition-all border border-sand-300';
+        if (txt) txt.textContent = 'Piano';
+      }
+    }
+
+    function pauseAmbientPianoForMedia() {
+      isPianoPlaying = false;
+      if (pianoTimerId) clearTimeout(pianoTimerId);
+      updatePianoButtonUI();
+    }
+
+    function toggleAmbientPiano() {
+      if (isPianoPlaying) {
+        pauseAmbientPianoForMedia();
+        showToast('Soft piano melody paused.');
+        return;
+      }
+
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!pianoAudioCtx) {
+          pianoAudioCtx = new AudioCtx();
+        }
+        if (pianoAudioCtx.state === 'suspended') {
+          pianoAudioCtx.resume();
+        }
+        isPianoPlaying = true;
+        updatePianoButtonUI();
+        scheduleNextPianoNote();
+        showToast('Playing soft ambient piano melody...');
+      } catch (e) {
+        showToast('Audio blocked by browser—tap again to play piano.', 'error');
+      }
+    }
+
+    // -----------------------------------------------------------------------
+    // 18. SOFTWARE-WISE PORTFOLIO TEASER SHOWREEL ENGINE
+    // -----------------------------------------------------------------------
+    const TEASER_CHAPTERS = [
+      {
+        key: 'Illustrator',
+        badge: 'ADOBE ILLUSTRATOR • VECTOR & BRAND',
+        heading: 'Vector Brand Architecture & Precision Dielines',
+        summary: 'Constructing mathematically balanced logotypes, Bezier typography, scalable vector emblems, and CMYK 300 DPI packaging dielines engineered for razor-sharp print and digital identity.',
+        capabilities: ['Custom Logotypes', 'CMYK Packaging Dielines', 'Bezier Vector Art', 'Brand Guidelines'],
+        fallbackCategories: ['Graphic Design', 'Packaging & Print']
+      },
+      {
+        key: 'Photoshop',
+        badge: 'ADOBE PHOTOSHOP • COMPOSITING & RETOUCH',
+        heading: 'High-Impact Key Visuals, Compositing & Print Art',
+        summary: 'Multi-layered photo manipulation, realistic product mockups, studio color retouching, campaign posters, and high-retention thumbnail design crafted at 300 DPI clarity.',
+        capabilities: ['Photo Compositing', 'Product Mockups', 'Poster & Campaign Art', 'High-End Retouching'],
+        fallbackCategories: ['Graphic Design', 'Packaging & Print']
+      },
+      {
+        key: 'Premiere Pro',
+        badge: 'ADOBE PREMIERE PRO • CINEMA & COMMERCIAL EDIT',
+        heading: 'High-Retention Story Cuts, Pacing & Color Grading',
+        summary: 'Rhythmic commercial storytelling, trailer pacing, multi-cam narrative assembly, layered sound design, and filmic LUT color grading mastered in 4K UHD.',
+        capabilities: ['Commercial & Trailer Cuts', 'Rhythmic Sound Design', 'Filmic LUT Grading', '4K UHD Mastering'],
+        fallbackCategories: ['Video Editing', 'Color Grading']
+      },
+      {
+        key: 'After Effects',
+        badge: 'ADOBE AFTER EFFECTS • MOTION & MASKING',
+        heading: 'Kinetic Typography, Precision Masking & VFX Motion',
+        summary: 'Frame-accurate rotoscoping and depth masking, custom kinetic typography, velocity speed-ramping, and fluid logo reveals that elevate visual retention.',
+        capabilities: ['Kinetic Typography', 'Precision Masking', 'Speed Ramping', '3D Camera & Logo Motion'],
+        fallbackCategories: ['Motion Graphics', 'Video Editing']
+      }
+    ];
+
+    let activeTeaserIndex = 0;
+    let teaserAutoTimer = null;
+    let isTeaserAutoplaying = true;
+    let teaserBlobUrls = [];
+
+    function clearTeaserBlobUrls() {
+      teaserBlobUrls.forEach(u => URL.revokeObjectURL(u));
+      teaserBlobUrls = [];
+    }
+
+    function selectTeaserChapter(softwareKey, manualTrigger = true) {
+      const idx = TEASER_CHAPTERS.findIndex(c => c.key === softwareKey);
+      if (idx !== -1) activeTeaserIndex = idx;
+      if (manualTrigger && isTeaserAutoplaying) {
+        restartTeaserAutoplayTimer();
+      }
+      renderSoftwareTeaser();
+    }
+
+    function nextTeaserChapter() {
+      activeTeaserIndex = (activeTeaserIndex + 1) % TEASER_CHAPTERS.length;
+      renderSoftwareTeaser();
+    }
+
+    function toggleTeaserAutoplay() {
+      isTeaserAutoplaying = !isTeaserAutoplaying;
+      const btn = document.getElementById('teaserAutoBtn');
+      if (btn) {
+        btn.innerHTML = isTeaserAutoplaying ? '&#9654; Auto Reel' : '&#10074;&#10074; Paused';
+      }
+      if (isTeaserAutoplaying) {
+        restartTeaserAutoplayTimer();
+      } else if (teaserAutoTimer) {
+        clearInterval(teaserAutoTimer);
+      }
+    }
+
+    function restartTeaserAutoplayTimer() {
+      if (teaserAutoTimer) clearInterval(teaserAutoTimer);
+      if (!isTeaserAutoplaying) return;
+      teaserAutoTimer = setInterval(() => {
+        if (document.hidden) return;
+        nextTeaserChapter();
+      }, 6500);
+    }
+
+    function filterGalleryBySoftwareChapter() {
+      const chapter = TEASER_CHAPTERS[activeTeaserIndex];
+      const searchBox = document.getElementById('searchInput');
+      if (searchBox) {
+        searchBox.value = chapter.key;
+        setCategory('All');
+      }
+      const archiveEl = document.getElementById('archive');
+      if (archiveEl) archiveEl.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    async function renderSoftwareTeaser() {
+      clearTeaserBlobUrls();
+      const chapter = TEASER_CHAPTERS[activeTeaserIndex];
+      if (!chapter) return;
+
+      // Update Tab Active States
+      document.querySelectorAll('.teaser-tab').forEach(tab => {
+        if (tab.dataset.teaser === chapter.key) {
+          tab.className = 'teaser-tab px-3.5 py-2 rounded-xl text-xs font-bold transition-all bg-bronze-500 text-white shadow-sm';
+        } else {
+          tab.className = 'teaser-tab px-3.5 py-2 rounded-xl text-xs font-semibold transition-all bg-espresso-800 text-sand-200 hover:bg-espresso-600';
+        }
+      });
+
+      // Find best matching uploaded project for this specific software (prefer exact primary match)
+      const exactMatches = appState.projects.filter(p =>
+        (p.software || '').toLowerCase().includes(chapter.key.toLowerCase())
+      );
+      const fallbackMatches = appState.projects.filter(p =>
+        chapter.fallbackCategories.includes(p.category)
+      );
+      const matchingProjects = exactMatches.length > 0 ? exactMatches : fallbackMatches;
+
+      const featured = matchingProjects[activeTeaserIndex % Math.max(matchingProjects.length, 1)] || matchingProjects[0] || null;
+      setSafeText('teaserBadge', chapter.badge);
+      setSafeText('teaserWorkCount', `Chapter 0${activeTeaserIndex + 1} / 04 • ${matchingProjects.length} Work${matchingProjects.length === 1 ? '' : 's'}`);
+      setSafeText('teaserHeading', featured ? `${featured.title} — ${chapter.key} Showcase` : chapter.heading);
+      setSafeText('teaserSummary', featured && featured.description ? featured.description : chapter.summary);
+
+      const progBar = document.getElementById('teaserProgressBar');
+      if (progBar) progBar.style.width = `${((activeTeaserIndex + 1) / TEASER_CHAPTERS.length) * 100}%`;
+
+      const capsBox = document.getElementById('teaserCapabilities');
+      if (capsBox) {
+        capsBox.innerHTML = chapter.capabilities.map(cap =>
+          `<span class="px-2.5 py-1 rounded-lg bg-espresso-800 border border-espresso-600 text-sand-200 text-[11px] font-semibold">${escapeHtml(cap)}</span>`
+        ).join('');
+      }
+
+      const stage = document.getElementById('teaserVisualStage');
+      if (!stage) return;
+
+      if (featured) {
+        let visualHtml = '';
+        if (featured.sourceType === 'embedded-data' && featured.embeddedDataUrl) {
+          if (featured.mediaType === 'video') {
+            visualHtml = `<video src="${featured.embeddedDataUrl}" autoplay muted loop playsinline class="w-full h-full max-h-[360px] object-cover"></video>`;
+          } else if (featured.mediaType === 'image') {
+            visualHtml = `<img src="${featured.embeddedDataUrl}" alt="${escapeHtml(featured.title)}" class="w-full h-full max-h-[360px] object-cover" />`;
+          }
+        } else if (featured.sourceType === 'local') {
+          const rec = await getBlobFromIndexedDB(featured.id);
+          if (rec && rec.blob && (featured.mediaType === 'video' || featured.mediaType === 'image')) {
+            const bUrl = URL.createObjectURL(rec.blob);
+            teaserBlobUrls.push(bUrl);
+            visualHtml = featured.mediaType === 'video'
+              ? `<video src="${bUrl}" autoplay muted loop playsinline class="w-full h-full max-h-[360px] object-cover"></video>`
+              : `<img src="${bUrl}" alt="${escapeHtml(featured.title)}" class="w-full h-full max-h-[360px] object-cover" />`;
+          }
+        } else if (featured.sourceType === 'link') {
+          const parsed = parseEmbedMediaUrl(featured.externalUrl, featured.mediaType);
+          const thumb = featured.customThumbUrl || parsed.thumb;
+          if (thumb) {
+            visualHtml = `<img src="${escapeHtml(thumb)}" alt="${escapeHtml(featured.title)}" class="w-full h-full max-h-[360px] object-cover" />`;
+          }
+        }
+
+        if (visualHtml) {
+          stage.innerHTML = `
+            <div onclick="openLightbox('${featured.id}')" class="relative w-full h-full cursor-pointer group">
+              ${visualHtml}
+              <div class="absolute inset-0 bg-gradient-to-t from-espresso-900/90 via-transparent to-transparent flex items-end justify-between p-5">
+                <div>
+                  <span class="px-2.5 py-1 rounded-md bg-bronze-500 text-white text-[10px] font-bold uppercase tracking-wider">FEATURED ${escapeHtml(chapter.key.toUpperCase())} WORK</span>
+                  <p class="font-serif text-xl font-bold text-white mt-1">${escapeHtml(featured.title)}</p>
+                </div>
+                <span class="px-3.5 py-2 rounded-xl bg-ivory text-espresso-900 text-xs font-bold group-hover:bg-amber-300 transition-colors">
+                  Open Story &rarr;
+                </span>
+              </div>
+            </div>`;
+          return;
+        }
+      }
+
+      // Elegant Software Craft Teaser Card when no matching project is uploaded yet
+      const monogramMap = { 'Illustrator': 'Ai', 'Photoshop': 'Ps', 'Premiere Pro': 'Pr', 'After Effects': 'Ae' };
+      const mono = monogramMap[chapter.key] || 'SG';
+      stage.innerHTML = `
+        <div class="w-full h-full p-8 flex flex-col items-center justify-center text-center bg-gradient-to-br from-espresso-900 via-espresso-800 to-espresso-900 relative overflow-hidden">
+          <div class="w-20 h-20 rounded-3xl bg-bronze-500/20 border-2 border-amber-400/60 text-amber-300 flex items-center justify-center font-serif font-bold text-3xl mb-4 shadow-lg">
+            ${mono}
+          </div>
+          <span class="text-[11px] font-bold uppercase tracking-[0.22em] text-amber-400">ADOBE ${escapeHtml(chapter.key.toUpperCase())} SHOWREEL</span>
+          <p class="font-serif text-xl sm:text-2xl text-alabaster mt-1.5 max-w-md">
+            ${escapeHtml(chapter.heading)}
+          </p>
+          <p class="text-xs text-sand-400 mt-2 max-w-sm">
+            Upload your ${escapeHtml(chapter.key)} projects in Owner Studio to showcase them live inside this showreel chapter.
+          </p>
+        </div>`;
+    }
+
+    // -----------------------------------------------------------------------
+    // 19. INITIALIZE ON PAGE LOAD
     // -----------------------------------------------------------------------
     window.addEventListener('DOMContentLoaded', async () => {
       initAtelierMotion();
       await initIndexedDB();
       loadPortfolioState();
+      upgradeLegacyProjectCaptions();
       renderPersonalProfile();
       await renderGallery();
+      await renderSoftwareTeaser();
+      restartTeaserAutoplayTimer();
     });
   </script>
 </body>
