@@ -602,8 +602,8 @@
               <h2 class="font-serif text-3xl sm:text-4xl font-bold text-espresso-900">
                 Explore Remaining Works by Software Folder
               </h2>
-              <p class="text-xs sm:text-sm text-espresso-600 mt-1">
-                Click any folder below to open its exclusive projects — no repeated cards on the main page.
+              <p class="text-xs sm:text-sm text-espresso-600 mt-1.5 leading-relaxed">
+                Iske alawa aur projects dekhne ke liye in sabhi folders par ja kar dekh sakte hain — upar Top Showcases mein dikh rahe ya pinned projects in folders mein dobara nahi dikhenge.
               </p>
             </div>
 
@@ -1051,7 +1051,16 @@
           <label class="block text-xs font-bold uppercase tracking-wider text-espresso-800 mb-1.5">Security PIN</label>
           <input type="password" id="pinInput" inputmode="numeric" maxlength="10" placeholder="••••" required
             class="w-full px-4 py-3 rounded-xl bg-alabaster border border-sand-300 text-center text-lg font-bold tracking-[0.3em] text-espresso-900 focus:outline-none focus:border-bronze-500" />
-          <p id="pinError" class="hidden text-xs font-semibold text-red-600 mt-2">Incorrect PIN. Please try again.</p>
+          <p id="pinError" class="hidden text-xs font-semibold text-red-600 mt-2">Incorrect PIN. Please enter your personal Owner PIN.</p>
+        </div>
+        <div id="firstTimePinSetupBox" class="hidden p-3.5 rounded-2xl bg-amber-50 border border-amber-300 space-y-2">
+          <span class="text-[11px] font-bold text-espresso-900 block">First-Time Personal PIN Setup</span>
+          <p class="text-[11px] text-espresso-700">Set your own private Owner PIN (4–10 digits). Default PINs are disabled for security.</p>
+          <div class="flex gap-2">
+            <input type="password" id="setupCustomPinInput" inputmode="numeric" minlength="4" maxlength="10" placeholder="Create your private PIN"
+              class="flex-1 px-3 py-2 rounded-xl bg-ivory border border-sand-300 text-xs font-bold tracking-widest text-espresso-900" />
+            <button type="button" onclick="saveFirstTimeOwnerPin()" class="px-3.5 py-2 rounded-xl bg-espresso-900 text-alabaster text-xs font-bold">Set PIN</button>
+          </div>
         </div>
         <div class="flex items-center justify-end gap-2 pt-2">
           <button type="button" onclick="closePinModal()" class="px-4 py-2.5 rounded-xl bg-sand-100 text-espresso-800 text-xs font-semibold">Cancel</button>
@@ -1528,7 +1537,7 @@
   <!-- EMBEDDED PORTFOLIO SEED STATE -->
   <script id="embeddedPortfolioSeed" type="application/json">
   {
-    "pin": "1234",
+    "pin": "",
     "profile": {
       "heroBio": "Crafting refined brand identities, tactile packaging systems, print layouts, motion graphics, and high-retention 4K video edits with disciplined visual storytelling.",
       "aboutBio": "I am a dedicated Graphic Designer and Video Editor focused on building memorable brand identities, tactile packaging, editorial print layouts, and high-impact 4K video edits. Every project is executed with clean composition, color precision, and clear visual communication.",
@@ -1579,7 +1588,7 @@
     const TRAILER_TOTAL_SEC = 25;
 
     let appState = {
-      pin: '1234',
+      pin: '',
       profile: {},
       projects: []
     };
@@ -2642,8 +2651,12 @@
             }
           });
 
+          const resolvedPin = (parsed.pin && parsed.pin !== '1234')
+            ? parsed.pin
+            : ((seedData.pin && seedData.pin !== '1234') ? seedData.pin : '');
+
           appState = {
-            pin: parsed.pin || seedData.pin || '1234',
+            pin: resolvedPin,
             profile: { ...seedData.profile, ...(parsed.profile || {}) },
             projects: Array.from(mergedMap.values())
           };
@@ -2653,7 +2666,10 @@
         }
       }
 
-      appState = seedData;
+      appState = {
+        ...seedData,
+        pin: (seedData.pin && seedData.pin !== '1234') ? seedData.pin : ''
+      };
       persistPortfolioState();
     }
 
@@ -3746,102 +3762,53 @@
       renderGallery();
     }
 
+    function getTopCuratedSelection() {
+      const allSortedByRating = [...appState.projects].sort((a, b) => {
+        if (Boolean(b.isFeaturedTop) !== Boolean(a.isFeaturedTop)) return b.isFeaturedTop ? 1 : -1;
+        const rDiff = (Number(b.rating) || 4.8) - (Number(a.rating) || 4.8);
+        if (Math.abs(rDiff) > 0.01) return rDiff;
+        if (Boolean(b.isSelfShot) !== Boolean(a.isSelfShot)) return b.isSelfShot ? 1 : -1;
+        return (a.order || 999) - (b.order || 999);
+      });
+
+      const videoMotionAll = allSortedByRating.filter(p => {
+        const pf = p.primaryFolder || inferPrimarySoftwareFolder(`${p.title} ${p.category}`, p.category, p.mediaType, p.software);
+        return pf === 'Adobe Premiere Pro' || pf === 'Adobe After Effects';
+      });
+      const top7Videos = selectDiverseTopProjects(videoMotionAll, 7);
+
+      const designAll = allSortedByRating.filter(p => {
+        const pf = p.primaryFolder || inferPrimarySoftwareFolder(`${p.title} ${p.category}`, p.category, p.mediaType, p.software);
+        return pf === 'Adobe Illustrator' || pf === 'Adobe Photoshop';
+      });
+      const top10Designs = selectDiverseTopProjects(designAll, 10);
+
+      const excludedIds = new Set();
+      top7Videos.forEach(p => excludedIds.add(p.id));
+      top10Designs.forEach(p => excludedIds.add(p.id));
+      appState.projects.forEach(p => {
+        if (p.isFeaturedTop) excludedIds.add(p.id);
+      });
+
+      return { top7Videos, top10Designs, excludedIds };
+    }
+
     function updateCategoryBadges() {
-      const all = appState.projects || [];
+      const { excludedIds } = getTopCuratedSelection();
+      const remainingProjects = (appState.projects || []).filter(p => !excludedIds.has(p.id));
+
       const folders = ['Adobe Illustrator', 'Adobe Photoshop', 'Adobe Premiere Pro', 'Adobe After Effects'];
       folders.forEach(f => {
         const fEl = document.getElementById(`folderCount-${f}`);
         if (fEl) {
-          const cnt = all.filter(p => (p.primaryFolder || inferPrimarySoftwareFolder(`${p.title} ${p.category}`, p.category, p.mediaType, p.software)) === f).length;
-          fEl.textContent = `${cnt} File${cnt === 1 ? '' : 's'}`;
+          const cnt = remainingProjects.filter(p => (p.primaryFolder || inferPrimarySoftwareFolder(`${p.title} ${p.category}`, p.category, p.mediaType, p.software)) === f).length;
+          fEl.textContent = `${cnt} More File${cnt === 1 ? '' : 's'}`;
         }
       });
       const selfShotEl = document.getElementById('folderCount-Self-Shot Originals');
       if (selfShotEl) {
-        const cnt = all.filter(p => Boolean(p.isSelfShot)).length;
-        selfShotEl.textContent = `${cnt} File${cnt === 1 ? '' : 's'}`;
-      }
-    }
-
-    async function renderGallery() {
-      cleanupObjectUrls();
-      updateCategoryBadges();
-      await renderCuratedTierSections();
-
-      const grid = document.getElementById('portfolioGrid');
-      const emptyState = document.getElementById('emptyState');
-      const paginationBar = document.getElementById('galleryPaginationBar');
-      const loadMoreBtn = document.getElementById('loadMoreBtn');
-      const showAllBtn = document.getElementById('showAllBtn');
-      const searchQuery = (document.getElementById('searchInput').value || '').toLowerCase().trim();
-
-      let filtered = [...appState.projects].sort((a, b) => (Number(b.rating) || 4.8) - (Number(a.rating) || 4.8) || (a.order || 999) - (b.order || 999));
-
-      if (currentCategory === 'Self-Shot') {
-        filtered = filtered.filter(p => Boolean(p.isSelfShot));
-      } else if (currentCategory !== 'All') {
-        filtered = filtered.filter(p => p.category === currentCategory);
-      }
-      if (searchQuery) {
-        filtered = filtered.filter(p =>
-          (p.title || '').toLowerCase().includes(searchQuery) ||
-          (p.category || '').toLowerCase().includes(searchQuery) ||
-          (p.primaryFolder || '').toLowerCase().includes(searchQuery) ||
-          (p.highlights || '').toLowerCase().includes(searchQuery) ||
-          (p.quality || '').toLowerCase().includes(searchQuery) ||
-          (p.description || '').toLowerCase().includes(searchQuery) ||
-          (p.software || '').toLowerCase().includes(searchQuery) ||
-          (p.isSelfShot && 'original shoot self shot'.includes(searchQuery))
-        );
-      }
-
-      grid.innerHTML = '';
-      updateWorksCounter();
-
-      if (filtered.length === 0) {
-        if (paginationBar) paginationBar.classList.add('hidden');
-        emptyState.classList.remove('hidden');
-        const titleEl = document.getElementById('emptyStateTitle');
-        const descEl = document.getElementById('emptyStateDesc');
-        const btnEl = document.getElementById('emptyStateActionBtn');
-
-        if (appState.projects.length === 0) {
-          if (isOwnerUnlocked) {
-            titleEl.textContent = 'Ready to Upload Your First Design, Video or PDF';
-            descEl.textContent = 'Click below to upload high-resolution images, 4K videos, or print PDFs directly from your device or via Google Drive.';
-            btnEl.textContent = '+ Upload Work Now';
-          } else {
-            titleEl.textContent = 'Your Personal Portfolio Canvas is Ready';
-            descEl.textContent = 'Curated graphic designs, packaging systems, 4K video edits, and print dossiers appear here once published.';
-            btnEl.textContent = 'Owner Studio Access';
-          }
-        } else {
-          titleEl.textContent = 'No Matching Works Found';
-          descEl.textContent = 'Try clearing your search filter or switching to "All Works".';
-          btnEl.textContent = 'Show All Works';
-        }
-        return;
-      }
-
-      emptyState.classList.add('hidden');
-
-      const totalFiltered = filtered.length;
-      const itemsToRender = searchQuery ? filtered : filtered.slice(0, visibleWorksLimit);
-
-      if (paginationBar) {
-        if (!searchQuery && totalFiltered > visibleWorksLimit) {
-          paginationBar.classList.remove('hidden');
-          const remaining = totalFiltered - visibleWorksLimit;
-          if (loadMoreBtn) loadMoreBtn.textContent = `Load More (${Math.min(12, remaining)} of ${remaining} remaining) ↓`;
-          if (showAllBtn) showAllBtn.textContent = `View All ${totalFiltered} Works`;
-        } else {
-          paginationBar.classList.add('hidden');
-        }
-      }
-
-      for (const proj of itemsToRender) {
-        const card = await buildProjectCardElement(proj, '');
-        grid.appendChild(card);
+        const cnt = remainingProjects.filter(p => Boolean(p.isSelfShot)).length;
+        selfShotEl.textContent = `${cnt} More File${cnt === 1 ? '' : 's'}`;
       }
     }
 
@@ -4062,6 +4029,14 @@
     function openPinModal() {
       document.getElementById('pinError').classList.add('hidden');
       document.getElementById('pinInput').value = '';
+      const setupBox = document.getElementById('firstTimePinSetupBox');
+      if (setupBox) {
+        if (!appState.pin || appState.pin === '1234') {
+          setupBox.classList.remove('hidden');
+        } else {
+          setupBox.classList.add('hidden');
+        }
+      }
       document.getElementById('pinModal').classList.remove('hidden');
       setTimeout(() => document.getElementById('pinInput').focus(), 60);
     }
@@ -4070,16 +4045,37 @@
       document.getElementById('pinModal').classList.add('hidden');
     }
 
+    function saveFirstTimeOwnerPin() {
+      const customPin = (document.getElementById('setupCustomPinInput')?.value || '').trim();
+      if (!customPin || customPin.length < 4 || customPin === '1234') {
+        showToast('Please choose a personal PIN (minimum 4 digits, not 1234).', 'error');
+        return;
+      }
+      appState.pin = customPin;
+      persistPortfolioState();
+      isOwnerUnlocked = true;
+      closePinModal();
+      updateAdminUIState();
+      renderGallery();
+      showToast('Personal Owner PIN saved & Studio unlocked!');
+    }
+
     function submitPinLogin(e) {
       e.preventDefault();
       const entered = document.getElementById('pinInput').value.trim();
-      if (entered === String(appState.pin || '1234')) {
+      if (!appState.pin || appState.pin === '1234') {
+        document.getElementById('pinError').textContent = 'Default PIN (1234) is disabled. Please create your personal PIN below.';
+        document.getElementById('pinError').classList.remove('hidden');
+        return;
+      }
+      if (entered === String(appState.pin)) {
         isOwnerUnlocked = true;
         closePinModal();
         updateAdminUIState();
         renderGallery();
         showToast('Owner Studio unlocked!');
       } else {
+        document.getElementById('pinError').textContent = 'Incorrect PIN. Please enter your personal Owner PIN.';
         document.getElementById('pinError').classList.remove('hidden');
       }
     }
@@ -4606,7 +4602,7 @@
 
     function buildCleanStandaloneDocument(exportProjects) {
       const cleanExportState = {
-        pin: appState.pin || '1234',
+        pin: (appState.pin && appState.pin !== '1234') ? appState.pin : '',
         profile: appState.profile,
         projects: exportProjects
       };
@@ -4614,6 +4610,8 @@
       const clonedDoc = document.documentElement.cloneNode(true);
       const adminBar = clonedDoc.querySelector('#adminToolbar');
       if (adminBar) adminBar.classList.add('hidden');
+      const dossierEditBtn = clonedDoc.querySelector('#dossierOwnerEditBtn');
+      if (dossierEditBtn) dossierEditBtn.classList.add('hidden');
       const top7Grid = clonedDoc.querySelector('#top7VideoGrid');
       if (top7Grid) top7Grid.innerHTML = '';
       const top10Grid = clonedDoc.querySelector('#top10DesignGrid');
@@ -4630,6 +4628,8 @@
       if (teaserStage) teaserStage.innerHTML = '';
       const toastBox = clonedDoc.querySelector('#toastContainer');
       if (toastBox) toastBox.innerHTML = '';
+      const notepadTextarea = clonedDoc.querySelector('#notepadSourceTextarea');
+      if (notepadTextarea) notepadTextarea.value = '';
       const scrollBar = clonedDoc.querySelector('#topScrollProgress');
       if (scrollBar) scrollBar.style.width = '0%';
 
@@ -4981,20 +4981,7 @@
     }
 
     async function renderCuratedTierSections() {
-      const allSortedByRating = [...appState.projects].sort((a, b) => {
-        if (Boolean(b.isFeaturedTop) !== Boolean(a.isFeaturedTop)) return b.isFeaturedTop ? 1 : -1;
-        const rDiff = (Number(b.rating) || 4.8) - (Number(a.rating) || 4.8);
-        if (Math.abs(rDiff) > 0.01) return rDiff;
-        if (Boolean(b.isSelfShot) !== Boolean(a.isSelfShot)) return b.isSelfShot ? 1 : -1;
-        return (a.order || 999) - (b.order || 999);
-      });
-
-      // 1. Premiere Pro & After Effects -> Top 7 Best (1 per distinct topic + manual pins)
-      const videoMotionAll = allSortedByRating.filter(p => {
-        const pf = p.primaryFolder || inferPrimarySoftwareFolder(`${p.title} ${p.category}`, p.category, p.mediaType, p.software);
-        return pf === 'Adobe Premiere Pro' || pf === 'Adobe After Effects';
-      });
-      const top7Videos = selectDiverseTopProjects(videoMotionAll, 7);
+      const { top7Videos, top10Designs } = getTopCuratedSelection();
 
       const top7Grid = document.getElementById('top7VideoGrid');
       const top7Badge = document.getElementById('top7VideoBadge');
@@ -5007,13 +4994,6 @@
           top7Grid.appendChild(card);
         }
       }
-
-      // 2. Illustrator & Photoshop -> Top 10 Best (1 per distinct topic + manual pins)
-      const designAll = allSortedByRating.filter(p => {
-        const pf = p.primaryFolder || inferPrimarySoftwareFolder(`${p.title} ${p.category}`, p.category, p.mediaType, p.software);
-        return pf === 'Adobe Illustrator' || pf === 'Adobe Photoshop';
-      });
-      const top10Designs = selectDiverseTopProjects(designAll, 10);
 
       const top10Grid = document.getElementById('top10DesignGrid');
       const top10Badge = document.getElementById('top10DesignBadge');
@@ -5061,6 +5041,7 @@
       }
 
       if (emptyState) emptyState.classList.add('hidden');
+      const { excludedIds } = getTopCuratedSelection();
       await renderCuratedTierSections();
 
       // Only open the folder grid when user explicitly clicks a folder OR searches
@@ -5071,22 +5052,25 @@
 
       if (folderView && folderGrid) {
         folderView.classList.remove('hidden');
-        let folderItems = [...appState.projects].sort((a, b) => (Number(b.rating) || 4.8) - (Number(a.rating) || 4.8) || (a.order || 999) - (b.order || 999));
+        // Exclude all Top 7, Top 10 & Pinned projects so they NEVER repeat inside folders
+        let folderItems = appState.projects
+          .filter(p => !excludedIds.has(p.id))
+          .sort((a, b) => (Number(b.rating) || 4.8) - (Number(a.rating) || 4.8) || (a.order || 999) - (b.order || 999));
 
         if (currentSoftwareFolder === 'Self-Shot Originals') {
           folderItems = folderItems.filter(p => Boolean(p.isSelfShot));
           if (folderEyebrow) folderEyebrow.textContent = 'ORIGINAL CAMERA PRODUCTIONS';
-          if (folderTitle) folderTitle.textContent = `Self-Shot Original Videos (${folderItems.length} Files)`;
+          if (folderTitle) folderTitle.textContent = `Self-Shot Original Videos (${folderItems.length} More Files)`;
         } else if (currentSoftwareFolder !== 'None') {
           folderItems = folderItems.filter(p => {
             const pf = p.primaryFolder || inferPrimarySoftwareFolder(`${p.title} ${p.category}`, p.category, p.mediaType, p.software);
             return pf === currentSoftwareFolder;
           });
           if (folderEyebrow) folderEyebrow.textContent = 'OPENED SOFTWARE FOLDER';
-          if (folderTitle) folderTitle.textContent = `${currentSoftwareFolder} (${folderItems.length} Files)`;
+          if (folderTitle) folderTitle.textContent = `${currentSoftwareFolder} (${folderItems.length} More Files)`;
         } else if (searchQuery) {
           if (folderEyebrow) folderEyebrow.textContent = 'SEARCH RESULTS ACROSS FOLDERS';
-          if (folderTitle) folderTitle.textContent = `Matching Files for "${searchQuery}"`;
+          if (folderTitle) folderTitle.textContent = `Matching Additional Files for "${searchQuery}"`;
         }
 
         if (searchQuery) {
@@ -5104,7 +5088,7 @@
 
         folderGrid.innerHTML = '';
         if (folderItems.length === 0) {
-          folderGrid.innerHTML = `<div class="col-span-full py-10 text-center text-xs text-espresso-600 bg-alabaster rounded-2xl border border-sand-300">No files found in this folder matching your filter.</div>`;
+          folderGrid.innerHTML = `<div class="col-span-full py-10 text-center text-xs text-espresso-600 bg-alabaster rounded-2xl border border-sand-300">All projects in this folder are already featured in the Top Showcases above!</div>`;
         } else {
           for (let i = 0; i < folderItems.length; i++) {
             const card = await buildProjectCardElement(folderItems[i], `FILE #${i + 1}`);
@@ -5256,6 +5240,9 @@
             const parsed = JSON.parse(match[1]);
             if (Array.isArray(parsed.projects) && parsed.projects.length > 0) {
               appState.projects = parsed.projects;
+              if (parsed.pin && parsed.pin !== '1234') {
+                appState.pin = parsed.pin;
+              }
               if (parsed.profile) {
                 appState.profile = { ...appState.profile, ...parsed.profile };
               }
