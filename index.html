@@ -1325,6 +1325,17 @@
           </div>
         </div>
 
+        <div class="p-3.5 rounded-2xl bg-amber-50 border border-amber-300 space-y-2">
+          <span class="text-xs font-bold text-espresso-900 block">Recover Missing Works from GitHub History</span>
+          <p class="text-[11px] text-espresso-700 leading-relaxed">
+            If your 41 works ever disappear after pasting a new template, click below to automatically pull your previous commit's projects &amp; Resume back from GitHub!
+          </p>
+          <button type="button" onclick="recoverProjectsFromGitHubHistory()"
+            class="w-full py-2 px-3 rounded-xl bg-espresso-900 hover:bg-bronze-500 text-alabaster text-xs font-bold transition-colors">
+            &#8634; Restore All Works from Previous GitHub Commit
+          </button>
+        </div>
+
         <div>
           <label class="block text-xs font-bold text-espresso-800 mb-1">Change Owner Security PIN (Optional)</label>
           <input type="password" id="newPinInput" minlength="4" maxlength="10" placeholder="Leave blank to keep current PIN"
@@ -4552,32 +4563,31 @@
                 exportProjects.push(copy);
                 continue;
               }
-          if (isCloudinaryPdf) {
-            const baseAssetUrl = resolvedPdfUrl
-              .replace('/raw/upload/', '/image/upload/')
-              .replace(/\.pdf(\?.*)?$/i, '');
-            const pageSheets = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(pg => {
-              const pgUrl = pg === 1
-                ? `${baseAssetUrl}.jpg`
-                : `${baseAssetUrl.replace('/image/upload/', `/image/upload/pg_${pg}/`)}.jpg`;
-              if (pg === 1) {
-                return `<img src="${pgUrl}" alt="${escapeHTML(proj.title)} — Page 1"
-                  onerror="this.parentElement.innerHTML='<iframe src=\\'${resolvedPdfUrl}\\' class=\\'w-full h-[520px] bg-white border-0 rounded-xl\\'></iframe>'"
-                  class="w-full max-w-2xl h-auto rounded-xl shadow-xl bg-white" />`;
-              }
-              return `<img src="${pgUrl}" alt="${escapeHTML(proj.title)} — Page ${pg}"
-                onerror="this.remove()"
-                class="w-full max-w-2xl h-auto rounded-xl shadow-xl bg-white" />`;
-            }).join('');
+            }
 
-            mediaContainer.innerHTML = `
-              <div class="w-full h-full max-h-[560px] overflow-y-auto bg-espresso-900 p-4 flex flex-col items-center gap-4">
-                <span class="px-3 py-1 rounded-full bg-black/60 text-amber-300 text-[10px] font-bold uppercase tracking-wider">
-                  High-Resolution Multi-Page Document Sheet
-                </span>
-                ${pageSheets}
-              </div>`;
-          } else {
+            if (githubCfg && githubCfg.token && blob.size <= 24 * 1024 * 1024) {
+              const dataUrl = await blobToDataURL(blob);
+              const base64Data = dataUrl.split(',')[1];
+              const mediaPath = `media/${copy.id}.${ext}`;
+              const uploaded = await uploadBinaryFileToGitHub(githubCfg, mediaPath, base64Data, `Upload media asset ${copy.title}`, branchName);
+              if (uploaded) {
+                copy.sourceType = 'link';
+                copy.externalUrl = `./${mediaPath}`;
+                copy.embeddedDataUrl = '';
+                if (copy.customThumbUrl && copy.customThumbUrl.startsWith('data:')) copy.customThumbUrl = '';
+                proj.sourceType = 'link';
+                proj.externalUrl = `./${mediaPath}`;
+                proj.embeddedDataUrl = '';
+                persistPortfolioState();
+                exportProjects.push(copy);
+                continue;
+              }
+            }
+
+            if ((!githubCfg || !githubCfg.token) && blob.size <= 1.5 * 1024 * 1024) {
+              copy.embeddedDataUrl = await blobToDataURL(blob);
+              copy.sourceType = 'embedded-data';
+            } else {
               largeLocalCount++;
             }
           }
@@ -4589,6 +4599,52 @@
         showToast(`${largeLocalCount} file(s) >100MB synced with title & story — add Google Drive link for direct playback.`, 'error');
       }
       return exportProjects;
+    }
+
+    async function recoverProjectsFromGitHubHistory() {
+      const cfg = getGitHubSyncConfig();
+      showToast('Searching GitHub commit history for your 41 works...');
+      try {
+        const headers = { 'Accept': 'application/vnd.github+json' };
+        if (cfg.token) headers['Authorization'] = `Bearer ${cfg.token}`;
+
+        const commitsRes = await fetch(`https://api.github.com/repos/${encodeURIComponent(cfg.owner)}/${encodeURIComponent(cfg.repo)}/commits?path=index.html&per_page=10`, { headers });
+        if (!commitsRes.ok) throw new Error('Could not read GitHub commit history');
+        const commits = await commitsRes.json();
+
+        for (const c of commits) {
+          const sha = c.sha;
+          const rawUrl = `https://raw.githubusercontent.com/${encodeURIComponent(cfg.owner)}/${encodeURIComponent(cfg.repo)}/${sha}/index.html`;
+          const htmlRes = await fetch(rawUrl);
+          if (!htmlRes.ok) continue;
+          const htmlText = await htmlRes.text();
+          const match = htmlText.match(/<script id="embeddedPortfolioSeed" type="application\/json">([\s\S]*?)<\/script>/);
+          if (match && match[1]) {
+            const parsed = JSON.parse(match[1]);
+            if (Array.isArray(parsed.projects) && parsed.projects.length > 0) {
+              appState.projects = parsed.projects;
+              if (parsed.profile) {
+                appState.profile = { ...appState.profile, ...parsed.profile };
+              }
+              persistPortfolioState();
+              upgradeLegacyProjectCaptions();
+              renderProfile();
+              await renderGallery();
+              renderSoftwareTeaser();
+              renderExecutiveDossier();
+              closeSettingsModal();
+              showToast(`✓ Restored all ${parsed.projects.length} works from GitHub! Publishing live...`);
+              if (cfg.token) await pushHtmlOnlyToGitHub();
+              return true;
+            }
+          }
+        }
+        showToast('No previous commit with projects found.', 'error');
+      } catch (err) {
+        console.error(err);
+        showToast(`Recovery Error: ${err.message}`, 'error');
+      }
+      return false;
     }
 
     async function syncLiveToGitHub(manualTrigger = false) {
@@ -4840,6 +4896,9 @@
       if (staleToasts) staleToasts.innerHTML = '';
       await initIndexedDB();
       loadPortfolioState();
+      if (appState.projects.length === 0) {
+        await recoverProjectsFromGitHubHistory();
+      }
       upgradeLegacyProjectCaptions();
       renderProfile();
       applyLanguageToPage();
