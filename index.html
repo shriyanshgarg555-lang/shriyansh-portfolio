@@ -493,11 +493,15 @@
                 class="px-3 py-2 rounded-xl bg-alabaster text-espresso-900 text-xs font-bold hover:bg-amber-300 transition-colors">
                 &#10074;&#10074; Playing 25s
               </button>
+              <button type="button" onclick="toggleTrailerScoreAudio()" id="trailerAudioBtn" title="Toggle Cinematic Trailer Audio"
+                class="px-3 py-2 rounded-xl bg-amber-400/20 border border-amber-400/40 text-amber-300 text-xs font-bold hover:bg-amber-400 hover:text-espresso-900 transition-colors">
+                &#128263; Trailer Score
+              </button>
             </div>
           </div>
 
           <div class="grid grid-cols-1 lg:grid-cols-12">
-            <div id="teaserVisualStage" class="lg:col-span-7 relative min-h-[260px] sm:min-h-[340px] bg-black flex items-center justify-center overflow-hidden"></div>
+            <div id="teaserVisualStage" class="lg:col-span-7 relative min-h-[260px] sm:min-h-[340px] bg-espresso-900 flex items-center justify-center overflow-hidden"></div>
 
             <div class="lg:col-span-5 p-6 sm:p-8 flex flex-col justify-between bg-espresso-900/95 border-t lg:border-t-0 lg:border-l border-espresso-800 space-y-5">
               <div class="space-y-3">
@@ -544,86 +548,7 @@
     <section id="archive" class="py-12 sm:py-16">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
 
-        <!-- 1. SOFTWARE FOLDER ARCHITECTURE (4 DEDICATED SOFTWARE FOLDERS) -->
-        <div class="p-6 sm:p-8 rounded-3xl bg-ivory/95 backdrop-blur-sm border border-sand-300 shadow-editorial space-y-6">
-          <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-sand-300 pb-5">
-            <div>
-              <span class="text-xs font-bold uppercase tracking-[0.2em] text-bronze-500 block mb-1">
-                ORGANIZED BY PRIMARY SOFTWARE MARK
-              </span>
-              <h2 class="font-serif text-3xl sm:text-4xl font-bold text-espresso-900">
-                Creative Software Folders
-              </h2>
-              <p class="text-xs sm:text-sm text-espresso-600 mt-1">
-                Every work is automatically filed into its primary software folder based on its studio mark &amp; craft rating.
-              </p>
-            </div>
-
-            <button type="button" onclick="selectSoftwareFolder('All')" id="resetFolderBtn"
-              class="self-start md:self-auto px-4 py-2 rounded-xl bg-sand-100 hover:bg-espresso-900 hover:text-alabaster text-espresso-900 border border-sand-300 text-xs font-bold transition-colors">
-              Show All Folders &amp; Curated Sections
-            </button>
-          </div>
-
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="softwareFoldersGrid">
-            <button type="button" onclick="selectSoftwareFolder('Adobe Illustrator')" data-folder="Adobe Illustrator"
-              class="folder-card text-left p-5 rounded-2xl bg-alabaster hover:bg-bronze-100/70 border-2 border-sand-300 transition-all group">
-              <div class="flex items-center justify-between mb-3">
-                <span class="w-10 h-10 rounded-xl bg-amber-950 text-amber-400 font-serif font-bold text-base flex items-center justify-center shadow-sm">Ai</span>
-                <span id="folderCount-Adobe Illustrator" class="px-2.5 py-1 rounded-lg bg-ivory border border-sand-300 text-xs font-bold text-espresso-900">0 Works</span>
-              </div>
-              <h3 class="font-serif text-xl font-bold text-espresso-900 group-hover:text-bronze-600">Adobe Illustrator</h3>
-              <p class="text-[11px] text-espresso-600 mt-1">Logos, Vector Architecture, Packaging Dielines &amp; Print</p>
-            </button>
-
-            <button type="button" onclick="selectSoftwareFolder('Adobe Photoshop')" data-folder="Adobe Photoshop"
-              class="folder-card text-left p-5 rounded-2xl bg-alabaster hover:bg-bronze-100/70 border-2 border-sand-300 transition-all group">
-              <div class="flex items-center justify-between mb-3">
-                <span class="w-10 h-10 rounded-xl bg-sky-950 text-sky-300 font-serif font-bold text-base flex items-center justify-center shadow-sm">Ps</span>
-                <span id="folderCount-Adobe Photoshop" class="px-2.5 py-1 rounded-lg bg-ivory border border-sand-300 text-xs font-bold text-espresso-900">0 Works</span>
-              </div>
-              <h3 class="font-serif text-xl font-bold text-espresso-900 group-hover:text-bronze-600">Adobe Photoshop</h3>
-              <p class="text-[11px] text-espresso-600 mt-1">Key Visuals, Photo Compositing, Retouch &amp; Brush Art</p>
-            </button>
-
-            <button type="button" onclick="selectSoftwareFolder('Adobe Premiere Pro')" data-folder="Adobe Premiere Pro"
-              class="folder-card text-left p-5 rounded-2xl bg-alabaster hover:bg-bronze-100/70 border-2 border-sand-300 transition-all group">
-              <div class="flex items-center justify-between mb-3">
-                <span class="w-10 h-10 rounded-xl bg-indigo-950 text-indigo-300 font-serif font-bold text-base flex items-center justify-center shadow-sm">Pr</span>
-                <span id="folderCount-Adobe Premiere Pro" class="px-2.5 py-1 rounded-lg bg-ivory border border-sand-300 text-xs font-bold text-espresso-900">0 Works</span>
-              </div>
-              <h3 class="font-serif text-xl font-bold text-espresso-900 group-hover:text-bronze-600">Adobe Premiere Pro</h3>
-              <p class="text-[11px] text-espresso-600 mt-1">Self-Shot Films, Commercial Edits, SFX &amp; Color Grading</p>
-            </button>
-
-            <button type="button" onclick="selectSoftwareFolder('Adobe After Effects')" data-folder="Adobe After Effects"
-              class="folder-card text-left p-5 rounded-2xl bg-alabaster hover:bg-bronze-100/70 border-2 border-sand-300 transition-all group">
-              <div class="flex items-center justify-between mb-3">
-                <span class="w-10 h-10 rounded-xl bg-purple-950 text-purple-300 font-serif font-bold text-base flex items-center justify-center shadow-sm">Ae</span>
-                <span id="folderCount-Adobe After Effects" class="px-2.5 py-1 rounded-lg bg-ivory border border-sand-300 text-xs font-bold text-espresso-900">0 Works</span>
-              </div>
-              <h3 class="font-serif text-xl font-bold text-espresso-900 group-hover:text-bronze-600">Adobe After Effects</h3>
-              <p class="text-[11px] text-espresso-600 mt-1">Precision Masking, Keyframe Animation &amp; Kinetic Motion</p>
-            </button>
-          </div>
-
-          <!-- ACTIVE SOFTWARE FOLDER VIEW (SHOWN WHEN A FOLDER IS CLICKED) -->
-          <div id="activeFolderView" class="hidden pt-4 border-t border-sand-300 space-y-5">
-            <div class="flex flex-wrap items-center justify-between gap-3">
-              <div>
-                <span id="activeFolderEyebrow" class="text-[11px] font-bold uppercase tracking-widest text-bronze-600 block">DEDICATED SOFTWARE FOLDER</span>
-                <h3 id="activeFolderTitle" class="font-serif text-2xl sm:text-3xl font-bold text-espresso-900">Adobe Premiere Pro</h3>
-              </div>
-              <button type="button" onclick="selectSoftwareFolder('All')"
-                class="px-4 py-2 rounded-xl bg-espresso-900 hover:bg-bronze-500 text-alabaster text-xs font-bold transition-colors">
-                &larr; Back to Curated Top-Rated View
-              </button>
-            </div>
-            <div id="activeFolderGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
-          </div>
-        </div>
-
-        <!-- 2. CURATED TOP-RATED SHOWCASES + COMPLETE RATED ARCHIVE -->
+        <!-- 1. CURATED TOP-RATED SHOWCASES (SHOWN FIRST — ZERO DUPLICATES) -->
         <div id="curatedShowcaseContainer" class="space-y-10">
 
           <!-- TOP 7 VIDEO & MOTION SHOWCASE (PREMIERE PRO & AFTER EFFECTS) -->
@@ -644,18 +569,6 @@
             </div>
 
             <div id="top7VideoGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
-
-            <!-- EXTRA VIDEO & MOTION WORKS WITH RATINGS -->
-            <div id="extraVideoSection" class="hidden pt-6 border-t border-sand-300 space-y-4">
-              <div class="flex items-center justify-between">
-                <div>
-                  <span class="text-[11px] font-bold uppercase tracking-wider text-bronze-600 block">ADDITIONAL RATED PRODUCTIONS</span>
-                  <h3 class="font-serif text-2xl font-bold text-espresso-900">More Premiere Pro &amp; After Effects Works (With Ratings)</h3>
-                </div>
-                <span id="extraVideoCount" class="text-xs font-bold text-espresso-600">0 Works</span>
-              </div>
-              <div id="extraVideoGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
-            </div>
           </div>
 
           <!-- TOP 8–10 DESIGN & PRINT SHOWCASE (ILLUSTRATOR & PHOTOSHOP) -->
@@ -676,85 +589,98 @@
             </div>
 
             <div id="top10DesignGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
-
-            <!-- EXTRA ILLUSTRATOR & PHOTOSHOP WORKS WITH RATINGS -->
-            <div id="extraDesignSection" class="hidden pt-6 border-t border-sand-300 space-y-4">
-              <div class="flex items-center justify-between">
-                <div>
-                  <span class="text-[11px] font-bold uppercase tracking-wider text-bronze-600 block">ADDITIONAL RATED DESIGNS</span>
-                  <h3 class="font-serif text-2xl font-bold text-espresso-900">More Illustrator &amp; Photoshop Works (With Ratings)</h3>
-                </div>
-                <span id="extraDesignCount" class="text-xs font-bold text-espresso-600">0 Works</span>
-              </div>
-              <div id="extraDesignGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
-            </div>
           </div>
         </div>
 
-        <!-- 3. SEARCH & COMPLETE RATED ARCHIVE EXPLORER -->
-        <div class="p-6 sm:p-8 rounded-3xl bg-ivory/92 backdrop-blur-sm border border-sand-300 shadow-editorial">
-          <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-6 border-b border-sand-300">
+        <!-- 2. REMAINING ARCHIVE DIVIDED INTO DEDICATED SOFTWARE FOLDERS (CLICK FOLDER TO OPEN) -->
+        <div class="p-6 sm:p-8 rounded-3xl bg-ivory/95 backdrop-blur-sm border border-sand-300 shadow-editorial space-y-6">
+          <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-sand-300 pb-5">
             <div>
-              <span data-i18n="galleryEyebrow" class="text-xs font-bold uppercase tracking-[0.2em] text-bronze-500 block mb-1">
-                Complete Rated Archive
+              <span class="text-xs font-bold uppercase tracking-[0.2em] text-bronze-500 block mb-1">
+                DEDICATED SOFTWARE VAULT • CLICK ANY FOLDER TO OPEN
               </span>
-              <h2 data-i18n="galleryHeading" class="font-serif text-3xl sm:text-4xl font-bold text-espresso-900">
-                Search &amp; Filter All Works
+              <h2 class="font-serif text-3xl sm:text-4xl font-bold text-espresso-900">
+                Explore Remaining Works by Software Folder
               </h2>
+              <p class="text-xs sm:text-sm text-espresso-600 mt-1">
+                Click any folder below to open its exclusive projects — no repeated cards on the main page.
+              </p>
             </div>
 
-            <div class="w-full md:w-80 relative">
-              <input type="text" id="searchInput" oninput="renderGallery()" placeholder="Search title, original shoot, 4.9 rating, masking..."
-                class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-alabaster border border-sand-300 text-xs sm:text-sm text-espresso-900 focus:outline-none focus:border-bronze-500" />
-              <svg class="w-4 h-4 text-espresso-400 absolute left-3.5 top-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <div class="w-full md:w-72 relative">
+              <input type="text" id="searchInput" oninput="renderGallery()" placeholder="Search inside folders..."
+                class="w-full pl-9 pr-4 py-2.5 rounded-xl bg-alabaster border border-sand-300 text-xs text-espresso-900 focus:outline-none focus:border-bronze-500" />
+              <svg class="w-4 h-4 text-espresso-400 absolute left-3 top-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
               </svg>
             </div>
           </div>
 
-          <div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-5">
-            <button onclick="setCategory('All')" data-cat="All"
-              class="filter-btn active px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all bg-espresso-900 text-alabaster shadow-sm">
-              <span data-i18n="catAll">All Works</span> <span id="count-All" class="ml-1 opacity-75 text-[11px]">(0)</span>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4" id="softwareFoldersGrid">
+            <button type="button" onclick="selectSoftwareFolder('Adobe Illustrator')" data-folder="Adobe Illustrator"
+              class="folder-card text-left p-5 rounded-2xl bg-alabaster hover:bg-bronze-100/70 border-2 border-sand-300 transition-all group">
+              <div class="flex items-center justify-between mb-3">
+                <span class="w-10 h-10 rounded-xl bg-amber-950 text-amber-400 font-serif font-bold text-base flex items-center justify-center shadow-sm">Ai</span>
+                <span id="folderCount-Adobe Illustrator" class="px-2.5 py-1 rounded-lg bg-ivory border border-sand-300 text-xs font-bold text-espresso-900">0 Files</span>
+              </div>
+              <h3 class="font-serif text-lg font-bold text-espresso-900 group-hover:text-bronze-600">Adobe Illustrator</h3>
+              <p class="text-[11px] text-espresso-600 mt-1">Logos, Vectors &amp; Packaging</p>
             </button>
-            <button onclick="setCategory('Self-Shot')" data-cat="Self-Shot"
-              class="filter-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-medium whitespace-nowrap transition-all bg-emerald-50 text-emerald-900 border border-emerald-200 hover:bg-emerald-100">
-              <span>&#127909; Self-Shot Videos</span> <span id="count-Self-Shot" class="ml-1 opacity-75 text-[11px]">(0)</span>
+
+            <button type="button" onclick="selectSoftwareFolder('Adobe Photoshop')" data-folder="Adobe Photoshop"
+              class="folder-card text-left p-5 rounded-2xl bg-alabaster hover:bg-bronze-100/70 border-2 border-sand-300 transition-all group">
+              <div class="flex items-center justify-between mb-3">
+                <span class="w-10 h-10 rounded-xl bg-sky-950 text-sky-300 font-serif font-bold text-base flex items-center justify-center shadow-sm">Ps</span>
+                <span id="folderCount-Adobe Photoshop" class="px-2.5 py-1 rounded-lg bg-ivory border border-sand-300 text-xs font-bold text-espresso-900">0 Files</span>
+              </div>
+              <h3 class="font-serif text-lg font-bold text-espresso-900 group-hover:text-bronze-600">Adobe Photoshop</h3>
+              <p class="text-[11px] text-espresso-600 mt-1">Key Visuals &amp; Retouching</p>
             </button>
-            <button onclick="setCategory('Graphic Design')" data-cat="Graphic Design"
-              class="filter-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-medium whitespace-nowrap transition-all bg-sand-100 text-espresso-800 hover:bg-sand-200">
-              <span data-i18n="catGraphic">Graphic Design</span> <span id="count-Graphic Design" class="ml-1 opacity-75 text-[11px]">(0)</span>
+
+            <button type="button" onclick="selectSoftwareFolder('Adobe Premiere Pro')" data-folder="Adobe Premiere Pro"
+              class="folder-card text-left p-5 rounded-2xl bg-alabaster hover:bg-bronze-100/70 border-2 border-sand-300 transition-all group">
+              <div class="flex items-center justify-between mb-3">
+                <span class="w-10 h-10 rounded-xl bg-indigo-950 text-indigo-300 font-serif font-bold text-base flex items-center justify-center shadow-sm">Pr</span>
+                <span id="folderCount-Adobe Premiere Pro" class="px-2.5 py-1 rounded-lg bg-ivory border border-sand-300 text-xs font-bold text-espresso-900">0 Files</span>
+              </div>
+              <h3 class="font-serif text-lg font-bold text-espresso-900 group-hover:text-bronze-600">Adobe Premiere Pro</h3>
+              <p class="text-[11px] text-espresso-600 mt-1">4K Edits, SFX &amp; Grading</p>
             </button>
-            <button onclick="setCategory('Packaging & Print')" data-cat="Packaging & Print"
-              class="filter-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-medium whitespace-nowrap transition-all bg-sand-100 text-espresso-800 hover:bg-sand-200">
-              <span data-i18n="catPackaging">Packaging &amp; Print</span> <span id="count-Packaging & Print" class="ml-1 opacity-75 text-[11px]">(0)</span>
+
+            <button type="button" onclick="selectSoftwareFolder('Adobe After Effects')" data-folder="Adobe After Effects"
+              class="folder-card text-left p-5 rounded-2xl bg-alabaster hover:bg-bronze-100/70 border-2 border-sand-300 transition-all group">
+              <div class="flex items-center justify-between mb-3">
+                <span class="w-10 h-10 rounded-xl bg-purple-950 text-purple-300 font-serif font-bold text-base flex items-center justify-center shadow-sm">Ae</span>
+                <span id="folderCount-Adobe After Effects" class="px-2.5 py-1 rounded-lg bg-ivory border border-sand-300 text-xs font-bold text-espresso-900">0 Files</span>
+              </div>
+              <h3 class="font-serif text-lg font-bold text-espresso-900 group-hover:text-bronze-600">Adobe After Effects</h3>
+              <p class="text-[11px] text-espresso-600 mt-1">Masking, Keyframes &amp; VFX</p>
             </button>
-            <button onclick="setCategory('Video Editing')" data-cat="Video Editing"
-              class="filter-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-medium whitespace-nowrap transition-all bg-sand-100 text-espresso-800 hover:bg-sand-200">
-              <span data-i18n="catVideo">Video Editing</span> <span id="count-Video Editing" class="ml-1 opacity-75 text-[11px]">(0)</span>
-            </button>
-            <button onclick="setCategory('Color Grading')" data-cat="Color Grading"
-              class="filter-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-medium whitespace-nowrap transition-all bg-sand-100 text-espresso-800 hover:bg-sand-200">
-              <span data-i18n="catColor">Color Grading</span> <span id="count-Color Grading" class="ml-1 opacity-75 text-[11px]">(0)</span>
-            </button>
-            <button onclick="setCategory('Motion Graphics')" data-cat="Motion Graphics"
-              class="filter-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-medium whitespace-nowrap transition-all bg-sand-100 text-espresso-800 hover:bg-sand-200">
-              <span data-i18n="catMotion">Motion Graphics</span> <span id="count-Motion Graphics" class="ml-1 opacity-75 text-[11px]">(0)</span>
+
+            <button type="button" onclick="selectSoftwareFolder('Self-Shot Originals')" data-folder="Self-Shot Originals"
+              class="folder-card text-left p-5 rounded-2xl bg-emerald-50/70 hover:bg-emerald-100/80 border-2 border-emerald-300/80 transition-all group">
+              <div class="flex items-center justify-between mb-3">
+                <span class="w-10 h-10 rounded-xl bg-emerald-900 text-emerald-200 font-serif font-bold text-base flex items-center justify-center shadow-sm">&#127909;</span>
+                <span id="folderCount-Self-Shot Originals" class="px-2.5 py-1 rounded-lg bg-ivory border border-emerald-300 text-xs font-bold text-emerald-900">0 Files</span>
+              </div>
+              <h3 class="font-serif text-lg font-bold text-emerald-950 group-hover:text-emerald-700">Original Shoot</h3>
+              <p class="text-[11px] text-emerald-800 mt-1">Self-Shot Camera Productions</p>
             </button>
           </div>
 
-          <div id="portfolioGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-2"></div>
-
-          <!-- PAGINATION / EXPAND ARCHIVE CONTROLS -->
-          <div id="galleryPaginationBar" class="hidden pt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
-            <button type="button" onclick="loadMoreWorks()" id="loadMoreBtn"
-              class="px-6 py-3 rounded-2xl bg-espresso-900 hover:bg-bronze-500 text-alabaster text-xs sm:text-sm font-bold transition-colors shadow-sm">
-              Load More Works &darr;
-            </button>
-            <button type="button" onclick="showAllWorksNow()" id="showAllBtn"
-              class="px-5 py-3 rounded-2xl bg-sand-100 hover:bg-sand-200 text-espresso-900 border border-sand-300 text-xs sm:text-sm font-semibold transition-colors">
-              View Complete Archive
-            </button>
+          <!-- OPENED FOLDER CONTENTS (ONLY OPENS WHEN USER CLICKS A FOLDER OR TYPES A SEARCH) -->
+          <div id="activeFolderView" class="hidden pt-6 border-t border-sand-300 space-y-5">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <span id="activeFolderEyebrow" class="text-[11px] font-bold uppercase tracking-widest text-bronze-600 block">OPENED FOLDER</span>
+                <h3 id="activeFolderTitle" class="font-serif text-2xl sm:text-3xl font-bold text-espresso-900">Folder Contents</h3>
+              </div>
+              <button type="button" onclick="closeSoftwareFolderView()"
+                class="px-4 py-2 rounded-xl bg-espresso-900 hover:bg-bronze-500 text-alabaster text-xs font-bold transition-colors">
+                &times; Close Folder
+              </button>
+            </div>
+            <div id="activeFolderGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
           </div>
 
           <div id="emptyState" class="hidden py-14 px-6 rounded-3xl bg-alabaster border-2 border-dashed border-sand-300 text-center max-w-2xl mx-auto my-4">
@@ -1641,9 +1567,7 @@
 
     let dbInstance = null;
     let isOwnerUnlocked = false;
-    let currentCategory = 'All';
-    let currentSoftwareFolder = 'All';
-    let visibleWorksLimit = 12;
+    let currentSoftwareFolder = 'None';
     let currentLang = localStorage.getItem(STORAGE_LANG_KEY) || 'en';
     let currentUploadSource = 'local';
     let pendingLocalFile = null;
@@ -1808,13 +1732,131 @@
     let trailerClockTimer = null;
     let isTeaserAutoplaying = true;
 
+    // -----------------------------------------------------------------------
+    // ADAPTIVE CINEMATIC TRAILER AUDIO ENGINE (WEB AUDIO API)
+    // -----------------------------------------------------------------------
+    let trailerAudioCtx = null;
+    let trailerBeatTimer = null;
+    let isTrailerAudioOn = false;
+    let trailerBeatStep = 0;
+
+    function playCinematicTrailerCue(chapterKey, step) {
+      if (!trailerAudioCtx || !isTrailerAudioOn) return;
+      const now = trailerAudioCtx.currentTime;
+      const isCinemaMode = (chapterKey === 'All Mix' || chapterKey === 'Premiere Pro' || chapterKey === 'After Effects');
+
+      // Deep cinematic sub-pulse on beat 0 & 2
+      if (isCinemaMode && step % 2 === 0) {
+        const subOsc = trailerAudioCtx.createOscillator();
+        const subGain = trailerAudioCtx.createGain();
+        subOsc.type = 'sine';
+        subOsc.frequency.setValueAtTime(step % 4 === 0 ? 65.41 : 55.00, now);
+        subOsc.frequency.exponentialRampToValueAtTime(36.71, now + 0.55);
+
+        subGain.gain.setValueAtTime(0.0001, now);
+        subGain.gain.exponentialRampToValueAtTime(0.09, now + 0.04);
+        subGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.65);
+
+        subOsc.connect(subGain);
+        subGain.connect(trailerAudioCtx.destination);
+        subOsc.start(now);
+        subOsc.stop(now + 0.7);
+      }
+
+      // Melodic harmonic pad tailored to Video/Motion vs Design/Print
+      const cinemaProgression = [
+        [220.00, 261.63, 329.63],
+        [174.61, 220.00, 349.23],
+        [196.00, 246.94, 392.00],
+        [164.81, 246.94, 329.63]
+      ];
+      const designProgression = [
+        [261.63, 329.63, 493.88],
+        [293.66, 349.23, 440.00],
+        [220.00, 261.63, 392.00],
+        [246.94, 293.66, 392.00]
+      ];
+      const prog = isCinemaMode ? cinemaProgression : designProgression;
+      const chord = prog[step % prog.length];
+
+      chord.forEach((freq, idx) => {
+        const osc = trailerAudioCtx.createOscillator();
+        const gain = trailerAudioCtx.createGain();
+        osc.type = isCinemaMode ? 'triangle' : 'sine';
+        osc.frequency.setValueAtTime(freq, now + idx * 0.06);
+
+        gain.gain.setValueAtTime(0.0001, now + idx * 0.06);
+        gain.gain.exponentialRampToValueAtTime(isCinemaMode ? 0.018 : 0.022, now + idx * 0.06 + 0.12);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + idx * 0.06 + 1.25);
+
+        osc.connect(gain);
+        gain.connect(trailerAudioCtx.destination);
+        osc.start(now + idx * 0.06);
+        osc.stop(now + idx * 0.06 + 1.3);
+      });
+    }
+
+    function toggleTrailerScoreAudio() {
+      if (isTrailerAudioOn) {
+        stopTrailerScoreAudio();
+      } else {
+        startTrailerScoreAudio();
+      }
+    }
+
+    function startTrailerScoreAudio() {
+      try {
+        if (isPianoPlaying) stopAmbientPiano();
+        if (!trailerAudioCtx) {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          trailerAudioCtx = new AudioCtx();
+        }
+        if (trailerAudioCtx.state === 'suspended') {
+          trailerAudioCtx.resume();
+        }
+        isTrailerAudioOn = true;
+        updateTrailerAudioBtnUI();
+        const activeKey = SOFTWARE_CHAPTERS[currentTeaserIdx]?.key || 'All Mix';
+        playCinematicTrailerCue(activeKey, trailerBeatStep++);
+        if (trailerBeatTimer) clearInterval(trailerBeatTimer);
+        trailerBeatTimer = setInterval(() => {
+          if (!isTrailerAudioOn) return;
+          const k = SOFTWARE_CHAPTERS[currentTeaserIdx]?.key || 'All Mix';
+          playCinematicTrailerCue(k, trailerBeatStep++);
+        }, 1250);
+      } catch (e) {
+        showToast('Click once on the page to unlock cinematic trailer audio.', 'error');
+      }
+    }
+
+    function stopTrailerScoreAudio() {
+      isTrailerAudioOn = false;
+      if (trailerBeatTimer) {
+        clearInterval(trailerBeatTimer);
+        trailerBeatTimer = null;
+      }
+      updateTrailerAudioBtnUI();
+    }
+
+    function updateTrailerAudioBtnUI() {
+      const btn = document.getElementById('trailerAudioBtn');
+      if (!btn) return;
+      if (isTrailerAudioOn) {
+        btn.innerHTML = '&#128266; Score On';
+        btn.className = 'px-3 py-2 rounded-xl bg-amber-400 text-espresso-900 text-xs font-bold shadow-sm transition-colors';
+      } else {
+        btn.innerHTML = '&#128263; Trailer Score';
+        btn.className = 'px-3 py-2 rounded-xl bg-amber-400/20 border border-amber-400/40 text-amber-300 text-xs font-bold hover:bg-amber-400 hover:text-espresso-900 transition-colors';
+      }
+    }
+
     function getAutoTrailerPlaylist() {
       const sorted = [...appState.projects].sort((a, b) => {
         const scoreA = (Number(a.rating) || 4.5) + (a.isSelfShot ? 0.4 : 0);
         const scoreB = (Number(b.rating) || 4.5) + (b.isSelfShot ? 0.4 : 0);
         return scoreB - scoreA || (a.order || 999) - (b.order || 999);
       });
-      return sorted.slice(0, 10);
+      return sorted;
     }
 
     function updateTrailerClockDisplay() {
@@ -1874,6 +1916,7 @@
         if (trailerClockTimer) clearInterval(trailerClockTimer);
         teaserAutoTimer = null;
         trailerClockTimer = null;
+        stopTrailerScoreAudio();
         if (btn) btn.innerHTML = '&#9654; Play 25s Trailer';
       } else {
         startTeaserAutoplay();
@@ -1897,12 +1940,12 @@
     function filterGalleryBySoftwareChapter() {
       const chapter = SOFTWARE_CHAPTERS[currentTeaserIdx];
       if (chapter.key === 'All Mix') {
-        selectSoftwareFolder('All');
+        selectSoftwareFolder('Self-Shot Originals');
       } else {
         selectSoftwareFolder(`Adobe ${chapter.key}`);
       }
-      const archiveEl = document.getElementById('archive');
-      if (archiveEl) archiveEl.scrollIntoView({ behavior: 'smooth' });
+      const folderEl = document.getElementById('softwareFoldersGrid');
+      if (folderEl) folderEl.scrollIntoView({ behavior: 'smooth' });
     }
 
     async function renderSoftwareTeaser() {
@@ -1967,23 +2010,39 @@
           previewUrl = getSmartThumbnailUrl(featuredProject) || featuredProject.externalUrl;
         }
 
-        const isVideo = featuredProject.mediaType === 'video' && (
+        const isDirectVideoFile = featuredProject.mediaType === 'video' && (
           featuredProject.sourceType === 'local' ||
           featuredProject.sourceType === 'embedded-data' ||
           /\.(mp4|webm|mov)(\?|$)/i.test(featuredProject.externalUrl || '')
         );
 
-        let mediaHtml = '';
-        if (isVideo && previewUrl) {
-          mediaHtml = `<video src="${previewUrl}" autoplay muted loop playsinline class="w-full h-full max-h-[360px] object-cover opacity-90 transition-transform duration-1000 scale-105"></video>`;
-        } else if (previewUrl) {
-          mediaHtml = `<img src="${previewUrl}" alt="${escapeHTML(featuredProject.title)}" class="w-full h-full max-h-[360px] object-cover opacity-90 transition-transform duration-[2500ms] ease-out scale-110"
-            onerror="this.style.display='none'" />`;
-        } else {
-          mediaHtml = `<div class="w-full h-full min-h-[280px] bg-gradient-to-br ${chapter.accent} flex flex-col items-center justify-center p-6 text-center">
-            <span class="font-serif text-6xl font-bold text-amber-400/40 mb-2">${chapter.code}</span>
-            <span class="text-xs font-bold uppercase tracking-widest text-amber-300">${escapeHTML(featuredProject.category)}</span>
+        const fallbackPosterHtml = `
+          <div class="w-full h-full min-h-[280px] sm:min-h-[340px] bg-gradient-to-br ${chapter.accent} flex flex-col items-center justify-center p-6 text-center">
+            <div class="w-16 h-16 rounded-2xl bg-white/10 border border-amber-400/40 flex items-center justify-center font-serif text-3xl font-bold text-amber-300 mb-3 shadow-lg">
+              ${featuredProject.mediaType === 'pdf' ? 'PDF' : featuredProject.mediaType === 'video' ? '&#9654;' : chapter.code}
+            </div>
+            <span class="text-xs font-bold uppercase tracking-widest text-amber-300">${escapeHTML(featuredProject.primaryFolder || featuredProject.category)}</span>
+            <p class="font-serif text-xl text-alabaster mt-1 max-w-md line-clamp-1">${escapeHTML(featuredProject.title)}</p>
           </div>`;
+
+        let mediaHtml = '';
+        if (isDirectVideoFile && previewUrl) {
+          mediaHtml = `
+            <div class="relative w-full h-full min-h-[280px] sm:min-h-[340px] flex items-center justify-center bg-espresso-900">
+              ${fallbackPosterHtml}
+              <video src="${previewUrl}" autoplay muted loop playsinline onerror="this.remove()"
+                class="absolute inset-0 w-full h-full object-cover opacity-95 transition-transform duration-1000 scale-105"></video>
+            </div>`;
+        } else if (previewUrl) {
+          mediaHtml = `
+            <div class="relative w-full h-full min-h-[280px] sm:min-h-[340px] flex items-center justify-center bg-espresso-900">
+              ${fallbackPosterHtml}
+              <img src="${previewUrl}" alt="${escapeHTML(featuredProject.title)}"
+                onerror="this.remove()"
+                class="absolute inset-0 w-full h-full object-cover opacity-95 transition-transform duration-[2500ms] ease-out scale-110" />
+            </div>`;
+        } else {
+          mediaHtml = fallbackPosterHtml;
         }
 
         const ratingStr = `★ ${(Number(featuredProject.rating) || 4.8).toFixed(1)}`;
@@ -3659,6 +3718,10 @@
     }
 
     function selectSoftwareFolder(folderName) {
+      if (currentSoftwareFolder === folderName) {
+        closeSoftwareFolderView();
+        return;
+      }
       currentSoftwareFolder = folderName;
       document.querySelectorAll('.folder-card').forEach(card => {
         if (card.dataset.folder === folderName) {
@@ -3672,312 +3735,31 @@
       renderGallery();
     }
 
-    function loadMoreWorks() {
-      visibleWorksLimit += 12;
-      renderGallery();
-    }
-
-    function showAllWorksNow() {
-      visibleWorksLimit = 9999;
+    function closeSoftwareFolderView() {
+      currentSoftwareFolder = 'None';
+      const searchInput = document.getElementById('searchInput');
+      if (searchInput) searchInput.value = '';
+      document.querySelectorAll('.folder-card').forEach(card => {
+        card.classList.remove('border-bronze-500', 'bg-bronze-100/80', 'shadow-md');
+        card.classList.add('border-sand-300', 'bg-alabaster');
+      });
       renderGallery();
     }
 
     function updateCategoryBadges() {
       const all = appState.projects || [];
-      const cats = ['Graphic Design', 'Packaging & Print', 'Video Editing', 'Color Grading', 'Motion Graphics'];
-      const allBadge = document.getElementById('count-All');
-      if (allBadge) allBadge.textContent = `(${all.length})`;
-      const selfShotBadge = document.getElementById('count-Self-Shot');
-      if (selfShotBadge) {
-        selfShotBadge.textContent = `(${all.filter(p => p.isSelfShot).length})`;
-      }
-      cats.forEach(c => {
-        const el = document.getElementById(`count-${c}`);
-        if (el) {
-          const cnt = all.filter(p => p.category === c).length;
-          el.textContent = `(${cnt})`;
-        }
-      });
-
       const folders = ['Adobe Illustrator', 'Adobe Photoshop', 'Adobe Premiere Pro', 'Adobe After Effects'];
       folders.forEach(f => {
         const fEl = document.getElementById(`folderCount-${f}`);
         if (fEl) {
           const cnt = all.filter(p => (p.primaryFolder || inferPrimarySoftwareFolder(`${p.title} ${p.category}`, p.category, p.mediaType, p.software)) === f).length;
-          fEl.textContent = `${cnt} Work${cnt === 1 ? '' : 's'}`;
+          fEl.textContent = `${cnt} File${cnt === 1 ? '' : 's'}`;
         }
       });
-    }
-
-    async function buildProjectCardElement(proj, rankLabel = '') {
-      const card = document.createElement('article');
-      card.className = 'group rounded-3xl bg-ivory border border-sand-300 shadow-card hover:shadow-hover card-lift overflow-hidden flex flex-col justify-between';
-
-      let resolvedUrl = '';
-      if (proj.sourceType === 'embedded-data' && proj.embeddedDataUrl) {
-        resolvedUrl = proj.embeddedDataUrl;
-      } else if (proj.sourceType === 'local') {
-        const blob = await getBlobFromIndexedDB(proj.id);
-        if (blob) {
-          resolvedUrl = URL.createObjectURL(blob);
-          activeObjectUrls.push(resolvedUrl);
-        }
-      } else if (proj.sourceType === 'link') {
-        resolvedUrl = getSmartThumbnailUrl(proj);
-      }
-
-      const ratingVal = (typeof proj.rating === 'number' ? proj.rating : 4.8).toFixed(1);
-      const ratingBadgeHTML = `<span class="px-2.5 py-1 rounded-lg bg-amber-400 text-espresso-900 text-[10px] font-extrabold shadow-sm">&#9733; ${ratingVal}</span>`;
-      const rankBadgeHTML = rankLabel ? `<span class="px-2.5 py-1 rounded-lg bg-espresso-900/90 text-amber-300 text-[10px] font-bold uppercase tracking-wider">${escapeHTML(rankLabel)}</span>` : '';
-      const selfShotBadgeHTML = proj.isSelfShot ? `<span class="px-2.5 py-1 rounded-lg bg-emerald-800/95 text-white text-[10px] font-bold shadow-sm">&#127909; Original Shoot</span>` : '';
-
-      let mediaHTML = '';
-      if (proj.mediaType === 'video') {
-        const videoPoster = proj.customThumbUrl || (proj.sourceType === 'link' ? resolvedUrl : '');
-        if (videoPoster && (proj.sourceType === 'link' || proj.customThumbUrl)) {
-          mediaHTML = `
-            <div class="relative aspect-video bg-espresso-900 overflow-hidden cursor-pointer" onclick="openLightbox('${proj.id}')">
-              <img src="${videoPoster}" alt="${escapeHTML(proj.title)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                onerror="this.style.display='none'" />
-              <div class="absolute inset-0 bg-espresso-900/35 flex items-center justify-center">
-                <div class="p-3.5 rounded-full bg-ivory/95 text-espresso-900 shadow-lg flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <svg class="w-5 h-5 translate-x-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-                </div>
-              </div>
-              <div class="absolute top-3 left-3 flex flex-wrap items-center gap-1.5">${rankBadgeHTML}${selfShotBadgeHTML}</div>
-              <div class="absolute top-3 right-3">${ratingBadgeHTML}</div>
-              ${proj.quality ? `<span class="absolute bottom-3 right-3 px-2.5 py-1 rounded-lg bg-espresso-900/85 text-amber-300 text-[10px] font-bold">${escapeHTML(proj.quality.split('•')[0].trim())}</span>` : ''}
-            </div>`;
-        } else if (resolvedUrl) {
-          mediaHTML = `
-            <div class="relative aspect-video bg-espresso-900 overflow-hidden cursor-pointer" onclick="openLightbox('${proj.id}')">
-              <video src="${resolvedUrl}#t=0.5" muted preload="metadata" class="w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-500"></video>
-              <div class="absolute inset-0 bg-espresso-900/30 flex items-center justify-center">
-                <div class="p-3.5 rounded-full bg-ivory/95 text-espresso-900 shadow-lg flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <svg class="w-5 h-5 translate-x-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-                </div>
-              </div>
-              <div class="absolute top-3 left-3 flex flex-wrap items-center gap-1.5">${rankBadgeHTML}${selfShotBadgeHTML}</div>
-              <div class="absolute top-3 right-3">${ratingBadgeHTML}</div>
-              ${proj.quality ? `<span class="absolute bottom-3 right-3 px-2.5 py-1 rounded-lg bg-espresso-900/85 text-amber-300 text-[10px] font-bold">${escapeHTML(proj.quality.split('•')[0].trim())}</span>` : ''}
-            </div>`;
-        } else {
-          mediaHTML = `
-            <div class="relative aspect-video bg-espresso-900 flex flex-col items-center justify-center p-6 text-center cursor-pointer" onclick="openLightbox('${proj.id}')">
-              <div class="absolute top-3 left-3 flex flex-wrap items-center gap-1.5">${rankBadgeHTML}${selfShotBadgeHTML}</div>
-              <div class="absolute top-3 right-3">${ratingBadgeHTML}</div>
-              <div class="w-12 h-12 rounded-2xl bg-bronze-500/20 text-amber-300 flex items-center justify-center mb-2">
-                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-              </div>
-              <span class="text-xs font-bold text-alabaster">${escapeHTML(proj.title)}</span>
-              <span class="text-[11px] text-sand-400 mt-1">Click to Play Video &amp; Read Matter</span>
-            </div>`;
-        }
-      } else if (proj.mediaType === 'pdf' || proj.mediaType === 'zip') {
-        const badgeLabel = proj.mediaType === 'zip' ? 'PROJECT ARCHIVE • ZIP' : 'PRINT DOSSIER • PDF';
-        mediaHTML = `
-          <div class="relative aspect-video bg-sand-100 border-b border-sand-300 flex flex-col items-center justify-center p-6 text-center cursor-pointer group-hover:bg-bronze-100/60 transition-colors" onclick="openLightbox('${proj.id}')">
-            <div class="absolute top-3 left-3 flex flex-wrap items-center gap-1.5">${rankBadgeHTML}</div>
-            <div class="absolute top-3 right-3">${ratingBadgeHTML}</div>
-            <div class="w-12 h-12 rounded-2xl bg-espresso-900 text-alabaster flex items-center justify-center font-serif font-bold text-base mb-2 shadow-sm">
-              ${proj.mediaType === 'zip' ? 'ZIP' : 'PDF'}
-            </div>
-            <span class="text-[10px] font-bold uppercase tracking-[0.18em] text-bronze-600">${badgeLabel}</span>
-            <span class="text-xs font-bold text-espresso-900 mt-1 line-clamp-1">${escapeHTML(proj.title)}</span>
-          </div>`;
-      } else {
-        if (resolvedUrl) {
-          mediaHTML = `
-            <div class="relative aspect-video bg-sand-100 overflow-hidden cursor-pointer" onclick="openLightbox('${proj.id}')">
-              <img src="${resolvedUrl}" alt="${escapeHTML(proj.title)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                onerror="this.src='https://placehold.co/800x450/F4EFE6/8C6239?text=Design+Preview'" />
-              <div class="absolute top-3 left-3 flex flex-wrap items-center gap-1.5">${rankBadgeHTML}</div>
-              <div class="absolute top-3 right-3">${ratingBadgeHTML}</div>
-              ${proj.quality ? `<span class="absolute bottom-3 right-3 px-2.5 py-1 rounded-lg bg-espresso-900/80 text-alabaster text-[10px] font-bold">${escapeHTML(proj.quality.split('•')[0].trim())}</span>` : ''}
-            </div>`;
-        } else {
-          mediaHTML = `
-            <div class="relative aspect-video bg-sand-100 flex items-center justify-center p-6 text-center cursor-pointer" onclick="openLightbox('${proj.id}')">
-              <div class="absolute top-3 left-3">${rankBadgeHTML}</div>
-              <div class="absolute top-3 right-3">${ratingBadgeHTML}</div>
-              <span class="font-serif text-lg font-bold text-espresso-800">${escapeHTML(proj.title)}</span>
-            </div>`;
-        }
-      }
-
-      const highlightChips = (proj.highlights || '')
-        .split(',')
-        .map(s => s.trim())
-        .filter(Boolean)
-        .slice(0, 3)
-        .map(tag => `<span class="px-2 py-0.5 rounded-md bg-alabaster border border-sand-300 text-[10px] font-semibold text-espresso-700">${escapeHTML(tag)}</span>`)
-        .join('');
-
-      const storyPreview = buildMultilingualStory(proj, currentLang).stage1;
-      const folderTag = proj.primaryFolder || inferPrimarySoftwareFolder(`${proj.title} ${proj.category}`, proj.category, proj.mediaType, proj.software);
-
-      const isProjectLive = proj.sourceType === 'link' || proj.sourceType === 'embedded-data';
-      const ownerStatusBadge = isProjectLive
-        ? `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-[10px] font-bold">● Live Online</span>`
-        : `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-50 border border-amber-300 text-amber-800 text-[10px] font-bold">⏳ Local Only</span>`;
-
-      const adminActionsHTML = isOwnerUnlocked ? `
-        <div class="pt-3 mt-3 border-t border-sand-200 flex items-center justify-between gap-2">
-          ${ownerStatusBadge}
-          <div class="flex items-center gap-1.5">
-            <button onclick="openProjectModal('${proj.id}')" class="px-3 py-1.5 rounded-lg bg-sand-100 hover:bg-sand-200 text-espresso-900 text-[11px] font-bold">Edit</button>
-            <button onclick="deleteProject('${proj.id}')" class="px-3 py-1.5 rounded-lg bg-red-50 hover:bg-red-600 hover:text-white text-red-700 text-[11px] font-bold transition-colors">Delete</button>
-          </div>
-        </div>
-      ` : '';
-
-      card.innerHTML = `
-        <div>
-          ${mediaHTML}
-          <div class="p-5 space-y-3">
-            <div class="flex items-center justify-between gap-2">
-              <span class="px-2.5 py-1 rounded-lg bg-bronze-100 text-bronze-600 text-[10px] font-bold uppercase tracking-wider">
-                ${escapeHTML(proj.category)}
-              </span>
-              <span class="text-[11px] font-bold text-espresso-600 truncate">
-                ${escapeHTML(folderTag)}
-              </span>
-            </div>
-
-            <div>
-              <h3 onclick="openLightbox('${proj.id}')" class="font-serif text-xl sm:text-2xl font-bold text-espresso-900 group-hover:text-bronze-500 transition-colors cursor-pointer line-clamp-1">
-                ${escapeHTML(proj.title)}
-              </h3>
-              ${proj.quality ? `<p class="text-[11px] font-bold text-bronze-600 mt-0.5">${escapeHTML(proj.quality)}</p>` : ''}
-            </div>
-
-            ${highlightChips ? `<div class="flex flex-wrap gap-1.5">${highlightChips}</div>` : ''}
-
-            <p class="text-xs text-espresso-600 leading-relaxed line-clamp-2">
-              ${escapeHTML(storyPreview)}
-            </p>
-          </div>
-        </div>
-
-        <div class="px-5 pb-5">
-          <div class="flex items-center justify-between gap-2 pt-3 border-t border-sand-200">
-            <span class="text-[11px] text-espresso-500 truncate max-w-[55%]">${escapeHTML(proj.software || '')}</span>
-            <button onclick="openLightbox('${proj.id}')" class="text-xs font-bold text-espresso-900 hover:text-bronze-500 transition-colors shrink-0">
-              ${escapeHTML(t('inspectStoryBtn'))} &rarr;
-            </button>
-          </div>
-          ${adminActionsHTML}
-        </div>
-      `;
-
-      return card;
-    }
-
-    async function renderCuratedTierSections() {
-      const folderView = document.getElementById('activeFolderView');
-      const folderGrid = document.getElementById('activeFolderGrid');
-      const curatedContainer = document.getElementById('curatedShowcaseContainer');
-      const allSortedByRating = [...appState.projects].sort((a, b) => {
-        const rDiff = (Number(b.rating) || 4.8) - (Number(a.rating) || 4.8);
-        if (Math.abs(rDiff) > 0.01) return rDiff;
-        if (Boolean(b.isSelfShot) !== Boolean(a.isSelfShot)) return b.isSelfShot ? 1 : -1;
-        return (a.order || 999) - (b.order || 999);
-      });
-
-      if (currentSoftwareFolder !== 'All') {
-        if (folderView) folderView.classList.remove('hidden');
-        if (curatedContainer) curatedContainer.classList.add('hidden');
-        const titleEl = document.getElementById('activeFolderTitle');
-        if (titleEl) titleEl.textContent = `${currentSoftwareFolder} — Rated Folder Archive`;
-
-        const folderItems = allSortedByRating.filter(p => {
-          const pf = p.primaryFolder || inferPrimarySoftwareFolder(`${p.title} ${p.category}`, p.category, p.mediaType, p.software);
-          return pf === currentSoftwareFolder;
-        });
-
-        if (folderGrid) {
-          folderGrid.innerHTML = '';
-          for (let i = 0; i < folderItems.length; i++) {
-            const card = await buildProjectCardElement(folderItems[i], `#${i + 1} IN FOLDER`);
-            folderGrid.appendChild(card);
-          }
-        }
-        return;
-      }
-
-      if (folderView) folderView.classList.add('hidden');
-      if (curatedContainer) curatedContainer.classList.remove('hidden');
-
-      // 1. Premiere Pro & After Effects -> Top 7 + Extra with Ratings
-      const videoMotionAll = allSortedByRating.filter(p => {
-        const pf = p.primaryFolder || inferPrimarySoftwareFolder(`${p.title} ${p.category}`, p.category, p.mediaType, p.software);
-        return pf === 'Adobe Premiere Pro' || pf === 'Adobe After Effects';
-      });
-      const top7Videos = videoMotionAll.slice(0, 7);
-      const extraVideos = videoMotionAll.slice(7);
-
-      const top7Grid = document.getElementById('top7VideoGrid');
-      const extraVideoSec = document.getElementById('extraVideoSection');
-      const extraVideoGrid = document.getElementById('extraVideoGrid');
-      const extraVideoCount = document.getElementById('extraVideoCount');
-      const top7Badge = document.getElementById('top7VideoBadge');
-
-      if (top7Badge) top7Badge.textContent = `Top ${top7Videos.length} of ${videoMotionAll.length} Works`;
-      if (top7Grid) {
-        top7Grid.innerHTML = '';
-        for (let i = 0; i < top7Videos.length; i++) {
-          const card = await buildProjectCardElement(top7Videos[i], `TOP #${i + 1}`);
-          top7Grid.appendChild(card);
-        }
-      }
-      if (extraVideoSec && extraVideoGrid) {
-        if (extraVideos.length > 0) {
-          extraVideoSec.classList.remove('hidden');
-          if (extraVideoCount) extraVideoCount.textContent = `${extraVideos.length} Additional Rated Works`;
-          extraVideoGrid.innerHTML = '';
-          for (let i = 0; i < extraVideos.length; i++) {
-            const card = await buildProjectCardElement(extraVideos[i], `#${i + 8} RATED`);
-            extraVideoGrid.appendChild(card);
-          }
-        } else {
-          extraVideoSec.classList.add('hidden');
-        }
-      }
-
-      // 2. Illustrator & Photoshop -> Top 10 (8–10 Best) + Extra with Ratings
-      const designAll = allSortedByRating.filter(p => {
-        const pf = p.primaryFolder || inferPrimarySoftwareFolder(`${p.title} ${p.category}`, p.category, p.mediaType, p.software);
-        return pf === 'Adobe Illustrator' || pf === 'Adobe Photoshop';
-      });
-      const top10Designs = designAll.slice(0, 10);
-      const extraDesigns = designAll.slice(10);
-
-      const top10Grid = document.getElementById('top10DesignGrid');
-      const extraDesignSec = document.getElementById('extraDesignSection');
-      const extraDesignGrid = document.getElementById('extraDesignGrid');
-      const extraDesignCount = document.getElementById('extraDesignCount');
-      const top10Badge = document.getElementById('top10DesignBadge');
-
-      if (top10Badge) top10Badge.textContent = `Top ${top10Designs.length} of ${designAll.length} Works`;
-      if (top10Grid) {
-        top10Grid.innerHTML = '';
-        for (let i = 0; i < top10Designs.length; i++) {
-          const card = await buildProjectCardElement(top10Designs[i], `TOP #${i + 1}`);
-          top10Grid.appendChild(card);
-        }
-      }
-      if (extraDesignSec && extraDesignGrid) {
-        if (extraDesigns.length > 0) {
-          extraDesignSec.classList.remove('hidden');
-          if (extraDesignCount) extraDesignCount.textContent = `${extraDesigns.length} Additional Rated Designs`;
-          extraDesignGrid.innerHTML = '';
-          for (let i = 0; i < extraDesigns.length; i++) {
-            const card = await buildProjectCardElement(extraDesigns[i], `#${i + 11} RATED`);
-            extraDesignGrid.appendChild(card);
-          }
-        } else {
-          extraDesignSec.classList.add('hidden');
-        }
+      const selfShotEl = document.getElementById('folderCount-Self-Shot Originals');
+      if (selfShotEl) {
+        const cnt = all.filter(p => Boolean(p.isSelfShot)).length;
+        selfShotEl.textContent = `${cnt} File${cnt === 1 ? '' : 's'}`;
       }
     }
 
@@ -4828,8 +4610,14 @@
       const clonedDoc = document.documentElement.cloneNode(true);
       const adminBar = clonedDoc.querySelector('#adminToolbar');
       if (adminBar) adminBar.classList.add('hidden');
-      const grid = clonedDoc.querySelector('#portfolioGrid');
-      if (grid) grid.innerHTML = '';
+      const top7Grid = clonedDoc.querySelector('#top7VideoGrid');
+      if (top7Grid) top7Grid.innerHTML = '';
+      const top10Grid = clonedDoc.querySelector('#top10DesignGrid');
+      if (top10Grid) top10Grid.innerHTML = '';
+      const folderGrid = clonedDoc.querySelector('#activeFolderGrid');
+      if (folderGrid) folderGrid.innerHTML = '';
+      const folderView = clonedDoc.querySelector('#activeFolderView');
+      if (folderView) folderView.classList.add('hidden');
       const empty = clonedDoc.querySelector('#emptyState');
       if (empty) empty.classList.add('hidden');
       const lbContainer = clonedDoc.querySelector('#lbMediaContainer');
@@ -4951,6 +4739,294 @@
         if (btn) {
           btn.disabled = false;
           btn.innerHTML = origText;
+        }
+      }
+    }
+
+    async function buildProjectCardElement(proj, rankBadgeText = '') {
+      const card = document.createElement('article');
+      card.className = 'group rounded-3xl bg-ivory border border-sand-300 shadow-card hover:shadow-hover card-lift overflow-hidden flex flex-col justify-between';
+
+      let resolvedUrl = '';
+      if (proj.sourceType === 'embedded-data' && proj.embeddedDataUrl) {
+        resolvedUrl = proj.embeddedDataUrl;
+      } else if (proj.sourceType === 'local') {
+        const blob = await getBlobFromIndexedDB(proj.id);
+        if (blob) {
+          resolvedUrl = URL.createObjectURL(blob);
+          activeObjectUrls.push(resolvedUrl);
+        }
+      } else if (proj.sourceType === 'link') {
+        resolvedUrl = getSmartThumbnailUrl(proj);
+      }
+
+      const ratingBadge = `<span class="px-2 py-0.5 rounded-md bg-amber-400/95 text-espresso-900 text-[10px] font-bold shadow-sm">&#9733; ${(Number(proj.rating) || 4.8).toFixed(1)}</span>`;
+      const rankChip = rankBadgeText ? `<span class="px-2 py-0.5 rounded-md bg-espresso-900/90 text-amber-300 text-[10px] font-bold">${escapeHTML(rankBadgeText)}</span>` : '';
+      const shootChip = proj.isSelfShot ? `<span class="px-2 py-0.5 rounded-md bg-emerald-900/90 text-emerald-200 text-[10px] font-bold">&#127909; Original Shoot</span>` : '';
+
+      let mediaHTML = '';
+      if (proj.mediaType === 'video') {
+        const videoPoster = proj.customThumbUrl || (proj.sourceType === 'link' ? resolvedUrl : '');
+        if (videoPoster && (proj.sourceType === 'link' || proj.customThumbUrl)) {
+          mediaHTML = `
+            <div class="relative aspect-video bg-espresso-900 overflow-hidden cursor-pointer" onclick="openLightbox('${proj.id}')">
+              <img src="${videoPoster}" alt="${escapeHTML(proj.title)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                onerror="this.style.display='none'" />
+              <div class="absolute inset-0 bg-espresso-900/35 flex items-center justify-center">
+                <div class="p-3.5 rounded-full bg-ivory/95 text-espresso-900 shadow-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <svg class="w-5 h-5 translate-x-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                </div>
+              </div>
+              <div class="absolute top-3 left-3 flex flex-wrap items-center gap-1.5">${rankChip}${ratingBadge}${shootChip}</div>
+              ${proj.quality ? `<span class="absolute bottom-3 right-3 px-2.5 py-1 rounded-lg bg-espresso-900/85 text-amber-300 text-[10px] font-bold">${escapeHTML(proj.quality.split('•')[0].trim())}</span>` : ''}
+            </div>`;
+        } else if (resolvedUrl) {
+          mediaHTML = `
+            <div class="relative aspect-video bg-espresso-900 overflow-hidden cursor-pointer" onclick="openLightbox('${proj.id}')">
+              <video src="${resolvedUrl}#t=0.5" muted preload="metadata" class="w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-500"></video>
+              <div class="absolute inset-0 bg-espresso-900/30 flex items-center justify-center">
+                <div class="p-3.5 rounded-full bg-ivory/95 text-espresso-900 shadow-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <svg class="w-5 h-5 translate-x-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                </div>
+              </div>
+              <div class="absolute top-3 left-3 flex flex-wrap items-center gap-1.5">${rankChip}${ratingBadge}${shootChip}</div>
+              ${proj.quality ? `<span class="absolute bottom-3 right-3 px-2.5 py-1 rounded-lg bg-espresso-900/85 text-amber-300 text-[10px] font-bold">${escapeHTML(proj.quality.split('•')[0].trim())}</span>` : ''}
+            </div>`;
+        } else {
+          mediaHTML = `
+            <div class="relative aspect-video bg-espresso-900 flex flex-col items-center justify-center p-6 text-center cursor-pointer" onclick="openLightbox('${proj.id}')">
+              <div class="absolute top-3 left-3 flex flex-wrap items-center gap-1.5">${rankChip}${ratingBadge}${shootChip}</div>
+              <div class="w-12 h-12 rounded-2xl bg-bronze-500/20 text-amber-300 flex items-center justify-center mb-2">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+              </div>
+              <span class="text-xs font-bold text-alabaster">${escapeHTML(proj.title)}</span>
+              <span class="text-[11px] text-sand-400 mt-1">Click to Play Video &amp; Read Story</span>
+            </div>`;
+        }
+      } else if (proj.mediaType === 'pdf' || proj.mediaType === 'zip') {
+        const badgeLabel = proj.mediaType === 'zip' ? 'PROJECT ARCHIVE • ZIP' : 'PRINT DOSSIER • PDF';
+        mediaHTML = `
+          <div class="relative aspect-video bg-sand-100 border-b border-sand-300 flex flex-col items-center justify-center p-6 text-center cursor-pointer group-hover:bg-bronze-100/60 transition-colors" onclick="openLightbox('${proj.id}')">
+            <div class="absolute top-3 left-3 flex flex-wrap items-center gap-1.5">${rankChip}${ratingBadge}</div>
+            <div class="w-12 h-12 rounded-2xl bg-espresso-900 text-alabaster flex items-center justify-center font-serif font-bold text-base mb-2 shadow-sm">
+              ${proj.mediaType === 'zip' ? 'ZIP' : 'PDF'}
+            </div>
+            <span class="text-[10px] font-bold uppercase tracking-[0.18em] text-bronze-600">${badgeLabel}</span>
+            <span class="text-xs font-bold text-espresso-900 mt-1 line-clamp-1">${escapeHTML(proj.title)}</span>
+          </div>`;
+      } else {
+        if (resolvedUrl) {
+          mediaHTML = `
+            <div class="relative aspect-video bg-sand-100 overflow-hidden cursor-pointer" onclick="openLightbox('${proj.id}')">
+              <img src="${resolvedUrl}" alt="${escapeHTML(proj.title)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                onerror="this.src='https://placehold.co/800x450/F4EFE6/8C6239?text=Design+Preview'" />
+              <div class="absolute top-3 left-3 flex flex-wrap items-center gap-1.5">${rankChip}${ratingBadge}</div>
+              ${proj.quality ? `<span class="absolute bottom-3 right-3 px-2.5 py-1 rounded-lg bg-espresso-900/80 text-alabaster text-[10px] font-bold">${escapeHTML(proj.quality.split('•')[0].trim())}</span>` : ''}
+            </div>`;
+        } else {
+          mediaHTML = `
+            <div class="relative aspect-video bg-sand-100 flex items-center justify-center p-6 text-center cursor-pointer" onclick="openLightbox('${proj.id}')">
+              <div class="absolute top-3 left-3 flex flex-wrap items-center gap-1.5">${rankChip}${ratingBadge}</div>
+              <span class="font-serif text-lg font-bold text-espresso-800">${escapeHTML(proj.title)}</span>
+            </div>`;
+        }
+      }
+
+      const highlightChips = (proj.highlights || '')
+        .split(',')
+        .map(s => s.trim())
+        .filter(Boolean)
+        .slice(0, 3)
+        .map(tag => `<span class="px-2 py-0.5 rounded-md bg-alabaster border border-sand-300 text-[10px] font-semibold text-espresso-700">${escapeHTML(tag)}</span>`)
+        .join('');
+
+      const storyPreview = buildMultilingualStory(proj, currentLang).stage1;
+      const folderLabel = proj.primaryFolder || inferPrimarySoftwareFolder(`${proj.title} ${proj.category}`, proj.category, proj.mediaType, proj.software);
+
+      const isProjectLive = proj.sourceType === 'link' || proj.sourceType === 'embedded-data';
+      const ownerStatusBadge = isProjectLive
+        ? `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-[10px] font-bold">● Live Online</span>`
+        : `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-50 border border-amber-300 text-amber-800 text-[10px] font-bold">⏳ Local Only</span>`;
+
+      const adminActionsHTML = isOwnerUnlocked ? `
+        <div class="pt-3 mt-3 border-t border-sand-200 flex items-center justify-between gap-2">
+          ${ownerStatusBadge}
+          <div class="flex items-center gap-1.5">
+            <button onclick="openProjectModal('${proj.id}')" class="px-3 py-1.5 rounded-lg bg-sand-100 hover:bg-sand-200 text-espresso-900 text-[11px] font-bold">Edit</button>
+            <button onclick="deleteProject('${proj.id}')" class="px-3 py-1.5 rounded-lg bg-red-50 hover:bg-red-600 hover:text-white text-red-700 text-[11px] font-bold transition-colors">Delete</button>
+          </div>
+        </div>
+      ` : '';
+
+      card.innerHTML = `
+        <div>
+          ${mediaHTML}
+          <div class="p-5 space-y-3">
+            <div class="flex items-center justify-between gap-2">
+              <span class="px-2.5 py-1 rounded-lg bg-bronze-100 text-bronze-600 text-[10px] font-bold uppercase tracking-wider">
+                ${escapeHTML(folderLabel)}
+              </span>
+              <span class="text-[11px] font-semibold text-espresso-400 truncate">
+                ${escapeHTML(proj.fileSize || '')}
+              </span>
+            </div>
+
+            <div>
+              <h3 onclick="openLightbox('${proj.id}')" class="font-serif text-xl sm:text-2xl font-bold text-espresso-900 group-hover:text-bronze-500 transition-colors cursor-pointer line-clamp-1">
+                ${escapeHTML(proj.title)}
+              </h3>
+              ${proj.quality ? `<p class="text-[11px] font-bold text-bronze-600 mt-0.5">${escapeHTML(proj.quality)}</p>` : ''}
+            </div>
+
+            ${highlightChips ? `<div class="flex flex-wrap gap-1.5">${highlightChips}</div>` : ''}
+
+            <p class="text-xs text-espresso-600 leading-relaxed line-clamp-2">
+              ${escapeHTML(storyPreview)}
+            </p>
+          </div>
+        </div>
+
+        <div class="px-5 pb-5">
+          <div class="flex items-center justify-between gap-2 pt-3 border-t border-sand-200">
+            <span class="text-[11px] text-espresso-500 truncate max-w-[55%]">${escapeHTML(proj.software || '')}</span>
+            <button onclick="openLightbox('${proj.id}')" class="text-xs font-bold text-espresso-900 hover:text-bronze-500 transition-colors shrink-0">
+              ${escapeHTML(t('inspectStoryBtn'))} &rarr;
+            </button>
+          </div>
+          ${adminActionsHTML}
+        </div>
+      `;
+
+      return card;
+    }
+
+    async function renderCuratedTierSections() {
+      const allSortedByRating = [...appState.projects].sort((a, b) => {
+        const rDiff = (Number(b.rating) || 4.8) - (Number(a.rating) || 4.8);
+        if (Math.abs(rDiff) > 0.01) return rDiff;
+        if (Boolean(b.isSelfShot) !== Boolean(a.isSelfShot)) return b.isSelfShot ? 1 : -1;
+        return (a.order || 999) - (b.order || 999);
+      });
+
+      // 1. Premiere Pro & After Effects -> Top 7 Best Only (No Duplicate Extra Grid)
+      const videoMotionAll = allSortedByRating.filter(p => {
+        const pf = p.primaryFolder || inferPrimarySoftwareFolder(`${p.title} ${p.category}`, p.category, p.mediaType, p.software);
+        return pf === 'Adobe Premiere Pro' || pf === 'Adobe After Effects';
+      });
+      const top7Videos = videoMotionAll.slice(0, 7);
+
+      const top7Grid = document.getElementById('top7VideoGrid');
+      const top7Badge = document.getElementById('top7VideoBadge');
+      if (top7Badge) top7Badge.textContent = `Top ${top7Videos.length} Curated`;
+      if (top7Grid) {
+        top7Grid.innerHTML = '';
+        for (let i = 0; i < top7Videos.length; i++) {
+          const card = await buildProjectCardElement(top7Videos[i], `TOP #${i + 1}`);
+          top7Grid.appendChild(card);
+        }
+      }
+
+      // 2. Illustrator & Photoshop -> Top 10 Best Only (No Duplicate Extra Grid)
+      const designAll = allSortedByRating.filter(p => {
+        const pf = p.primaryFolder || inferPrimarySoftwareFolder(`${p.title} ${p.category}`, p.category, p.mediaType, p.software);
+        return pf === 'Adobe Illustrator' || pf === 'Adobe Photoshop';
+      });
+      const top10Designs = designAll.slice(0, 10);
+
+      const top10Grid = document.getElementById('top10DesignGrid');
+      const top10Badge = document.getElementById('top10DesignBadge');
+      if (top10Badge) top10Badge.textContent = `Top ${top10Designs.length} Curated`;
+      if (top10Grid) {
+        top10Grid.innerHTML = '';
+        for (let i = 0; i < top10Designs.length; i++) {
+          const card = await buildProjectCardElement(top10Designs[i], `TOP #${i + 1}`);
+          top10Grid.appendChild(card);
+        }
+      }
+    }
+
+    async function renderGallery() {
+      cleanupObjectUrls();
+      updateCategoryBadges();
+      updateWorksCounter();
+
+      const emptyState = document.getElementById('emptyState');
+      const folderView = document.getElementById('activeFolderView');
+      const folderGrid = document.getElementById('activeFolderGrid');
+      const folderTitle = document.getElementById('activeFolderTitle');
+      const folderEyebrow = document.getElementById('activeFolderEyebrow');
+      const searchQuery = (document.getElementById('searchInput')?.value || '').toLowerCase().trim();
+
+      if (appState.projects.length === 0) {
+        if (folderView) folderView.classList.add('hidden');
+        if (emptyState) {
+          emptyState.classList.remove('hidden');
+          const titleEl = document.getElementById('emptyStateTitle');
+          const descEl = document.getElementById('emptyStateDesc');
+          const btnEl = document.getElementById('emptyStateActionBtn');
+          if (isOwnerUnlocked) {
+            titleEl.textContent = 'Ready to Upload Your First Design, Video or PDF';
+            descEl.textContent = 'Click below to upload high-resolution images, 4K videos, or print PDFs directly from your device or via Google Drive.';
+            btnEl.textContent = '+ Upload Work Now';
+          } else {
+            titleEl.textContent = 'Your Personal Portfolio Canvas is Ready';
+            descEl.textContent = 'Curated graphic designs, packaging systems, 4K video edits, and print dossiers appear here once published.';
+            btnEl.textContent = 'Owner Studio Access';
+          }
+        }
+        return;
+      }
+
+      if (emptyState) emptyState.classList.add('hidden');
+      await renderCuratedTierSections();
+
+      // Only open the folder grid when user explicitly clicks a folder OR searches
+      if (currentSoftwareFolder === 'None' && !searchQuery) {
+        if (folderView) folderView.classList.add('hidden');
+        return;
+      }
+
+      if (folderView && folderGrid) {
+        folderView.classList.remove('hidden');
+        let folderItems = [...appState.projects].sort((a, b) => (Number(b.rating) || 4.8) - (Number(a.rating) || 4.8) || (a.order || 999) - (b.order || 999));
+
+        if (currentSoftwareFolder === 'Self-Shot Originals') {
+          folderItems = folderItems.filter(p => Boolean(p.isSelfShot));
+          if (folderEyebrow) folderEyebrow.textContent = 'ORIGINAL CAMERA PRODUCTIONS';
+          if (folderTitle) folderTitle.textContent = `Self-Shot Original Videos (${folderItems.length} Files)`;
+        } else if (currentSoftwareFolder !== 'None') {
+          folderItems = folderItems.filter(p => {
+            const pf = p.primaryFolder || inferPrimarySoftwareFolder(`${p.title} ${p.category}`, p.category, p.mediaType, p.software);
+            return pf === currentSoftwareFolder;
+          });
+          if (folderEyebrow) folderEyebrow.textContent = 'OPENED SOFTWARE FOLDER';
+          if (folderTitle) folderTitle.textContent = `${currentSoftwareFolder} (${folderItems.length} Files)`;
+        } else if (searchQuery) {
+          if (folderEyebrow) folderEyebrow.textContent = 'SEARCH RESULTS ACROSS FOLDERS';
+          if (folderTitle) folderTitle.textContent = `Matching Files for "${searchQuery}"`;
+        }
+
+        if (searchQuery) {
+          folderItems = folderItems.filter(p =>
+            (p.title || '').toLowerCase().includes(searchQuery) ||
+            (p.category || '').toLowerCase().includes(searchQuery) ||
+            (p.primaryFolder || '').toLowerCase().includes(searchQuery) ||
+            (p.highlights || '').toLowerCase().includes(searchQuery) ||
+            (p.quality || '').toLowerCase().includes(searchQuery) ||
+            (p.description || '').toLowerCase().includes(searchQuery) ||
+            (p.software || '').toLowerCase().includes(searchQuery) ||
+            (p.isSelfShot && 'original shoot self shot'.includes(searchQuery))
+          );
+        }
+
+        folderGrid.innerHTML = '';
+        if (folderItems.length === 0) {
+          folderGrid.innerHTML = `<div class="col-span-full py-10 text-center text-xs text-espresso-600 bg-alabaster rounded-2xl border border-sand-300">No files found in this folder matching your filter.</div>`;
+        } else {
+          for (let i = 0; i < folderItems.length; i++) {
+            const card = await buildProjectCardElement(folderItems[i], `FILE #${i + 1}`);
+            folderGrid.appendChild(card);
+          }
         }
       }
     }
