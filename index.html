@@ -1170,14 +1170,14 @@
                 class="w-full px-3 py-2 rounded-xl bg-ivory border border-sand-300 text-xs font-semibold text-espresso-900 focus:outline-none focus:border-bronze-500">
                 <option value="Adobe Illustrator">Adobe Illustrator</option>
                 <option value="Adobe Photoshop">Adobe Photoshop</option>
-                <option value="Adobe Premiere Pro">Adobe Premiere Pro</option>
-                <option value="Adobe After Effects">Adobe After Effects</option>
-              </select>
-            </div>
-            <div class="flex flex-col justify-end">
-              <label class="flex items-center gap-2 px-3 py-2 rounded-xl bg-emerald-50 border border-emerald-300 cursor-pointer select-none">
+            <div class="flex flex-col justify-end gap-1.5">
+              <label class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-50 border border-emerald-300 cursor-pointer select-none">
                 <input type="checkbox" id="projectSelfShot" onchange="autoComposeCreativeStory(true)" class="w-4 h-4 accent-emerald-700 rounded" />
                 <span class="text-[11px] font-bold text-emerald-900">&#127909; Self-Shot Original Video</span>
+              </label>
+              <label class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-amber-50 border border-amber-300 cursor-pointer select-none">
+                <input type="checkbox" id="projectFeaturedTop" class="w-4 h-4 accent-amber-600 rounded" />
+                <span class="text-[11px] font-bold text-amber-950">&#11088; Pin to Top Showcase</span>
               </label>
             </div>
           </div>
@@ -4152,6 +4152,7 @@
           if (document.getElementById('projectRating')) document.getElementById('projectRating').value = (typeof proj.rating === 'number' ? proj.rating : 4.8).toFixed(1);
           if (document.getElementById('projectPrimaryFolder')) document.getElementById('projectPrimaryFolder').value = proj.primaryFolder || inferPrimarySoftwareFolder(`${proj.title} ${proj.category}`, proj.category, proj.mediaType, proj.software);
           if (document.getElementById('projectSelfShot')) document.getElementById('projectSelfShot').checked = Boolean(proj.isSelfShot);
+          if (document.getElementById('projectFeaturedTop')) document.getElementById('projectFeaturedTop').checked = Boolean(proj.isFeaturedTop);
           document.getElementById('projectQuality').value = proj.quality || '';
           document.getElementById('projectFileSize').value = proj.fileSize || '';
           document.getElementById('projectHighlights').value = proj.highlights || '';
@@ -4181,6 +4182,7 @@
         document.getElementById('projectOrder').value = appState.projects.length + 1;
         if (document.getElementById('projectRating')) document.getElementById('projectRating').value = '4.9';
         if (document.getElementById('projectSelfShot')) document.getElementById('projectSelfShot').checked = false;
+        if (document.getElementById('projectFeaturedTop')) document.getElementById('projectFeaturedTop').checked = false;
         onTitleOrCategoryEdit(true);
       }
 
@@ -4249,6 +4251,7 @@
         const rating = Math.min(5.0, Math.max(1.0, parseFloat(document.getElementById('projectRating').value) || 4.8));
         const primaryFolder = document.getElementById('projectPrimaryFolder').value || inferPrimarySoftwareFolder(title, category, 'image', '');
         const isSelfShot = document.getElementById('projectSelfShot') ? document.getElementById('projectSelfShot').checked : false;
+        const isFeaturedTop = document.getElementById('projectFeaturedTop') ? document.getElementById('projectFeaturedTop').checked : false;
         const quality = document.getElementById('projectQuality').value.trim();
         const fileSize = document.getElementById('projectFileSize').value.trim();
         const highlights = document.getElementById('projectHighlights').value.trim();
@@ -4263,6 +4266,7 @@
           rating,
           primaryFolder,
           isSelfShot,
+          isFeaturedTop,
           quality,
           fileSize,
           highlights,
@@ -4852,6 +4856,10 @@
         <div class="pt-3 mt-3 border-t border-sand-200 flex items-center justify-between gap-2">
           ${ownerStatusBadge}
           <div class="flex items-center gap-1.5">
+            <button onclick="togglePinProjectToTop('${proj.id}')" title="Pin or Unpin in Top Showcase"
+              class="px-2.5 py-1.5 rounded-lg ${proj.isFeaturedTop ? 'bg-amber-400 text-espresso-900' : 'bg-amber-50 hover:bg-amber-200 text-amber-900'} text-[11px] font-bold transition-colors">
+              ${proj.isFeaturedTop ? '&#9733; Pinned Top' : '&#9734; Pin Top'}
+            </button>
             <button onclick="openProjectModal('${proj.id}')" class="px-3 py-1.5 rounded-lg bg-sand-100 hover:bg-sand-200 text-espresso-900 text-[11px] font-bold">Edit</button>
             <button onclick="deleteProject('${proj.id}')" class="px-3 py-1.5 rounded-lg bg-red-50 hover:bg-red-600 hover:text-white text-red-700 text-[11px] font-bold transition-colors">Delete</button>
           </div>
@@ -4900,46 +4908,121 @@
       return card;
     }
 
+    function detectDistinctTopicKey(proj) {
+      const text = `${proj.title || ''} ${proj.category || ''} ${proj.highlights || ''}`.toLowerCase();
+      if (/\b(wedding|bridal|groom|pre-wedding|engagement|ceremony)\b/.test(text)) return 'topic-wedding';
+      if (/\b(dress|fashion|apparel|garment|ethnic|couture|wear|collection|lookbook)\b/.test(text)) return 'topic-fashion';
+      if (/\b(logo|monogram|emblem|crest|identity|brand\s*mark)\b/.test(text)) return 'topic-logo';
+      if (/\b(pack|packaging|box|dieline|label|pouch|bottle|carton|jar)\b/.test(text)) return 'topic-packaging';
+      if (/\b(food|menu|cafe|restaurant|bakery|kitchen|hotel)\b/.test(text)) return 'topic-food';
+      if (/\b(reel|shorts|instagram|vertical|viral|hook)\b/.test(text)) return 'topic-reel';
+      if (/\b(commercial|product|ad|promo|launch|campaign|brand\s*film)\b/.test(text)) return 'topic-commercial';
+      if (/\b(thumbnail|youtube|cover|banner|social)\b/.test(text)) return 'topic-thumbnail';
+      if (/\b(brochure|catalog|catalogue|magazine|booklet|flyer|poster)\b/.test(text)) return 'topic-print';
+      if (/\b(motion|kinetic|title|intro|outro|reveal|3d|mask|rotoscope)\b/.test(text)) return 'topic-motion';
+      if (/\b(color|colour|grade|grading|lut|cinematic)\b/.test(text)) return 'topic-color';
+      const firstWord = (proj.title || '').toLowerCase().replace(/[^a-z0-9\s]/g, '').trim().split(/\s+/)[0];
+      return firstWord ? `topic-word-${firstWord}` : `topic-id-${proj.id}`;
+    }
+
+    function selectDiverseTopProjects(candidates, limit) {
+      const pinned = candidates.filter(p => Boolean(p.isFeaturedTop));
+      const unpinned = candidates.filter(p => !p.isFeaturedTop);
+
+      const selected = [];
+      const selectedIds = new Set();
+      const usedTopics = new Set();
+
+      // 1. Always honor owner's manually pinned projects first
+      for (const p of pinned) {
+        if (selected.length >= limit) break;
+        selected.push(p);
+        selectedIds.add(p.id);
+        usedTopics.add(detectDistinctTopicKey(p));
+      }
+
+      // 2. Pick only 1 highest-rated project per distinct topic so topics never repeat
+      for (const p of unpinned) {
+        if (selected.length >= limit) break;
+        if (selectedIds.has(p.id)) continue;
+        const topic = detectDistinctTopicKey(p);
+        if (!usedTopics.has(topic)) {
+          selected.push(p);
+          selectedIds.add(p.id);
+          usedTopics.add(topic);
+        }
+      }
+
+      // 3. Only fill remaining slots if total distinct topics are fewer than limit
+      if (selected.length < limit) {
+        for (const p of unpinned) {
+          if (selected.length >= limit) break;
+          if (!selectedIds.has(p.id)) {
+            selected.push(p);
+            selectedIds.add(p.id);
+          }
+        }
+      }
+
+      return selected;
+    }
+
+    async function togglePinProjectToTop(projectId) {
+      if (!isOwnerUnlocked) return;
+      const idx = appState.projects.findIndex(p => p.id === projectId);
+      if (idx === -1) return;
+      const nextVal = !Boolean(appState.projects[idx].isFeaturedTop);
+      appState.projects[idx].isFeaturedTop = nextVal;
+      persistPortfolioState();
+      await renderGallery();
+      renderSoftwareTeaser();
+      showToast(nextVal ? `★ Pinned "${appState.projects[idx].title}" to Top Showcase!` : `Unpinned "${appState.projects[idx].title}" from Top Showcase.`);
+      await pushHtmlOnlyToGitHub();
+    }
+
     async function renderCuratedTierSections() {
       const allSortedByRating = [...appState.projects].sort((a, b) => {
+        if (Boolean(b.isFeaturedTop) !== Boolean(a.isFeaturedTop)) return b.isFeaturedTop ? 1 : -1;
         const rDiff = (Number(b.rating) || 4.8) - (Number(a.rating) || 4.8);
         if (Math.abs(rDiff) > 0.01) return rDiff;
         if (Boolean(b.isSelfShot) !== Boolean(a.isSelfShot)) return b.isSelfShot ? 1 : -1;
         return (a.order || 999) - (b.order || 999);
       });
 
-      // 1. Premiere Pro & After Effects -> Top 7 Best Only (No Duplicate Extra Grid)
+      // 1. Premiere Pro & After Effects -> Top 7 Best (1 per distinct topic + manual pins)
       const videoMotionAll = allSortedByRating.filter(p => {
         const pf = p.primaryFolder || inferPrimarySoftwareFolder(`${p.title} ${p.category}`, p.category, p.mediaType, p.software);
         return pf === 'Adobe Premiere Pro' || pf === 'Adobe After Effects';
       });
-      const top7Videos = videoMotionAll.slice(0, 7);
+      const top7Videos = selectDiverseTopProjects(videoMotionAll, 7);
 
       const top7Grid = document.getElementById('top7VideoGrid');
       const top7Badge = document.getElementById('top7VideoBadge');
-      if (top7Badge) top7Badge.textContent = `Top ${top7Videos.length} Curated`;
+      if (top7Badge) top7Badge.textContent = `Top ${top7Videos.length} Distinct Topics`;
       if (top7Grid) {
         top7Grid.innerHTML = '';
         for (let i = 0; i < top7Videos.length; i++) {
-          const card = await buildProjectCardElement(top7Videos[i], `TOP #${i + 1}`);
+          const label = top7Videos[i].isFeaturedTop ? `★ PINNED #${i + 1}` : `TOP #${i + 1}`;
+          const card = await buildProjectCardElement(top7Videos[i], label);
           top7Grid.appendChild(card);
         }
       }
 
-      // 2. Illustrator & Photoshop -> Top 10 Best Only (No Duplicate Extra Grid)
+      // 2. Illustrator & Photoshop -> Top 10 Best (1 per distinct topic + manual pins)
       const designAll = allSortedByRating.filter(p => {
         const pf = p.primaryFolder || inferPrimarySoftwareFolder(`${p.title} ${p.category}`, p.category, p.mediaType, p.software);
         return pf === 'Adobe Illustrator' || pf === 'Adobe Photoshop';
       });
-      const top10Designs = designAll.slice(0, 10);
+      const top10Designs = selectDiverseTopProjects(designAll, 10);
 
       const top10Grid = document.getElementById('top10DesignGrid');
       const top10Badge = document.getElementById('top10DesignBadge');
-      if (top10Badge) top10Badge.textContent = `Top ${top10Designs.length} Curated`;
+      if (top10Badge) top10Badge.textContent = `Top ${top10Designs.length} Distinct Topics`;
       if (top10Grid) {
         top10Grid.innerHTML = '';
         for (let i = 0; i < top10Designs.length; i++) {
-          const card = await buildProjectCardElement(top10Designs[i], `TOP #${i + 1}`);
+          const label = top10Designs[i].isFeaturedTop ? `★ PINNED #${i + 1}` : `TOP #${i + 1}`;
+          const card = await buildProjectCardElement(top10Designs[i], label);
           top10Grid.appendChild(card);
         }
       }
